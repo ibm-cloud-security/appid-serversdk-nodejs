@@ -1,5 +1,5 @@
 {
-  "name": "appid",
+  "name": "bluemix-appid",
   "version": "0.0.1",
   "description": "Node.js SDK for the IBM Bluemix AppID service",
   "main": "lib/appid-sdk.js",
@@ -16,13 +16,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "express": "^4.14.0",
+	"express-session": "^1.15.0",
     "mocha": "^3.2.0",
     "passport": "^0.3.2",
     "pug": "^2.0.0-beta10"
   },
   "dependencies": {
-    "cfenv": "^1.0.3",
-    "express-session": "^1.15.0",
     "jsonwebtoken": "^7.2.1",
     "log4js": "^1.1.0",
     "q": "^1.4.1",
