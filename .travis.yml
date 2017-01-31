@@ -1,0 +1,21 @@
+language: node_js
+
+notifications:
+  email:
+    on_success: always
+    on_failure: always
+
+node_js:
+- '6'
+- '5'
+- '4'
+
+deploy:
+  provider: npm
+  email: antona@us.ibm.com
+  api_key:
+    secure: RfdJBc3dLelQj44aFC+Sqpub3+SIT4uQ5DNXVGF5zyJvrYBuaICP6qWXNFNrijjc5lIZr2GOixq85Qrx6pflZ+N4S/tDG9tGIHENoNlGyGVsld/f1qW82/rENyRF1FzPH22EoQAY9UlIMO+wVwI0MtohvvWpQuGBRr62VlLBiQa/RjENy6i4uHMztvwHocPc+m3axZAJDKdOQvCZ57htDt6r3gIsXYFfGKX6J0BITEne2r4dnhYqQW8PaJuKWD/FFbbjNNZi0DpO5TYxN/HCUyhMTURPrH2tWFnnr4VMDk0Cwt3bd53Xwmc5v7RkGuY+VhwnEVPEHVNS/Cl2ZUoidq77CtsN3XaC13hVdNYLCKM6hQFAXYiFMInV9wF+BEL2Td7Y7cYwN9luu0cllt12uq7onEL/wQl0Wpq7oAWUSMKrBVzWy6ov8oEPpxUIn6s4eeerXjuPykUO/IWzm8+hVsgqE10cNNyUGLOAXDIgEoXsWvaILgOA444K8o+JuAjJpL021IbdTQAqNV7jjeIvnt67rsPr3LJ/QBm89RmieK0K+GZnCOszC5hWO76V1MPrQtcgBWP7elyk53iCfwRilSWVZw9/kR2dhP7ELfcc2NNAlgr0dzFK8FNrDrUWSOv07Z0G64fF+60CfB9zbb1/Ip9AZcBR+sTPDUMVGNDTdhU=
+  on:
+    repo: ibm-bluemix-mobile-services/appid-serversdk-nodejs
+    branch: master
+    tags: true
