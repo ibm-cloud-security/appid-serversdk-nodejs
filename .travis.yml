@@ -10,5 +10,5 @@ node_js:
     - "5"
     - "4"
 
-deploy:
-    - ./scripts/deploy-script.sh
+script:
+    - ./scripts/dev-deploy-script.sh

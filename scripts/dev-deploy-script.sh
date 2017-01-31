@@ -5,3 +5,5 @@ set -ev
 # fi
 echo "hello!"
 # $TRAVIS_NODE_VERSION
+# TRAVIS_BRANCH
+# TRAVIS_PULL_REQUEST == # or "false"
