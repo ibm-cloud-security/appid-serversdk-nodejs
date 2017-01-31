@@ -4,3 +4,4 @@ set -ev
 # 	bundle exec rake test:integration
 # fi
 echo "hello!"
+# $TRAVIS_NODE_VERSION
