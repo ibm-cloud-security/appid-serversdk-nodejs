@@ -2,8 +2,10 @@
   "name": "appid",
   "version": "0.0.1",
   "description": "Node.js SDK for the IBM Bluemix AppID service",
-  "main": "lib/index.js",
+  "main": "lib/appid-sdk.js",
   "scripts": {
+    "apiapp": "node samples/api-app-sample.js",
+    "webapp": "node samples/web-app-sample.js",
     "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
@@ -15,7 +17,8 @@
   "devDependencies": {
     "express": "^4.14.0",
     "mocha": "^3.2.0",
-    "passport": "^0.3.2"
+    "passport": "^0.3.2",
+    "pug": "^2.0.0-beta10"
   },
   "dependencies": {
     "cfenv": "^1.0.3",

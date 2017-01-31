@@ -4,8 +4,3 @@ notifications:
   email:
     on_success: always
     on_failure: always
-
-node_js:
-  - "6"
-  - "5"
-  - "4"

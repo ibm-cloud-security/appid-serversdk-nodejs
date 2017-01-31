@@ -1,0 +1,14 @@
+#Home
+
+    h1 This is an web-app-sample for appid-serversdk-nodejs.
+
+    if isAuthenticated
+        h3 You're authenticated!
+        h3= name
+        img(src=""+photo)
+        hr
+        button(onclick="window.location='/ibm/bluemix/appid/logout'") Logout
+    else
+        h3 You're not authenticated yet
+        hr
+        button(onclick="window.location='/ibm/bluemix/appid/login'") Login
