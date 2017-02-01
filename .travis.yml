@@ -5,10 +5,13 @@ notifications:
     on_success: always
     on_failure: always
 
-node_js:
-- '6'
-- '5'
-- '4'
+install:
+  - npm install -g codecov
+
+script:
+  - npm install
+  - npm run coverage
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js # publish coverage info to coveralls
 
 deploy:
   provider: npm
