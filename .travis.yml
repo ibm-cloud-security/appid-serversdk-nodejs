@@ -12,6 +12,7 @@ script:
   - npm install
   - npm run coverage
   - codecov
+  - npm run coverageForCoveralls
 
 deploy:
   provider: npm
