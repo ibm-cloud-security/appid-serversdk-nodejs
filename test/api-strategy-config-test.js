@@ -1,9 +1,15 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Config = require("../lib/strategies/api-strategy-config");
-
 describe('/lib/strategies/api-strategy-config', function(){
+	console.log("Loading api-strategy-config-test.js");
+
+	var Config;
+
+	before(function(){
+		Config = require("../lib/strategies/api-strategy-config");
+	});
+
 	beforeEach(function(){
 		delete process.env.VCAP_SERVICES;
 		delete process.env.VCAP_APPLICATION;

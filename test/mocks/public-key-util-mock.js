@@ -4,7 +4,7 @@ const DEV_PUBLIC_KEY = {"kty":"RSA","n":"AKSd08Gubj4wkfVNcy1g2aDD2SP4rSAxqqSpq3B
 
 module.exports = {
 	retrievePublicKey: function(){
-		throw "NOT IMPLEMENTED";
+		
 	},
 
 	getPublicKeyPem: function () {
