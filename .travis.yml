@@ -5,6 +5,13 @@ notifications:
     on_success: always
     on_failure: always
 
+install:
+  - npm install -g codecov
+
+script:
+  - npm run coverage
+  - codecov
+
 deploy:
   provider: npm
   email: antona@us.ibm.com
