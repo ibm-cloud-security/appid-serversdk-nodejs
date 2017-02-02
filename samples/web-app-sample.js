@@ -95,4 +95,3 @@ var port = process.env.PORT || 1234;
 app.listen(port, function(){
 	logger.info("Listening on http://localhost:" + port);
 });
-
