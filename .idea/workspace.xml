@@ -2,19 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="55fed3f9-a6e5-4ce8-9eb2-0b25db30c891" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/api-strategy-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/mocks/token-util-mock.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/webapp-strategy-test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/strategies/api-strategy.js" afterPath="$PROJECT_DIR$/lib/strategies/api-strategy.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/strategies/webapp-strategy-config.js" afterPath="$PROJECT_DIR$/lib/strategies/webapp-strategy-config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/strategies/webapp-strategy.js" afterPath="$PROJECT_DIR$/lib/strategies/webapp-strategy.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/api-strategy-config-test.js" afterPath="$PROJECT_DIR$/test/api-strategy-config-test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/appid-sdk-test.js" afterPath="$PROJECT_DIR$/test/appid-sdk-test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/mocks/public-key-util-mock.js" afterPath="$PROJECT_DIR$/test/mocks/public-key-util-mock.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/public-key-util-test.js" afterPath="$PROJECT_DIR$/test/public-key-util-test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/token-util-test.js" afterPath="$PROJECT_DIR$/test/token-util-test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/webapp-strategy-config-test.js" afterPath="$PROJECT_DIR$/test/webapp-strategy-config-test.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/webapp-strategy-test.js" afterPath="$PROJECT_DIR$/test/webapp-strategy-test.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -35,8 +23,8 @@
       <file leaf-file-name="webapp-strategy-test.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/webapp-strategy-test.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="556">
-              <caret line="153" column="28" lean-forward="false" selection-start-line="153" selection-start-column="28" selection-end-line="153" selection-end-column="28" />
+            <state relative-caret-position="60">
+              <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -471,7 +459,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="61172000" />
+    <option name="totallyTimeSpent" value="61299000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="98" y="23" width="1582" height="1027" extended-state="0" />
@@ -483,7 +471,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47165775" sideWeight="0.49744898" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47165775" sideWeight="0.49744898" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42525253" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -914,8 +902,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/webapp-strategy-test.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="556">
-          <caret line="153" column="28" lean-forward="false" selection-start-line="153" selection-start-column="28" selection-end-line="153" selection-end-column="28" />
+        <state relative-caret-position="60">
+          <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
           <folding />
         </state>
       </provider>

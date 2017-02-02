@@ -2,7 +2,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
 
-describe.only('/lib/strategies/webapp-strategy', function(){
+describe('/lib/strategies/webapp-strategy', function(){
 	console.log("Loading webapp-strategy-test.js");
 
 	var WebAppStrategy;
