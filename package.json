@@ -1,12 +1,13 @@
 {
   "name": "bluemix-appid",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js SDK for the IBM Bluemix AppID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
     "apiapp": "node samples/api-app-sample.js",
     "webapp": "node samples/web-app-sample.js",
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/.bin/_mocha",
+    "coverage": "./node_modules/.bin/istanbul cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -15,10 +16,15 @@
   "author": "Anton Aleksandrov",
   "license": "Apache-2.0",
   "devDependencies": {
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "coveralls": "^2.11.15",
     "express": "^4.14.0",
-	"express-session": "^1.15.0",
+    "express-session": "^1.15.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "passport": "^0.3.2",
+    "proxyquire": "^1.7.11",
     "pug": "^2.0.0-beta10"
   },
   "dependencies": {
