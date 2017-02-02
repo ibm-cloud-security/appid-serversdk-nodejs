@@ -1,9 +1,14 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Config = require("../lib/strategies/webapp-strategy-config");
-
 describe('/lib/strategies/webapp-strategy-config', function(){
+	console.log("Loading webapp-strategy-config-test.js");
+
+	var Config;
+
+	before(function(){
+		Config = require("../lib/strategies/webapp-strategy-config");
+	});
 
 	beforeEach(function(){
 		delete process.env.VCAP_SERVICES;
@@ -81,7 +86,5 @@ describe('/lib/strategies/webapp-strategy-config', function(){
 		    var config = new Config();
 		    assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
 	    });
-
-
     })
 });

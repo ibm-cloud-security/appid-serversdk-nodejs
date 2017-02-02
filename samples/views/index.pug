@@ -5,10 +5,12 @@
     if isAuthenticated
         h3 You're authenticated!
         h3= name
-        img(src=""+photo)
+        img(src=""+picture)
         hr
         button(onclick="window.location='/ibm/bluemix/appid/logout'") Logout
     else
         h3 You're not authenticated yet
         hr
         button(onclick="window.location='/ibm/bluemix/appid/login'") Login
+
+    button(onclick="window.location='/userProfile'") Get full user profile

@@ -1,17 +1,23 @@
 const chai = require("chai");
+const assert = chai.assert;
 const proxyquire = require("proxyquire");
-
 const testServerUrl = "https://mobileclientaccess.ng.bluemix.net/imf-authserver";
 const testTenantId = "dummy-tenant-id";
 
-const assert = chai.assert;
-
-const PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
-	"request": require("./mocks/request-mock")
-});
 
 describe('/lib/utils/public-key-util', function(){
+	console.log("Loading public-key-util-test.js");
+
+	var PublicKeyUtil;
+
+	before(function(){
+		PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
+			"request": require("./mocks/request-mock")
+		});
+	});
+
 	this.timeout(5000);
+
 	describe('#retrievePublicKey()', function(){
 		it('Should fail retrieving public key from the server', function(done){
 			PublicKeyUtil.retrievePublicKey(testTenantId, testServerUrl + "FAIL-PUBLIC-KEY").then(function(){
