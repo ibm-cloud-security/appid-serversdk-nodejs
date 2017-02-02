@@ -10,14 +10,15 @@ describe('/lib/strategies/webapp-strategy', function(){
 
 	before(function(){
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
-			"./../utils/token-util": require("./mocks/token-util-mock")
+			"./../utils/token-util": require("./mocks/token-util-mock"),
+			"request": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
 			tenantId: "tenantId",
 			clientId: "clientId",
 			secret: "secret",
-			authorizationEndpoint: "https://authorizationEndpoint",
-			tokenEndpoint: "https://tokenEndpoint",
+			authorizationEndpoint: "https://authorizationEndpointMock",
+			tokenEndpoint: "https://tokenEndpointMock",
 			redirectUri: "https://redirectUri"
 		});
 	});
@@ -103,12 +104,7 @@ describe('/lib/strategies/webapp-strategy', function(){
 
 			WebAppStrategy.ensureAuthenticated()(req, null, next());
 		});
-
-
 	});
-
-
-
 
 	describe("#authenticate()", function(){
 		it("Should fail if request doesn't have session", function(done){
@@ -134,30 +130,102 @@ describe('/lib/strategies/webapp-strategy', function(){
 		});
 
 		it("Should handle callback if request contains grant code. Fail due to tokenEndpoint error", function(done){
-			done()
+			webAppStrategy.fail = function(err){
+				assert.equal(err.message, "Failed to obtain tokens");
+				done();
+			}
+			var req = {
+				session: {},
+				query: {
+					code: "FAILING_CODE"
+				}
+			}
+			webAppStrategy.authenticate(req);
 		});
 
 		it("Should handle callback if request contains grant code. Success with options.successRedirect", function(done){
-			done()
+			webAppStrategy.success = function(user){
+
+				assert.equal(options.successRedirect, "redirectUri");
+				assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT]);
+
+				assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken);
+				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken, "access_token_mock");
+				assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload);
+				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload.scope, "appid_default");
+
+				assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken);
+				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken, "id_token_mock");
+				assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload);
+				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+
+				assert.isObject(user);
+				assert.equal(user.scope, "appid_default");
+
+				done();
+			};
+
+			var req = {
+				session: {},
+				query: {
+					code: "WORKING_CODE"
+				}
+			};
+
+			var options = {
+				successRedirect: "redirectUri"
+			};
+
+			webAppStrategy.authenticate(req, options);
 		});
 
 		it("Should handle callback if request contains grant code. Success with WebAppStrategy.ORIGINAL_URL", function(done){
-			done()
+			webAppStrategy.success = function(user){
+				assert.equal(options.successRedirect, "originalUri");
+				done();
+			};
+
+			var req = {
+				session: {
+					APPID_ORIGINAL_URL: "originalUri"
+				},
+				query: {
+					code: "WORKING_CODE"
+				}
+			};
+
+			var options = {};
+
+			webAppStrategy.authenticate(req, options);
 		});
 
 		it("Should handle callback if request contains grant code. Success with redirect to /", function(done){
-			done()
+			webAppStrategy.success = function(user){
+				assert.equal(options.successRedirect, "/");
+				done();
+			};
+
+			var req = {
+				session: {
+				},
+				query: {
+					code: "WORKING_CODE"
+				}
+			};
+
+			var options = {};
+
+			webAppStrategy.authenticate(req, options);
 		});
 
-		it("Should handle authorization", function(done){
+		it("Should handle authorization redirect to AppID /authorization endpoint", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, "https://authorizationEndpoint?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, "https://authorizationEndpointMock?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
 				done();
 			}
 			webAppStrategy.authenticate({
 				session: {}
 			});
 		});
-
 	});
 });

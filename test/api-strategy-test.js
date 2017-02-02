@@ -110,9 +110,15 @@ describe('/lib/strategies/api-strategy', function(){
 			apiStrategy.success = function(idToken){
 				assert.isNull(idToken);
 				assert.isObject(req.appIdAuthorizationContext);
+
 				assert.isString(req.appIdAuthorizationContext.accessToken);
+				assert.equal(req.appIdAuthorizationContext.accessToken, "access_token");
 				assert.isObject(req.appIdAuthorizationContext.accessTokenPayload);
 				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default");
+
+				assert.isUndefined(req.appIdAuthorizationContext.identityToken);
+				assert.isUndefined(req.appIdAuthorizationContext.identityTokenPayload);
+
 				done()
 			}
 
@@ -129,9 +135,15 @@ describe('/lib/strategies/api-strategy', function(){
 			apiStrategy.success = function(idToken){
 				assert.isNull(idToken);
 				assert.isObject(req.appIdAuthorizationContext);
+
 				assert.isString(req.appIdAuthorizationContext.accessToken);
+				assert.equal(req.appIdAuthorizationContext.accessToken, "access_token");
 				assert.isObject(req.appIdAuthorizationContext.accessTokenPayload);
 				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default");
+
+				assert.isUndefined(req.appIdAuthorizationContext.identityToken);
+				assert.isUndefined(req.appIdAuthorizationContext.identityTokenPayload);
+
 				done()
 			}
 
@@ -148,14 +160,19 @@ describe('/lib/strategies/api-strategy', function(){
 
 			apiStrategy.success = function(idToken){
 				assert.isObject(req.appIdAuthorizationContext);
+
 				assert.isString(req.appIdAuthorizationContext.accessToken);
+				assert.equal(req.appIdAuthorizationContext.accessToken, "access_token");
 				assert.isObject(req.appIdAuthorizationContext.accessTokenPayload);
 				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default");
+
 				assert.isString(req.appIdAuthorizationContext.identityToken);
+				assert.equal(req.appIdAuthorizationContext.identityToken, "id_token");
 				assert.isObject(req.appIdAuthorizationContext.identityTokenPayload);
 				assert.equal(req.appIdAuthorizationContext.identityTokenPayload.scope, "appid_default");
 
-				assert.isNotNull(idToken);
+				assert.isObject(idToken);
+
 				assert.equal(idToken.scope, "appid_default");
 				done()
 			}
