@@ -21,7 +21,7 @@ Node.js SDK for the Bluemix AppID service
 * [License](#license)
 
 ### Summary
-The Bluemix AppID Service allows developers ....
+The Bluemix AppID Service allows developers .....
 
 This SDK provides Passport.js strategies for protecting two types of resources - APIs and Web applications. The major difference between these two resource types is the way client is challenged.
 
