@@ -1,6 +1,6 @@
 {
   "name": "bluemix-appid",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Node.js SDK for the IBM Bluemix AppID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
@@ -11,13 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ibm-bluemix-mobile-services/appid-serversdk-nodejs.git"
+    "url": "git+https://github.com/ibm-cloud-security/appid-serversdk-nodejs.git"
   },
   "author": "Anton Aleksandrov",
   "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^3.5.0",
-    "codecov": "^1.0.1",
     "coveralls": "^2.11.15",
     "express": "^4.14.0",
     "express-session": "^1.15.0",
