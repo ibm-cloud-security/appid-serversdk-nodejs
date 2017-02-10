@@ -41,7 +41,7 @@ npm install --save bluemix-appid
 ```
 
 ### Example Usage
-Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository. 
+Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository.
 
 Note that below examples are using additional npm modules. In order to install required npm modules run below commands in your node.js application.
 ```
@@ -111,7 +111,7 @@ app.listen(port, function(){
 ```
 
 #### Protecting web applications using WebAppStrategy
-WebAppStrategy is based on authorization_code OAuth2 flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy detects unauthenticated attempt to access a protected resource it will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from AppID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. It is up to developer to decide whether to persist access and identity tokens in the application database. 
+WebAppStrategy is based on authorization_code OAuth2 flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy detects unauthenticated attempt to access a protected resource it will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from AppID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. It is up to developer to decide whether to persist access and identity tokens in the application database.
 
 ```JavaScript
 const express = require('express');
@@ -150,16 +150,16 @@ app.set('views', './samples/views');
 app.use(passport.session());
 
 // Below configuration can be obtained from Service Credentials
-// tab in the AppID Dashboard. You're not required to manually provide below 
+// tab in the AppID Dashboard. You're not required to manually provide below
 // configuration if your node.js application runs on Bluemix and is bound to the
 // AppID service instance. In this case AppID configuration will be obtained
 // automatically using VCAP_SERVICES environment variable.
-// 
+//
 // The redirectUri value can be supplied in three ways:
 // 1. Manually in new WebAppStrategy({redirectUri: "...."})
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the AppID SDK will try to retrieve
-//    application_uri of the application running on Bluemix and append default 
+//    application_uri of the application running on Bluemix and append default
 //    default suffix `/ibm/bluemix/appid/callback`
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
@@ -236,19 +236,19 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 [img-npm-downloads-monthly]: https://img.shields.io/npm/dm/bluemix-appid.svg
 [img-npm-downloads-total]: https://img.shields.io/npm/dt/bluemix-appid.svg
 
-[img-github-watchers]: https://img.shields.io/github/watchers/ibm-bluemix-mobile-services/appid-serversdk-nodejs.svg?style=social&label=Watch
-[url-github-watchers]: https://github.com/ibm-bluemix-mobile-services/appid-serversdk-nodejs/watchers
-[img-github-stars]: https://img.shields.io/github/stars/ibm-bluemix-mobile-services/appid-serversdk-nodejs.svg?style=social&label=Star
-[url-github-stars]: https://github.com/ibm-bluemix-mobile-services/appid-serversdk-nodejs/stargazers
-[img-github-forks]: https://img.shields.io/github/forks/ibm-bluemix-mobile-services/appid-serversdk-nodejs.svg?style=social&label=Fork
-[url-github-forks]: https://github.com/ibm-bluemix-mobile-services/appid-serversdk-nodejs/network
+[img-github-watchers]: https://img.shields.io/github/watchers/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Watch
+[url-github-watchers]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/watchers
+[img-github-stars]: https://img.shields.io/github/stars/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Star
+[url-github-stars]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/stargazers
+[img-github-forks]: https://img.shields.io/github/forks/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Fork
+[url-github-forks]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/network
 
-[img-travis-master]: https://travis-ci.org/ibm-bluemix-mobile-services/appid-serversdk-nodejs.svg
-[url-travis-master]: https://travis-ci.org/ibm-bluemix-mobile-services/appid-serversdk-nodejs
-[img-travis-development]: https://travis-ci.org/ibm-bluemix-mobile-services/appid-serversdk-nodejs.svg?branch=development
-[url-travis-development]: https://travis-ci.org/ibm-bluemix-mobile-services/appid-serversdk-nodejs?branch=development
+[img-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg
+[url-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs
+[img-travis-development]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg?branch=development
+[url-travis-development]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs?branch=development
 
-[img-coveralls-master]: https://coveralls.io/repos/github/ibm-bluemix-mobile-services/appid-serversdk-nodejs/badge.svg
-[url-coveralls-master]: https://coveralls.io/github/ibm-bluemix-mobile-services/appid-serversdk-nodejs
-[img-coveralls-development]: https://coveralls.io/repos/github/ibm-bluemix-mobile-services/appid-serversdk-nodejs/badge.svg?branch=development
-[url-coveralls-development]: https://coveralls.io/github/ibm-bluemix-mobile-services/appid-serversdk-nodejs?branch=development
+[img-coveralls-master]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg
+[url-coveralls-master]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs
+[img-coveralls-development]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg?branch=development
+[url-coveralls-development]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs?branch=development
