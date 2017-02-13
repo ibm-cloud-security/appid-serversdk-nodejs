@@ -24,7 +24,7 @@ describe('/lib/utils/public-key-util', function(){
 				done(new Error("This is impossible!!!"));
 			}).catch(function(err){
 				done();
-			})
+			});
 		});
 	});
 
@@ -41,7 +41,7 @@ describe('/lib/utils/public-key-util', function(){
 				done();
 			}).catch(function(err){
 				done(new Error(err));
-			})
+			});
 		});
 	});
 

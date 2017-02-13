@@ -23,7 +23,7 @@ describe('/lib/strategies/api-strategy-config', function(){
 			assert.isObject(config.getConfig());
 			assert.isUndefined(config.getTenantId());
 			assert.isUndefined(config.getServerUrl());
-	    })
+		})
 
 		it("Should succeed and get config from options argument", function(){
 			var config = new Config({
@@ -37,7 +37,7 @@ describe('/lib/strategies/api-strategy-config', function(){
 		});
 
 	    it("Should succeed and get config from VCAP_SERVICES", function(){
-		    process.env.VCAP_SERVICES = JSON.stringify({
+			process.env.VCAP_SERVICES = JSON.stringify({
 			    AdvancedMobileAccess: [
 				    {
 						credentials: {

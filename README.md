@@ -4,6 +4,7 @@ Node.js SDK for the Bluemix AppID service
 [![Bluemix powered][img-bluemix-powered]][url-bluemix]
 [![Travis][img-travis-master]][url-travis-master]
 [![Coveralls][img-coveralls-master]][url-coveralls-master]
+[![Codacy][img-codacy]][url-codacy]
 [![Version][img-version]][url-npm]
 [![DownloadsMonthly][img-npm-downloads-monthly]][url-npm]
 [![DownloadsTotal][img-npm-downloads-total]][url-npm]
@@ -245,10 +246,9 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 
 [img-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg
 [url-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs
-[img-travis-development]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg?branch=development
-[url-travis-development]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs?branch=development
 
 [img-coveralls-master]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg
 [url-coveralls-master]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs
-[img-coveralls-development]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg?branch=development
-[url-coveralls-development]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs?branch=development
+
+[img-codacy]: https://api.codacy.com/project/badge/Grade/3156f40a37cb4026a443082fc1afcaa4?branch=master
+[url-codacy]: https://www.codacy.com/app/ibm-cloud-security/appid-serversdk-nodejs

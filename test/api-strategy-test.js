@@ -24,26 +24,37 @@ describe('/lib/strategies/api-strategy', function(){
 			assert.isFunction(APIStrategy);
 			assert.equal(APIStrategy.STRATEGY_NAME, "appid-api-strategy");
 			assert.equal(APIStrategy.DEFAULT_SCOPE, "appid_default");
-		})
-	})
+		});
+	});
 
 	describe("#authenticate()", function(){
-		it("Should fail when there's no access token", function(done){
 
+		it("Should fail returning both default and custom scopes", function(done){
 			apiStrategy.fail = function(msg, status){
-				assert.equal(msg, 'Bearer scope="appid_default", error="invalid_token"');
+				assert.equal(msg, "Bearer scope=\"appid_default custom_scope\", error=\"invalid_token\"");
 				assert.equal(status, 401);
-				done()
+				done();
 			}
 
 			apiStrategy.authenticate({
 				header: function(){
 					return null;
-					if (name=="Authorizati1on") {
-						return "Jopa";
-					} else {
-						return null;
-					}
+				}
+			}, {
+				scope: "custom_scope"
+			});
+		});
+
+		it("Should fail when there's no access token", function(done){
+			apiStrategy.fail = function(msg, status){
+				assert.equal(msg, 'Bearer scope="appid_default", error="invalid_token"');
+				assert.equal(status, 401);
+				done();
+			}
+
+			apiStrategy.authenticate({
+				header: function(){
+					return null;
 				}
 			});
 		});
