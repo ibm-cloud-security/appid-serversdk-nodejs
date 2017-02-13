@@ -38,11 +38,7 @@ describe('/lib/strategies/api-strategy', function(){
 
 			apiStrategy.authenticate({
 				header: function(){
-					if (name === "Authorization") {
-						return "bad";
-					} else {
-						return null;
-					}
+					return null;
 				}
 			});
 		});
