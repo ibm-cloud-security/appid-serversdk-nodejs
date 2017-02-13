@@ -31,7 +31,7 @@ describe('/lib/strategies/api-strategy', function(){
 
 		it("Should fail returning both default and custom scopes", function(done){
 			apiStrategy.fail = function(msg, status){
-				assert.equal(msg, 'Bearer scope="appid_default custom_scope", error="invalid_token"');
+				assert.equal(msg, "Bearer scope=\"appid_default custom_scope\", error=\"invalid_token\"");
 				assert.equal(status, 401);
 				done();
 			}
