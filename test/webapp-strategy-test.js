@@ -1,8 +1,8 @@
-const chai = require('chai');
+const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
 
-describe('/lib/strategies/webapp-strategy', function(){
+describe("/lib/strategies/webapp-strategy", function(){
 	console.log("Loading webapp-strategy-test.js");
 
 	var WebAppStrategy;
@@ -30,7 +30,7 @@ describe('/lib/strategies/webapp-strategy', function(){
 			assert.equal(WebAppStrategy.DEFAULT_SCOPE, "appid_default");
 			assert.equal(WebAppStrategy.ORIGINAL_URL, "APPID_ORIGINAL_URL");
 			assert.equal(WebAppStrategy.AUTH_CONTEXT, "APPID_AUTH_CONTEXT");
-		})
+		});
 	});
 
 	describe("#logout", function(done){
