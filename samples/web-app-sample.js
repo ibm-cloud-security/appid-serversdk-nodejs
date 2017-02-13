@@ -1,11 +1,11 @@
-const express = require('express');
-const session = require('express-session')
-const log4js = require('log4js');
+const express = require("express");
+const session = require("express-session");
+const log4js = require("log4js");
 const logger = log4js.getLogger("testApp");
-const passport = require('passport');
-const pug = require('pug');
+const passport = require("passport");
+const pug = require("pug");
 
-const WebAppStrategy = require('./../lib/appid-sdk').WebAppStrategy;
+const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
 const app = express();
 
 // Below URLs will be used for AppID OAuth flows
@@ -18,15 +18,15 @@ const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 // environments. See https://github.com/expressjs/session for
 // additional documentation
 app.use(session({
-	secret: '123456',
+	secret: "123456",
 	resave: true,
 	saveUninitialized: true
 }));
 
 // Configure Pug template engine
 pug.basedir = "samples";
-app.set('view engine', 'pug');
-app.set('views', './samples/views');
+app.set("view engine", "pug");
+app.set("views", "./samples/views");
 
 // Configure express application to use passportjs
 app.use(passport.initialize());
@@ -62,7 +62,7 @@ app.get("/", function(req, res, next) {
 			isAuthenticated: true,
 			name: user.name,
 			picture: user.picture
-		}
+		};
 	}
 	res.render("index.pug", data);
 });

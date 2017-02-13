@@ -1,7 +1,7 @@
-const express = require('express');
-const log4js = require('log4js');
-const passport = require('passport');
-const APIStrategy = require('./../lib/appid-sdk').APIStrategy;
+const express = require("express");
+const log4js = require("log4js");
+const passport = require("passport");
+const APIStrategy = require("./../lib/appid-sdk").APIStrategy;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -10,13 +10,12 @@ app.use(passport.initialize());
 
 passport.use(new APIStrategy({
 	tenantId: "e9be2ca6-b280-43b9-b3b9-d03809d8390f",
-	serverUrl: "https://workingfromhome.stage1.mybluemix.net/imf-authserver"
+	serverUrl: "https://imf-authserver.stage1.mybluemix.net"
 }));
 
 app.get("/api/protected",
 	passport.authenticate(APIStrategy.STRATEGY_NAME, {
-		session: false,
-		scope: "default" // TODO: Change to appid_default after server side update
+		session: false
 	}),
 	function(req, res) {
 		var appIdAuthContext = req.appIdAuthorizationContext;
