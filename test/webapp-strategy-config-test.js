@@ -1,36 +1,36 @@
 const chai = require("chai");
 const assert = chai.assert;
 
-describe("/lib/strategies/webapp-strategy-config", function(){
+describe("/lib/strategies/webapp-strategy-config", function () {
 	console.log("Loading webapp-strategy-config-test.js");
 
 	var Config;
 
-	before(function(){
+	before(function () {
 		Config = require("../lib/strategies/webapp-strategy-config");
 	});
 
-	beforeEach(function(){
+	beforeEach(function () {
 		delete process.env.VCAP_SERVICES;
 		delete process.env.VCAP_APPLICATION;
 		delete process.env.redirectUri;
 	});
 
-	describe("#getConfig(), #getTenantId(), #getClientId(), #getSecret(), #getAuthorizationEndpoint(), #getTokenEndpoint(), #getRedirectUri()", function(){
- 		it("Should fail since there's no options argument nor VCAP_SERVICES", function(){
- 			var config = new Config();
+	describe("#getConfig(), #getTenantId(), #getClientId(), #getSecret(), #getAuthorizationEndpoint(), #getTokenEndpoint(), #getRedirectUri()", function () {
+		it("Should fail since there's no options argument nor VCAP_SERVICES", function () {
+			var config = new Config();
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
-		    assert.isUndefined(config.getTenantId());
-		    assert.isUndefined(config.getClientId());
-		    assert.isUndefined(config.getSecret());
-		    assert.isUndefined(config.getAuthorizationEndpoint());
+			assert.isUndefined(config.getTenantId());
+			assert.isUndefined(config.getClientId());
+			assert.isUndefined(config.getSecret());
+			assert.isUndefined(config.getAuthorizationEndpoint());
 			assert.isUndefined(config.getTokenEndpoint());
 			assert.isUndefined(config.getRedirectUri());
 
 		});
 
-		it("Should succeed and get config from options argument", function(){
+		it("Should succeed and get config from options argument", function () {
 			var config = new Config({
 				tenantId: "abcd",
 				clientId: "clientId",
@@ -49,10 +49,10 @@ describe("/lib/strategies/webapp-strategy-config", function(){
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 
-	    it("Should succeed and get config from VCAP_SERVICES", function(){
+		it("Should succeed and get config from VCAP_SERVICES", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
-				    {
+					{
 						credentials: {
 							tenantId: "abcd",
 							clientId: "clientId",
@@ -60,13 +60,13 @@ describe("/lib/strategies/webapp-strategy-config", function(){
 							authorizationEndpoint: "authEndpoint",
 							tokenEndpoint: "tokenEndpoint"
 						}
-				    }
-			    ]
+					}
+				]
 			});
 
-		    process.env.redirectUri = "redirectUri";
+			process.env.redirectUri = "redirectUri";
 
-	    	var config = new Config();
+			var config = new Config();
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
 			assert.equal(config.getTenantId(), "abcd");
@@ -75,16 +75,16 @@ describe("/lib/strategies/webapp-strategy-config", function(){
 			assert.equal(config.getAuthorizationEndpoint(), "authEndpoint");
 			assert.equal(config.getTokenEndpoint(), "tokenEndpoint");
 			assert.equal(config.getRedirectUri(), "redirectUri");
-	    });
+		});
 
-	    it("Should succeed and get redirectUri from VCAP_APPLICATION", function(){
-		    process.env.VCAP_APPLICATION = JSON.stringify({
-			    "application_uris": [
-			    	"abcd.com"
-			    ]
-		    });
-		    var config = new Config();
-		    assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
-	    });
-    })
+		it("Should succeed and get redirectUri from VCAP_APPLICATION", function () {
+			process.env.VCAP_APPLICATION = JSON.stringify({
+				"application_uris": [
+					"abcd.com"
+				]
+			});
+			var config = new Config();
+			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
+		});
+	})
 });
