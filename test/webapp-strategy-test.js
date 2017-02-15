@@ -46,7 +46,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 	});
 
-	describe("#logout", function(done){
+	describe("#logout", function(){
 		it("Should be able to successfully logout", function(done){
 			var req = {
 				logout: function(){
@@ -63,7 +63,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 	});
 
-	describe("#ensureAuthenticated", function(done){
+	describe("#ensureAuthenticated", function(){
 		it("Should be able to detect unauthenticated request with explicit notAuthenticatedRedirect", function(done){
 			var req = {
 				isAuthenticated: function(){
@@ -115,7 +115,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				done();
 			}
 
-			WebAppStrategy.ensureAuthenticated()(req, null, next());
+			WebAppStrategy.ensureAuthenticated()(req, null, next);
 		});
 	});
 
