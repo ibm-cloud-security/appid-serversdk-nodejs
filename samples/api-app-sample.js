@@ -15,9 +15,15 @@ const express = require("express");
 const log4js = require("log4js");
 const passport = require("passport");
 const APIStrategy = require("./../lib/appid-sdk").APIStrategy;
+const UserAttributeManager = require("./../lib/appid-sdk").UserAttributeManager;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
+
+UserAttributeManager.init({
+	serverUrl: "https://user-profiles-bluemix.com/v1/api"
+});
+UserAttributeManager.getAttribute("a","b","c");
 
 app.use(passport.initialize());
 
