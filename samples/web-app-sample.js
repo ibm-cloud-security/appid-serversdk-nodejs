@@ -47,11 +47,10 @@ app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
 passport.use(new WebAppStrategy({
-	tenantId: "bb9b7729-3a5e-4e4b-b917-5076e848bcf2",
-	clientId: "a8fd7d1c-2c82-4ad0-b4f8-0ded373e69a9",
-	secret: "NWY3MzIzYzctMzM0Ny00MWM4LWJkYmUtY2FjNTNjYzM2MWNi",
-	authorizationEndpoint: "https://mobileclientaccess.stage1-dev.ng.bluemix.net/oauth/v3/bb9b7729-3a5e-4e4b-b917-5076e848bcf2/authorization",
-	tokenEndpoint: "https://mobileclientaccess.stage1-dev.ng.bluemix.net/oauth/v3/bb9b7729-3a5e-4e4b-b917-5076e848bcf2/token",
+	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
+	clientId: "7e464c3e-3a0f-431a-b3a1-a35bdb8e2562",
+	secret: "MmRkNzA0MzctZjE0MC00ZmY2LTg4MDMtOTM5OGQwODFjMWE0",
+	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
 
@@ -98,7 +97,7 @@ app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 // 3. application root ("/")
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
-// Clears authetnication information from session
+// Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
 	WebAppStrategy.logout(req);
 	res.redirect("/");

@@ -37,8 +37,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.isUndefined(config.getTenantId());
 			assert.isUndefined(config.getClientId());
 			assert.isUndefined(config.getSecret());
-			assert.isUndefined(config.getAuthorizationEndpoint());
-			assert.isUndefined(config.getTokenEndpoint());
+			assert.isUndefined(config.getOAuthServerUrl());
 			assert.isUndefined(config.getRedirectUri());
 
 		});
@@ -48,8 +47,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 				tenantId: "abcd",
 				clientId: "clientId",
 				secret: "secret",
-				authorizationEndpoint: "authEndpoint",
-				tokenEndpoint: "tokenEndpoint",
+				oauthServerUrl: "oauthServerUrl",
 				redirectUri: "redirectUri"
 			});
 			assert.isObject(config);
@@ -57,8 +55,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getClientId(), "clientId");
 			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getAuthorizationEndpoint(), "authEndpoint");
-			assert.equal(config.getTokenEndpoint(), "tokenEndpoint");
+			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 
@@ -70,8 +67,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 							tenantId: "abcd",
 							clientId: "clientId",
 							secret: "secret",
-							authorizationEndpoint: "authEndpoint",
-							tokenEndpoint: "tokenEndpoint"
+							oauthServerUrl: "oauthServerUrl"
 						}
 					}
 				]
@@ -85,8 +81,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getClientId(), "clientId");
 			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getAuthorizationEndpoint(), "authEndpoint");
-			assert.equal(config.getTokenEndpoint(), "tokenEndpoint");
+			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 

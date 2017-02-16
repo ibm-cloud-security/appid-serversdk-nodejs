@@ -30,8 +30,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			tenantId: "tenantId",
 			clientId: "clientId",
 			secret: "secret",
-			authorizationEndpoint: "https://authorizationEndpointMock",
-			tokenEndpoint: "https://tokenEndpointMock",
+			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
 		});
 	});
@@ -231,14 +230,27 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.authenticate(req, options);
 		});
 
-		it("Should handle authorization redirect to AppID /authorization endpoint", function(done){
+		it("Should handle authorization redirect to AppID /authorization endpoint with default scope", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, "https://authorizationEndpointMock?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
 				done();
 			}
 			webAppStrategy.authenticate({
 				session: {}
 			});
 		});
+
+		it("Should handle authorization redirect to AppID /authorization endpoint with custom scope", function(done){
+			webAppStrategy.redirect = function(url){
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
+				done();
+			}
+			webAppStrategy.authenticate({
+				session: {}
+			}, {
+				scope: "customScope"
+			});
+		});
+
 	});
 });

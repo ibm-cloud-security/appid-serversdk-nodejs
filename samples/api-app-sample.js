@@ -20,16 +20,17 @@ const UserAttributeManager = require("./../lib/appid-sdk").UserAttributeManager;
 const app = express();
 const logger = log4js.getLogger("testApp");
 
-UserAttributeManager.init({
-	serverUrl: "https://user-profiles-bluemix.com/v1/api"
-});
-UserAttributeManager.getAttribute("a","b","c");
+// UserAttributeManager.init({
+// 	serverUrl: "https://user-profiles-bluemix.com/v1/api"
+// });
+// UserAttributeManager.getAttribute("a","b","c");
 
 app.use(passport.initialize());
 
 passport.use(new APIStrategy({
-	tenantId: "e9be2ca6-b280-43b9-b3b9-d03809d8390f",
-	serverUrl: "https://imf-authserver.stage1.mybluemix.net"
+	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
+	// oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4"
+	oauthServerUrl: "https://imf-authserver.stage1.mybluemix.net/imf-authserver/authorization/v1/apps/50d0beed-add7-48dd-8b0a-c818cb456bb4"
 }));
 
 app.get("/api/protected",

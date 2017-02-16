@@ -35,18 +35,18 @@ describe('/lib/strategies/api-strategy-config', function(){
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
 			assert.isUndefined(config.getTenantId());
-			assert.isUndefined(config.getServerUrl());
+			assert.isUndefined(config.getOAuthServerUrl());
 		})
 
 		it("Should succeed and get config from options argument", function(){
 			var config = new Config({
 				tenantId: "abcd",
-				serverUrl: "http://abcd"
+				oauthServerUrl: "http://abcd"
 			});
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
 			assert.equal(config.getTenantId(), "abcd");
-			assert.equal(config.getServerUrl(), "http://abcd");
+			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 		});
 
 	    it("Should succeed and get config from VCAP_SERVICES", function(){
@@ -55,7 +55,7 @@ describe('/lib/strategies/api-strategy-config', function(){
 				    {
 						credentials: {
 							tenantId: "abcd",
-							serverUrl: "http://abcd"
+							oauthServerUrl: "http://abcd"
 						}
 				    }
 			    ]
@@ -65,7 +65,7 @@ describe('/lib/strategies/api-strategy-config', function(){
 		    assert.isObject(config);
 		    assert.isObject(config.getConfig());
 		    assert.equal(config.getTenantId(), "abcd");
-		    assert.equal(config.getServerUrl(), "http://abcd");
+		    assert.equal(config.getOAuthServerUrl(), "http://abcd");
 	    });
 
     })
