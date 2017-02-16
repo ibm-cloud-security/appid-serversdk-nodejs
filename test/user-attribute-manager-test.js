@@ -17,7 +17,7 @@ const proxyquire = require("proxyquire");
 const _ = require("underscore");
 const Q = require("q");
 
-describe('/lib/attribute-manager/user-attrubute-manager', function() {
+describe("/lib/attribute-manager/user-attrubute-manager", function() {
 	console.log("Loading user-attribute-manager-test.js");
 
 	var UserAttributeManager;
@@ -233,14 +233,14 @@ function requestMock(options, callback){
 	var authHeader = options.headers["Authorization"];
 	console.log(authHeader);
 	if (authHeader.indexOf("return_error") > 0){
-		callback(new Error("EXPECTED FAILURE"));
+		return callback(new Error("EXPECTED FAILURE"));
 	} else if (authHeader.indexOf("return_code") > 0){
 		var statusCode = parseInt(authHeader.split("_")[2]);
-		callback(null, {
+		return callback(null, {
 			statusCode: parseInt(statusCode)
 		});
 	} else {
-		callback(null, {
+		return callback(null, {
 			statusCode: 200
 		}, JSON.stringify(options));
 	}
