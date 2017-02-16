@@ -71,14 +71,13 @@ const logger = log4js.getLogger("testApp");
 
 app.use(passport.initialize());
 
-// Both tenantId and serverUrl values can be obtained from Service Credentials
-// tab in the AppID Dashboard. You're not required to provide tenantId and
-// serverUrl if your node.js application runs on Bluemix and is bound to the
+// The oauthServerUrl value can be obtained from Service Credentials
+// tab in the AppID Dashboard. You're not required to provide this argument
+// if your node.js application runs on Bluemix and is bound to the
 // AppID service instance. In this case AppID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
-	tenantId: "{service-tenant-id}",
-	serverUrl: "{server-url}"
+	oauthServerUrl: "{oauth-server-url}"
 }));
 
 // Declare the API you want to protect
@@ -166,8 +165,7 @@ passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
 	clientId: "{client-id}",
 	secret: "{secret}",
-	authorizationEndpoint: "{auth-endpoint}",
-	tokenEndpoint: "{token-endpoint}",
+	oauthServerUrl: "{oauth-server-url}",
 	redirectUri: "{server-url}" + CALLBACK_URL
 }));
 

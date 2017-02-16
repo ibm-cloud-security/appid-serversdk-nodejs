@@ -28,7 +28,6 @@ const logger = log4js.getLogger("testApp");
 app.use(passport.initialize());
 
 passport.use(new APIStrategy({
-	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	// oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4"
 	oauthServerUrl: "https://imf-authserver.stage1.mybluemix.net/imf-authserver/authorization/v1/apps/50d0beed-add7-48dd-8b0a-c818cb456bb4"
 }));

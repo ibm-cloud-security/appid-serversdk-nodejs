@@ -29,23 +29,20 @@ describe('/lib/strategies/api-strategy-config', function () {
 		delete process.env.redirectUri;
 	});
 
-	describe("#getConfig(), #getTenantId, #getServerUrl", function () {
+	describe("#getConfig(), #getServerUrl", function () {
 		it("Should fail since there's no options argument nor VCAP_SERVICES", function () {
 			var config = new Config();
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
-			assert.isUndefined(config.getTenantId());
 			assert.isUndefined(config.getOAuthServerUrl());
 		});
 
 		it("Should succeed and get config from options argument", function () {
 			var config = new Config({
-				tenantId: "abcd",
 				oauthServerUrl: "http://abcd"
 			});
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 		});
 
@@ -54,7 +51,6 @@ describe('/lib/strategies/api-strategy-config', function () {
 				AdvancedMobileAccess: [
 					{
 						credentials: {
-							tenantId: "abcd",
 							oauthServerUrl: "http://abcd"
 						}
 					}
@@ -64,7 +60,6 @@ describe('/lib/strategies/api-strategy-config', function () {
 			var config = new Config();
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 		});
 	});
