@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	$(".hideOnStartup").hide();
 
-	$.getJSON("/userinfo", function(data){
+	$.getJSON("/idtoken", function(data){
 		// Already authenticated
 		$("#WhenAuthenticated").show();
 		$("#sub").text(data.sub);
@@ -13,4 +13,10 @@ $(document).ready(function(){
 	}).always(function(){
 		$("#LoginButtons").show();
 	});
+
+	$("#LoginButton").click(onLoginButtonClicked);
 });
+
+function onLoginButtonClicked(){
+
+}
