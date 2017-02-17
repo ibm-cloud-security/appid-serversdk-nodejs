@@ -52,7 +52,8 @@ var webAppStrategy = new WebAppStrategy({
 	secret: "MmRkNzA0MzctZjE0MC00ZmY2LTg4MDMtOTM5OGQwODFjMWE0",
 	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
-}) ;
+});
+
 // Configure passportjs to use WebAppStrategy
 passport.use(webAppStrategy);
 
