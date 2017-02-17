@@ -32,19 +32,25 @@ passport.use(new APIStrategy({
 	oauthServerUrl: "https://imf-authserver.stage1.mybluemix.net/imf-authserver/authorization/v1/apps/50d0beed-add7-48dd-8b0a-c818cb456bb4"
 }));
 
+UserAttributeManager.init({
+	serverUrl: "http://appid-user-profile-service.stage1.mybluemix.net/v1/attributes"
+});
+
 app.get("/api/protected",
 	passport.authenticate(APIStrategy.STRATEGY_NAME, {
 		session: false
 	}),
 	function(req, res) {
 		var appIdAuthContext = req.appIdAuthorizationContext;
-		var username = "Anonymous";
+		var username = "[unknown identity]";
 		if (appIdAuthContext.identityTokenPayload){
 			username = appIdAuthContext.identityTokenPayload.name;
 		}
 		logger.debug(req.appIdAuthorizationContext);
 		res.send("Hello from protected resource " + username);
 	}
+
+
 );
 
 var port = process.env.PORT || 1234;

@@ -13,4 +13,10 @@ $(document).ready(function(){
 	}).always(function(){
 		$("#LoginButtons").show();
 	});
+
+	$("#LoginButton").click(onLoginButtonClicked);
 });
+
+function onLoginButtonClicked(){
+
+}

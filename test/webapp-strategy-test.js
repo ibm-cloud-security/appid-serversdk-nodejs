@@ -280,7 +280,8 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 
 			webAppStrategy.authenticate(req, {
-				allowAnonymousLogin: true
+				allowAnonymousLogin: true,
+				allowCreateNewAnonymousUser: false
 			});
 		});
 
@@ -289,7 +290,8 @@ describe("/lib/strategies/webapp-strategy", function(){
 				session: {}
 			};
 
-			webAppStrategy.success = function(){
+			webAppStrategy.redirect = function(url){
+				assert.include(url, "idp=appid_anon")
 				done();
 			};
 
@@ -298,25 +300,6 @@ describe("/lib/strategies/webapp-strategy", function(){
 				allowCreateNewAnonymousUser: true
 			});
 		});
-
-		it("Should handle anonymous login failure", function(done){
-			var req = {
-				session: {}
-			};
-			webAppStrategy.fail = function(){
-				done();
-			};
-
-			webAppStrategy.authenticate(req, {
-				scope: "FAIL_REQUEST",
-				allowAnonymousLogin: true,
-				allowCreateNewAnonymousUser: true
-			});
-		});
-
-
-
-
 	});
 });
 
