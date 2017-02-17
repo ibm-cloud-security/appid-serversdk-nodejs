@@ -14,11 +14,11 @@
 const express = require("express");
 const session = require("express-session");
 const log4js = require("log4js");
-const logger = log4js.getLogger("testApp");
 const passport = require("passport");
-
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
+
 const app = express();
+const logger = log4js.getLogger("testApp");
 
 // Below URLs will be used for AppID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
@@ -40,21 +40,18 @@ app.use(session({
 // Use static resources from /samples directory
 app.use(express.static("samples"));
 
-// Configure Pug template engine
 // Configure express application to use passportjs
 app.use(passport.initialize());
 app.use(passport.session());
 
-var webAppStrategy = new WebAppStrategy({
+// Configure passportjs to use WebAppStrategy
+passport.use(new WebAppStrategy({
 	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	clientId: "7e464c3e-3a0f-431a-b3a1-a35bdb8e2562",
 	secret: "MmRkNzA0MzctZjE0MC00ZmY2LTg4MDMtOTM5OGQwODFjMWE0",
 	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
-});
-
-// Configure passportjs to use WebAppStrategy
-passport.use(webAppStrategy);
+}));
 
 // Configure passportjs with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
@@ -72,7 +69,7 @@ app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL
 }));
 
-// Anonymous login endpoint. Will generate
+// Anonymous login endpoint. Will redirect browser for anonymous login
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	allowAnonymousLogin: true,
 	allowCreateNewAnonymousUser: true,
@@ -94,10 +91,8 @@ app.get(LOGOUT_URL, function(req, res){
 	res.redirect(LANDING_PAGE_URL);
 });
 
-
-
-
-app.get("/idtoken", function(req, res, next){
+// userinfo endpoint, used by the web app to retrieve current user
+app.get("/userinfo", function(req, res, next){
 	var user = req.user;
 	if (user) {
 		res.json(user);

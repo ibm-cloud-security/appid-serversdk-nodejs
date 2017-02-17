@@ -291,7 +291,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 
 			webAppStrategy.redirect = function(url){
-				assert.include(url, "idp=appid_anon")
+				assert.include(url, "idp=appid_anon");
 				done();
 			};
 

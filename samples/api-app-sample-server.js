@@ -44,13 +44,11 @@ app.get("/api/protected",
 		var appIdAuthContext = req.appIdAuthorizationContext;
 		var username = "[unknown identity]";
 		if (appIdAuthContext.identityTokenPayload){
-			username = appIdAuthContext.identityTokenPayload.name;
+			username = appIdAuthContext.identityTokenPayload.name || "Anonymous";
 		}
 		logger.debug(req.appIdAuthorizationContext);
 		res.send("Hello from protected resource " + username);
 	}
-
-
 );
 
 var port = process.env.PORT || 1234;
