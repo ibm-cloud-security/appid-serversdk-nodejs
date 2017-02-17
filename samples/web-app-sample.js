@@ -23,6 +23,7 @@ const app = express();
  */
 
 const LOGIN_URL = "/ibm/bluemix/appid/login";
+const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 
@@ -45,14 +46,15 @@ app.set("views", "./samples/views");
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configure passportjs to use WebAppStrategy
-passport.use(new WebAppStrategy({
+var webAppStrategy = new WebAppStrategy({
 	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	clientId: "7e464c3e-3a0f-431a-b3a1-a35bdb8e2562",
 	secret: "MmRkNzA0MzctZjE0MC00ZmY2LTg4MDMtOTM5OGQwODFjMWE0",
 	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
-}));
+}) ;
+// Configure passportjs to use WebAppStrategy
+passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
@@ -72,8 +74,9 @@ app.get("/", function(req, res, next) {
 	if (user){
 		data = {
 			isAuthenticated: true,
-			name: user.name,
-			picture: user.picture
+			name: user.name || "Anonymous",
+			picture: user.picture || "http://downloadicons.net/sites/default/files/anonymous-icons-16857.png",
+			sub: user.sub
 		};
 	}
 	res.render("index.pug", data);
@@ -83,14 +86,23 @@ app.get("/", function(req, res, next) {
 // In case of attempt to open this page without authenticating first will redirect to login page
 // Before redirecting to the login page the WebAppStrategy.ensureAuthenticated() method will
 // persist original request URL to HTTP session under WebAppStrategy.ORIGINAL_URL key.
-app.get("/userProfile", WebAppStrategy.ensureAuthenticated(LOGIN_URL), function(req, res){
+app.get("/userProfile", WebAppStrategy.ensureAuthenticated({
+	loginUrl: LOGIN_URL,
+	allowAnonymous: true
+}), function(req, res){
 	res.json(req.user);
 });
 
-// Login page
+// Login
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
-// Callback to finish authorization process. Will retrieve access and identity tokens
+// Anonymous login
+app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	allowAnonymousLogin: true,
+	allowCreateNewAnonymousUser: true
+}));
+
+// Callback to finish authorization process. Will retrieve access and identity tokens/
 // from AppID service and redirect to either (in below order)
 // 1. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 2. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.

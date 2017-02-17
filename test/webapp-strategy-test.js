@@ -24,7 +24,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 	before(function(){
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"./../utils/token-util": require("./mocks/token-util-mock"),
-			"request": require("./mocks/request-mock")
+			"request": requestMock
 		});
 		webAppStrategy = new WebAppStrategy({
 			tenantId: "tenantId",
@@ -192,7 +192,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 
 		it("Should handle callback if request contains grant code. Success with WebAppStrategy.ORIGINAL_URL", function(done){
-			webAppStrategy.success = function(user){
+			webAppStrategy.success = function(){
 				assert.equal(options.successRedirect, "originalUri");
 				done();
 			};
@@ -212,7 +212,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 
 		it("Should handle callback if request contains grant code. Success with redirect to /", function(done){
-			webAppStrategy.success = function(user){
+			webAppStrategy.success = function(){
 				assert.equal(options.successRedirect, "/");
 				done();
 			};
@@ -244,7 +244,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.redirect = function(url){
 				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
 				done();
-			}
+			};
 			webAppStrategy.authenticate({
 				session: {}
 			}, {
@@ -252,5 +252,95 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
+		it("Should inject anonymous access token into request url if present", function(done){
+			var req = {
+				session: {}
+			};
+			req.session[WebAppStrategy.AUTH_CONTEXT] =  {
+				accessTokenPayload: {
+					amr: ["appid_anon"]
+				},
+				accessToken: "test_access_token"
+			};
+			webAppStrategy.redirect = function(url){
+				assert.include(url, "appid_access_token=test_access_token");
+				done();
+			};
+
+			webAppStrategy.authenticate(req);
+		});
+
+		it("Should fail if previous anonymous access token is not found and anon user is not allowed", function(done){
+			var req = {
+				session: {}
+			};
+
+			webAppStrategy.fail = function(){
+				done();
+			};
+
+			webAppStrategy.authenticate(req, {
+				allowAnonymousLogin: true
+			});
+		});
+
+		it("Should be able to login anonymously", function(done){
+			var req = {
+				session: {}
+			};
+
+			webAppStrategy.success = function(){
+				done();
+			};
+
+			webAppStrategy.authenticate(req, {
+				allowAnonymousLogin: true,
+				allowCreateNewAnonymousUser: true
+			});
+		});
+
+		it("Should handle anonymous login failure", function(done){
+			var req = {
+				session: {}
+			};
+			webAppStrategy.fail = function(){
+				done();
+			};
+
+			webAppStrategy.authenticate(req, {
+				scope: "FAIL_REQUEST",
+				allowAnonymousLogin: true,
+				allowCreateNewAnonymousUser: true
+			});
+		});
+
+
+
+
 	});
 });
+
+
+var requestMock = function (options, callback){
+	if (options.url.indexOf("FAIL-PUBLIC-KEY") >=0  || options.url.indexOf("FAIL_REQUEST") >= 0){ // Used in public-key-util-test
+		callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1){ // Used in public-key-util-test
+		callback(null, { statusCode: 200}, {"n":1, "e":2});
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1){ // Used in webapp-strategy-test
+		callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1){ // Used in webapp-strategy-test
+		callback(null, {statusCode: 200}, JSON.stringify({
+			"access_token": "access_token_mock",
+			"id_token": "id_token_mock"
+		}));
+	} else if (options.followRedirect === false){
+		callback(null, {
+			statusCode: 302,
+			headers: {
+				location: "test-location?code=WORKING_CODE"
+			}
+		});
+	} else {
+		throw "Unhandled case!!!" + JSON.stringify(options);
+	}
+};

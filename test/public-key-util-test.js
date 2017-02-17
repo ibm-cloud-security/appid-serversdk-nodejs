@@ -23,7 +23,7 @@ describe('/lib/utils/public-key-util', function(){
 
 	before(function(){
 		PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
-			"request": require("./mocks/request-mock")
+			"request": requestMock
 		});
 	});
 
@@ -65,3 +65,27 @@ describe('/lib/utils/public-key-util', function(){
 		});
 	});
 });
+
+var requestMock = function (options, callback){
+	if (options.url.indexOf("FAIL-PUBLIC-KEY") >=0  || options.url.indexOf("FAIL_REQUEST") >= 0){ // Used in public-key-util-test
+		callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1){ // Used in public-key-util-test
+		callback(null, { statusCode: 200}, {"n":1, "e":2});
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1){ // Used in webapp-strategy-test
+		callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1){ // Used in webapp-strategy-test
+		callback(null, {statusCode: 200}, JSON.stringify({
+			"access_token": "access_token_mock",
+			"id_token": "id_token_mock"
+		}));
+	} else if (options.followRedirect === false){
+		callback(null, {
+			statusCode: 302,
+			headers: {
+				location: "test-location?code=WORKING_CODE"
+			}
+		});
+	} else {
+		throw "Unhandled case!!!" + JSON.stringify(options);
+	}
+};

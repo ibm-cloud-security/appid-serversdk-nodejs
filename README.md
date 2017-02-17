@@ -89,6 +89,12 @@ app.get("/api/protected",
 	function(req, res) {
 		// Get appIdAuthorizationContext from request object
 		var appIdAuthContext = req.appIdAuthorizationContext;
+
+        appIdAuthContext.accessToken; // Raw access_token
+	    appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
+        appIdAuthContext.identityToken; // Raw identity_token
+        appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+
 		var username = "Anonymous";
 
 		// Get identity information
@@ -183,6 +189,13 @@ passport.deserializeUser(function(obj, cb) {
 // Main application landing page. Not protected by WebAppStrategy
 app.get("/", function(req, res, next) {
 	var user = req.user;
+
+	var appIdAuthContext = req.session[WebAppStrategy.AUTH_CONTEXT]; // Get full auth context
+    appIdAuthContext.accessToken; // Raw access_token
+    appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
+    appIdAuthContext.identityToken; // Raw identity_token
+    appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+
 	var data = {};
 	if (user){
 		data = {
@@ -221,6 +234,38 @@ app.get(LOGOUT_URL, function(req, res){
 var port = process.env.PORT || 1234;
 app.listen(port, function(){
 	logger.info("Listening on http://localhost:" + port);
+});
+```
+
+#### Anonymous login
+WebAppStrategy allows users to login to your web application anonymously, meaning without requiring any credentials. After successful login the anonymous user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the anonymous user access token will be destroyed as well.  
+
+To allow anonymous login for a particular URL use two configuration properties as shown on a code snippet below:
+* `allowAnonymousLogin` - set this value to true if you want to allow your users to login anonymously when accessing this endpoint. If this property is set to true no authentication will be required. The default value of this property is `false`, therefore you must set it explicitly to allow anonymous login.
+* `allowCreateNewAnonymousUser` - By default a new anonymous user will be created every time this method is invoked unless there's an existing anonymous access_token stored in the current HTTP session. In some cases you want to explicitly control whether you want to automatically create new anonymous user or not. Set this property to `false` if you want to disable automatic creation of new anonymous users. The default value of this property is `true`.  
+
+```JavaScript
+const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
+
+// Anonymous login
+app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	allowAnonymousLogin: true,
+	allowCreateNewAnonymousUser: true
+}));
+```
+
+As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by AppID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+
+```JavaScript
+app.get("/", function(req, res, next) {
+	var user = req.user; // Get user information
+	var appIdAuthContext = req.session[WebAppStrategy.AUTH_CONTEXT]; // Get full auth context
+    appIdAuthContext.accessToken; // Raw access_token
+	appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
+	appIdAuthContext.identityToken; // Raw identity_token
+	appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+
+	res.send("OK");
 });
 ```
 
