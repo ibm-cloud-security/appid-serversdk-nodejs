@@ -62,61 +62,6 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 	});
 
-	describe("#ensureAuthenticated", function(){
-		it("Should be able to detect unauthenticated request with explicit notAuthenticatedRedirect", function(done){
-			var req = {
-				isAuthenticated: function(){
-					return false;
-				},
-				url: "originalUrl",
-				session: {}
-			};
-
-			var res = {
-				redirect: function (url) {
-					assert.equal(url, "explicitUrl");
-					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
-					done();
-				}
-			};
-
-			WebAppStrategy.ensureAuthenticated("explicitUrl")(req, res);
-		});
-
-		it("Should be able to detect unauthenticated request with default redirect", function(done){
-			var req = {
-				isAuthenticated: function(){
-					return false;
-				},
-				url: "originalUrl",
-				session: {}
-			};
-
-			var res = {
-				redirect: function (url) {
-					assert.equal(url, "/");
-					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
-					done();
-				}
-			};
-
-			WebAppStrategy.ensureAuthenticated()(req, res);
-		});
-
-		it("Should be able to detect authenticated request and call next()", function(done){
-			var req = {
-				isAuthenticated: function(){
-					return true;
-				}
-			};
-
-			var next = function(){
-				done();
-			}
-
-			WebAppStrategy.ensureAuthenticated()(req, null, next);
-		});
-	});
 
 	describe("#authenticate()", function(){
 		it("Should fail if request doesn't have session", function(done){
@@ -127,6 +72,40 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			webAppStrategy.authenticate({});
 		});
+
+		it("Should be able to detect unauthenticated request and redirect to authorization", function(done){
+			var req = {
+				isAuthenticated: function(){
+					return false;
+				},
+				url: "originalUrl",
+				session: {}
+			};
+
+			webAppStrategy.redirect = function (url) {
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
+				done();
+			};
+
+			webAppStrategy.authenticate(req, {});
+		});
+
+		it("Should be able to detect authenticated request and skip strategy", function(done){
+			var req = {
+				isAuthenticated: function(){
+					return true;
+				},
+				session: {}
+			};
+
+			webAppStrategy.pass = function(){
+				done();
+			}
+
+			webAppStrategy.authenticate(req, {});
+		});
+
 
 		it("Should fail if error was returned in callback", function(done){
 			webAppStrategy.fail = function(){
@@ -230,13 +209,34 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.authenticate(req, options);
 		});
 
+		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function(done){
+			webAppStrategy.redirect = function(url){
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-callback");
+				done();
+			};
+
+			var req = {
+				session: {},
+				isAuthenticated: function(){ return false; }
+			};
+
+			var options = {
+				successRedirect: "success-callback"
+			};
+
+			webAppStrategy.authenticate(req, options);
+		});
+
+
 		it("Should handle authorization redirect to AppID /authorization endpoint with default scope", function(done){
 			webAppStrategy.redirect = function(url){
 				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
 				done();
 			}
 			webAppStrategy.authenticate({
-				session: {}
+				session: {},
+				isAuthenticated: function(){ return false; }
 			});
 		});
 
@@ -246,15 +246,17 @@ describe("/lib/strategies/webapp-strategy", function(){
 				done();
 			};
 			webAppStrategy.authenticate({
-				session: {}
+				session: {},
+				isAuthenticated: function(){ return false; }
 			}, {
 				scope: "customScope"
 			});
 		});
 
-		it("Should inject anonymous access token into request url if present", function(done){
+		it("Should inject anonymous access token into request url if one is present", function(done){
 			var req = {
-				session: {}
+				session: {},
+				isAuthenticated: function(){ return false; }
 			};
 			req.session[WebAppStrategy.AUTH_CONTEXT] =  {
 				accessTokenPayload: {
@@ -272,7 +274,8 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should fail if previous anonymous access token is not found and anon user is not allowed", function(done){
 			var req = {
-				session: {}
+				session: {},
+				isAuthenticated: function(){ return false; }
 			};
 
 			webAppStrategy.fail = function(){
@@ -287,7 +290,8 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should be able to login anonymously", function(done){
 			var req = {
-				session: {}
+				session: {},
+				isAuthenticated: function(){ return false; }
 			};
 
 			webAppStrategy.redirect = function(url){

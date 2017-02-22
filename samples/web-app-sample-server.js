@@ -47,8 +47,8 @@ app.use(passport.session());
 // Configure passportjs to use WebAppStrategy
 passport.use(new WebAppStrategy({
 	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
-	clientId: "7e464c3e-3a0f-431a-b3a1-a35bdb8e2562",
-	secret: "MmRkNzA0MzctZjE0MC00ZmY2LTg4MDMtOTM5OGQwODFjMWE0",
+	clientId: "86148468-1d73-48ac-9b5c-aaa86a34597a",
+	secret: "ODczMjUxZDAtNGJhMy00MzFkLTkzOGUtYmY4YzU0N2U3MTY4",
 	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
@@ -64,51 +64,38 @@ passport.deserializeUser(function(obj, cb) {
 	cb(null, obj);
 });
 
-// Login endpoint. Will redirect browser to login widget
+// Explicit login endpoint. Will always redirect browser to login widget due to {forceLogin: true}.
+// If forceLogin is set to false redirect to login widget will not occur of already authenticated users.
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
-	successRedirect: LANDING_PAGE_URL
+	successRedirect: LANDING_PAGE_URL,
+	forceLogin: true
 }));
 
-// Anonymous login endpoint. Will redirect browser for anonymous login
+// Explicit anonymous login endpoint. Will always redirect browser for anonymous login due to forceLogin: true
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
 	allowAnonymousLogin: true,
-	allowCreateNewAnonymousUser: true,
-	successRedirect: LANDING_PAGE_URL
+	allowCreateNewAnonymousUser: true
 }));
 
-// Callback to finish authorization process. Will retrieve access and identity tokens/
+// Callback to finish the authorization process. Will retrieve access and identity tokens/
 // from AppID service and redirect to either (in below order)
-// 1. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
-// 2. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
+// 1. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
+// 2. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 3. application root ("/")
-app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME,{
-	successRedirect: LANDING_PAGE_URL
-}));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
-// Clears authentication information from session
+// Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
 	WebAppStrategy.logout(req);
 	res.redirect(LANDING_PAGE_URL);
 });
 
-// userinfo endpoint, used by the web app to retrieve current user
-app.get("/userinfo", function(req, res, next){
-	var user = req.user;
-	if (user) {
-		res.json(user);
-	} else {
-		res.status(401).send("unauthorized");
-	}
-});
-
-// Protected area. Will return a page with user information. Protected by WebAppStrategy
-// In case of attempt to open this page without authenticating first will redirect to login page
-// Before redirecting to the login page the WebAppStrategy.ensureAuthenticated() method will
-// persist original request URL to HTTP session under WebAppStrategy.ORIGINAL_URL key.
-app.get("/protected", WebAppStrategy.ensureAuthenticated(LOGIN_URL), function(req, res){
+// Protected area. If current user is not authenticated - redirect to the login widget will be returned.
+// In case user is authenticated - a page with current user information will be returned.
+app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
 	res.json(req.user);
 });
-
 
 var port = process.env.PORT || 1234;
 app.listen(port, function(){

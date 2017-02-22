@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	$(".hideOnStartup").hide();
 
-	$.getJSON("/userinfo", function(data){
+	$.getJSON("/protected", function(data){
 		// Already authenticated
 		$("#WhenAuthenticated").show();
 		$("#sub").text(data.sub);
