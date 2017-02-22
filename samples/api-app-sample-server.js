@@ -15,38 +15,29 @@ const express = require("express");
 const log4js = require("log4js");
 const passport = require("passport");
 const APIStrategy = require("./../lib/appid-sdk").APIStrategy;
-const UserAttributeManager = require("./../lib/appid-sdk").UserAttributeManager;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
 
-// UserAttributeManager.init({
-// 	serverUrl: "https://user-profiles-bluemix.com/v1/api"
-// });
-// UserAttributeManager.getAttribute("a","b","c");
-
 app.use(passport.initialize());
 
-passport.use(new APIStrategy({
-	// oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4"
-	oauthServerUrl: "https://imf-authserver.stage1.mybluemix.net/imf-authserver/authorization/v1/apps/50d0beed-add7-48dd-8b0a-c818cb456bb4"
-}));
-
-UserAttributeManager.init({
-	serverUrl: "http://appid-user-profile-service.stage1.mybluemix.net/v1/attributes"
-});
+passport.use(new APIStrategy());
 
 app.get("/api/protected",
 	passport.authenticate(APIStrategy.STRATEGY_NAME, {
 		session: false
 	}),
 	function(req, res) {
+		// Get full appIdAuthorizationContext from request object
 		var appIdAuthContext = req.appIdAuthorizationContext;
-		var username = "[unknown identity]";
-		if (appIdAuthContext.identityTokenPayload){
-			username = appIdAuthContext.identityTokenPayload.name || "Anonymous";
-		}
-		logger.debug(req.appIdAuthorizationContext);
+
+		appIdAuthContext.accessToken; // Raw access_token
+		appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
+		appIdAuthContext.identityToken; // Raw identity_token
+		appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+
+		// Or use user object provided by passport.js
+		var username = req.user.name || "Anonymous";
 		res.send("Hello from protected resource " + username);
 	}
 );

@@ -71,8 +71,8 @@ const logger = log4js.getLogger("testApp");
 app.use(passport.initialize());
 
 // The oauthServerUrl value can be obtained from Service Credentials
-// tab in the AppID Dashboard. You're not required to provide this argument
-// if your node.js application runs on Bluemix and is bound to the
+// tab in the AppID Dashboard. You're not required to provide this argument if
+// your node.js application runs on Bluemix and is bound to the
 // AppID service instance. In this case AppID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
@@ -86,23 +86,16 @@ app.get("/api/protected",
 		session: false
 	}),
 	function(req, res) {
-		// Get appIdAuthorizationContext from request object
+		// Get full appIdAuthorizationContext from request object
 		var appIdAuthContext = req.appIdAuthorizationContext;
 
-        appIdAuthContext.accessToken; // Raw access_token
-	    appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
-        appIdAuthContext.identityToken; // Raw identity_token
-        appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+		appIdAuthContext.accessToken; // Raw access_token
+		appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
+		appIdAuthContext.identityToken; // Raw identity_token
+		appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
 
-		var username = "[unknown identity]";
-
-		// Get identity information
-		if (appIdAuthContext.identityTokenPayload){
-			username = appIdAuthContext.identityTokenPayload.name || "Anonymous";
-		}
-
-		// Print authorization context to console
-		logger.debug(appIdAuthContext);
+		// Or use user object provided by passport.js
+		var username = req.user.name || "Anonymous";
 		res.send("Hello from protected resource " + username);
 	}
 );
@@ -116,7 +109,7 @@ app.listen(port, function(){
 ```
 
 #### Protecting web applications using WebAppStrategy
-WebAppStrategy is based on authorization_code OAuth2 flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from AppID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available accross server app instances.
+WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from AppID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available accross server app instances.
 
 ```JavaScript
 const express = require('express');
@@ -163,14 +156,14 @@ app.use(passport.session());
 // 1. Manually in new WebAppStrategy({redirectUri: "...."})
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the AppID SDK will try to retrieve
-//    application_uri of the application running on Bluemix and append default
-//    default suffix `/ibm/bluemix/appid/callback`
+//    application_uri of the application running on Bluemix and append a
+//    default suffix "/ibm/bluemix/appid/callback"
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
 	clientId: "{client-id}",
 	secret: "{secret}",
 	oauthServerUrl: "{oauth-server-url}",
-	redirectUri: "{server-url}" + CALLBACK_URL
+	redirectUri: "{app-url}" + CALLBACK_URL
 }));
 
 // Configure passportjs with user serialization/deserialization. This is required
@@ -184,43 +177,33 @@ passport.deserializeUser(function(obj, cb) {
 	cb(null, obj);
 });
 
-// Login endpoint. Will redirect browser to login widget
+// Explicit login endpoint. Will always redirect browser to login widget due to {forceLogin: true}. If forceLogin is set to false the redirect to login widget will not occur if user is already authenticated
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
-	successRedirect: LANDING_PAGE_URL
+	successRedirect: LANDING_PAGE_URL,
+	forceLogin: true
 }));
 
-// Callback to finish authorization process. Will retrieve access and identity tokens
+// Callback to finish the authorization process. Will retrieve access and identity tokens/
 // from AppID service and redirect to either (in below order)
-// 1. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
-// 2. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
+// 1. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
+// 2. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 3. application root ("/")
-app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME,{
-	successRedirect: LANDING_PAGE_URL
-}));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
-// Clears authentication information from session
+// Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
 	WebAppStrategy.logout(req);
 	res.redirect(LANDING_PAGE_URL);
 });
 
-// userinfo endpoint, used by the web app to retrieve current user
-app.get("/userinfo", function(req, res, next){
-	var user = req.user;
-	if (user) {
-		res.json(user);
-	} else {
-		res.status(401).send("unauthorized");
-	}
-});
-
-// Protected area. Will return a page with user information. Protected by WebAppStrategy
-// In case of attempt to open this page without authenticating first will redirect to login page
-// Before redirecting to the login page the WebAppStrategy.ensureAuthenticated() method will
-// persist original request URL to HTTP session under WebAppStrategy.ORIGINAL_URL key.
-app.get("/protected", WebAppStrategy.ensureAuthenticated(LOGIN_URL), function(req, res){
+// Protected area. If current user is not authenticated - redirect to the login widget will be returned.
+// In case user is authenticated - a page with current user information will be returned.
+app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
 	res.json(req.user);
 });
+
+// Start the server!
+app.listen(process.env.PORT || 1234);
 ```
 
 #### Anonymous login
@@ -233,11 +216,11 @@ To allow anonymous login for a particular URL use two configuration properties a
 ```JavaScript
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 
-// Anonymous login endpoint. Will redirect browser for anonymous login
+// Explicit anonymous login endpoint
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
 	allowAnonymousLogin: true,
-	allowCreateNewAnonymousUser: true,
-	successRedirect: LANDING_PAGE_URL
+	allowCreateNewAnonymousUser: true
 }));
 ```
 
