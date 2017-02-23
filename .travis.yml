@@ -5,6 +5,11 @@ notifications:
     on_success: always
     on_failure: always
 
+branches:
+  only:
+  - master
+  - development
+
 install:
   - npm install -g codecov
 

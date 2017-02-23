@@ -1,6 +1,6 @@
 {
   "name": "bluemix-appid",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Node.js SDK for the IBM Bluemix AppID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
@@ -23,14 +23,14 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "passport": "^0.3.2",
-    "proxyquire": "^1.7.11",
-    "pug": "^2.0.0-beta10"
+    "proxyquire": "^1.7.11"
   },
   "dependencies": {
     "jsonwebtoken": "^7.2.1",
     "log4js": "^1.1.0",
     "q": "^1.4.1",
     "request": "^2.79.0",
-    "rsa-pem-from-mod-exp": "^0.8.4"
+    "rsa-pem-from-mod-exp": "^0.8.4",
+    "underscore": "^1.8.3"
   }
 }
