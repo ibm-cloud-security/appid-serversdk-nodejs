@@ -22,8 +22,7 @@ script:
 deploy:
   provider: npm
   email: $npm_email
-  api_key:
-    secure: $npm_apikey
+  api_key: $npm_apikey
   on:
     repo: ibm-cloud-security/appid-serversdk-nodejs
     branch: master
