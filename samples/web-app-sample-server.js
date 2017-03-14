@@ -20,7 +20,7 @@ const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
 const app = express();
 const logger = log4js.getLogger("testApp");
 
-// Below URLs will be used for AppID OAuth flows
+// Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
 const LOGIN_URL = "/ibm/bluemix/appid/login";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
@@ -79,7 +79,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 
 // Callback to finish the authorization process. Will retrieve access and identity tokens/
-// from AppID service and redirect to either (in below order)
+// from App ID service and redirect to either (in below order)
 // 1. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
 // 2. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 3. application root ("/")
