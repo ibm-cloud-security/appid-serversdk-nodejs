@@ -229,7 +229,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 
 
-		it("Should handle authorization redirect to AppID /authorization endpoint with default scope", function(done){
+		it("Should handle authorization redirect to App ID /authorization endpoint with default scope", function(done){
 			webAppStrategy.redirect = function(url){
 				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
 				done();
@@ -240,7 +240,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		it("Should handle authorization redirect to AppID /authorization endpoint with custom scope", function(done){
+		it("Should handle authorization redirect to App ID /authorization endpoint with custom scope", function(done){
 			webAppStrategy.redirect = function(url){
 				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
 				done();

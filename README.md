@@ -1,5 +1,5 @@
-# Bluemix AppID
-Node.js SDK for the Bluemix AppID service
+# Bluemix App ID
+Node.js SDK for the Bluemix App ID service
 
 [![Bluemix powered][img-bluemix-powered]][url-bluemix]
 [![Travis][img-travis-master]][url-travis-master]
@@ -27,9 +27,9 @@ This SDK provides Passport.js strategies for protecting two types of resources -
 
 If you use the API protection strategy the unauthenticated client will get HTTP 401 response with list of scopes to obtain authorization for as described below.
 
-If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by AppID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
+If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
-Read the [official documentation](TODO: ADD LINK) for information about getting started with Bluemix AppID Service.
+Read the [official documentation](TODO: ADD LINK) for information about getting started with Bluemix App ID Service.
 
 ### Requirements
 * npm 4.+
@@ -53,7 +53,7 @@ npm install --save pug
 ```
 
 #### Protecting APIs using the APIStrategy
-APIStrategy expects request to contain an Authorization header with valid access token and optionally identity token. See AppID docs for additional information. The expected header structure is `Authorization=Bearer {access_token} [{id_token}]`
+APIStrategy expects request to contain an Authorization header with valid access token and optionally identity token. See App ID docs for additional information. The expected header structure is `Authorization=Bearer {access_token} [{id_token}]`
 
 In case of invalid/expired tokens the APIStrategy will return HTTP 401 with `Www-Authenticate=Bearer scope="{scope}" error="{error}"`. The `error` component is optional.
 
@@ -71,9 +71,9 @@ const logger = log4js.getLogger("testApp");
 app.use(passport.initialize());
 
 // The oauthServerUrl value can be obtained from Service Credentials
-// tab in the AppID Dashboard. You're not required to provide this argument if
+// tab in the App ID Dashboard. You're not required to provide this argument if
 // your node.js application runs on Bluemix and is bound to the
-// AppID service instance. In this case AppID configuration will be obtained
+// App ID service instance. In this case App ID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
 	oauthServerUrl: "{oauth-server-url}"
@@ -109,7 +109,7 @@ app.listen(port, function(){
 ```
 
 #### Protecting web applications using WebAppStrategy
-WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from AppID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available accross server app instances.
+WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
 
 ```JavaScript
 const express = require('express');
@@ -123,7 +123,7 @@ const logger = log4js.getLogger("testApp");
 
 app.use(passport.initialize());
 
-// Below URLs will be used for AppID OAuth flows
+// Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
 const LOGIN_URL = "/ibm/bluemix/appid/login";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
@@ -147,15 +147,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Below configuration can be obtained from Service Credentials
-// tab in the AppID Dashboard. You're not required to manually provide below
+// tab in the App ID Dashboard. You're not required to manually provide below
 // configuration if your node.js application runs on Bluemix and is bound to the
-// AppID service instance. In this case AppID configuration will be obtained
+// App ID service instance. In this case App ID configuration will be obtained
 // automatically using VCAP_SERVICES environment variable.
 //
 // The redirectUri value can be supplied in three ways:
 // 1. Manually in new WebAppStrategy({redirectUri: "...."})
 // 2. As environment variable named `redirectUri`
-// 3. If none of the above was supplied the AppID SDK will try to retrieve
+// 3. If none of the above was supplied the App ID SDK will try to retrieve
 //    application_uri of the application running on Bluemix and append a
 //    default suffix "/ibm/bluemix/appid/callback"
 passport.use(new WebAppStrategy({
@@ -167,7 +167,7 @@ passport.use(new WebAppStrategy({
 }));
 
 // Configure passportjs with user serialization/deserialization. This is required
-// for authenticated session persistence accross HTTP requests. See passportjs docs
+// for authenticated session persistence across HTTP requests. See passportjs docs
 // for additional information http://passportjs.org/docs
 passport.serializeUser(function(user, cb) {
 	cb(null, user);
@@ -184,7 +184,7 @@ app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 
 // Callback to finish the authorization process. Will retrieve access and identity tokens/
-// from AppID service and redirect to either (in below order)
+// from App ID service and redirect to either (in below order)
 // 1. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
 // 2. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 3. application root ("/")
@@ -224,7 +224,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 
-As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by AppID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
