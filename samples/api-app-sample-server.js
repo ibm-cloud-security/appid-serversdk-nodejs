@@ -15,10 +15,12 @@ const express = require("express");
 const log4js = require("log4js");
 const passport = require("passport");
 const APIStrategy = require("./../lib/appid-sdk").APIStrategy;
+const helmet = require("helmet");
 
 const app = express();
 const logger = log4js.getLogger("testApp");
 
+app.use(helmet());
 app.use(passport.initialize());
 
 passport.use(new APIStrategy());
