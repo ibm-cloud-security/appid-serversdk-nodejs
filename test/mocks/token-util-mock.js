@@ -21,6 +21,8 @@ function decode(accessTokenString) {
 		return;
 	} else if (accessTokenString === "bad_scope") {
 		return {scope: "bad_scope"};
+	} else if (accessTokenString === "null_scope") {
+    return null;
 	} else {
 		return {scope: "appid_default"};
 	}
