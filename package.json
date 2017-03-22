@@ -1,11 +1,11 @@
 {
   "name": "bluemix-appid",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Node.js SDK for the IBM Bluemix App ID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
-    "apiapp": "node samples/api-app-sample.js",
-    "webapp": "node samples/web-app-sample.js",
+    "apiapp": "node samples/api-app-sample-server.js",
+    "webapp": "node samples/web-app-sample-server.js",
     "test": "./node_modules/.bin/_mocha",
     "coverage": "./node_modules/.bin/istanbul cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
   },
@@ -26,6 +26,7 @@
     "proxyquire": "^1.7.11"
   },
   "dependencies": {
+    "helmet": "^3.5.0",
     "jsonwebtoken": "^7.2.1",
     "log4js": "^1.1.0",
     "q": "^1.4.1",

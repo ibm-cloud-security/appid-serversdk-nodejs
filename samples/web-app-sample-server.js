@@ -16,6 +16,7 @@ const session = require("express-session");
 const log4js = require("log4js");
 const passport = require("passport");
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
+const helmet = require("helmet");
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -26,6 +27,8 @@ const LOGIN_URL = "/ibm/bluemix/appid/login";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
+
+app.use(helmet());
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
@@ -46,10 +49,10 @@ app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
 passport.use(new WebAppStrategy({
-	tenantId: "50d0beed-add7-48dd-8b0a-c818cb456bb4",
-	clientId: "86148468-1d73-48ac-9b5c-aaa86a34597a",
-	secret: "ODczMjUxZDAtNGJhMy00MzFkLTkzOGUtYmY4YzU0N2U3MTY4",
-	oauthServerUrl: "https://mobileclientaccess.stage1.mybluemix.net/oauth/v3/50d0beed-add7-48dd-8b0a-c818cb456bb4",
+	tenantId: "90ff4e45-dd1c-4367-b878-5307f68ee9ce",
+	clientId: "a7a75575-8763-4200-8165-58792e88b16e",
+	secret: "YmYwZmUwNTgtMTNkYi00ZDZiLTg0OTUtODIwNmM2M2RjNGEy",
+	oauthServerUrl: "https://appid-oauth.ng.bluemix.net/oauth/v3/90ff4e45-dd1c-4367-b878-5307f68ee9ce",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
 
