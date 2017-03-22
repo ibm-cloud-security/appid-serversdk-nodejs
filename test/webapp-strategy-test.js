@@ -190,17 +190,18 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.authenticate(req, options);
 		});
 
-		it("Should handle callback if request contains grant code. Success with redirect to /", function(done){
+		it("Should be able to login with null identity token", function(done){
 			webAppStrategy.success = function(){
-				assert.equal(options.successRedirect, "/");
+        assert.equal(options.successRedirect, "originalUri");
 				done();
 			};
 
 			var req = {
-				session: {
-				},
+        session: {
+          APPID_ORIGINAL_URL: "originalUri"
+        },
 				query: {
-					code: "WORKING_CODE"
+					code: "NULL_ID_TOKEN"
 				}
 			};
 
@@ -208,6 +209,25 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			webAppStrategy.authenticate(req, options);
 		});
+
+    it("Should handle callback if request contains grant code. Success with redirect to /", function(done){
+      webAppStrategy.success = function(){
+        assert.equal(options.successRedirect, "/");
+        done();
+      };
+
+      var req = {
+        session: {
+        },
+        query: {
+          code: "WORKING_CODE"
+        }
+      };
+
+      var options = {};
+
+      webAppStrategy.authenticate(req, options);
+    });
 
 		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function(done){
 			webAppStrategy.redirect = function(url){
@@ -327,6 +347,11 @@ var requestMock = function (options, callback){
 				location: "test-location?code=WORKING_CODE"
 			}
 		});
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("NULL_ID_TOKEN") !== -1) {
+    return callback(null, {statusCode: 200}, JSON.stringify({
+      "access_token": "access_token_mock",
+      "id_token": "null_scope"
+    }));
 	} else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
 	}
