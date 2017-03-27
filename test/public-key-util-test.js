@@ -70,7 +70,7 @@ var requestMock = function (options, callback){
 	if (options.url.indexOf("FAIL-PUBLIC-KEY") >=0  || options.url.indexOf("FAIL_REQUEST") >= 0){ // Used in public-key-util-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1){ // Used in public-key-util-test
-		return callback(null, { statusCode: 200}, {"n":1, "e":2});
+		return callback(null, { statusCode: 200}, {"n":"1", "e":"2"});
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1){ // Used in webapp-strategy-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1){ // Used in webapp-strategy-test
