@@ -46,7 +46,7 @@ describe('/lib/strategies/api-strategy-config', function () {
 			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 		});
 
-		it("Should succeed and get config from VCAP_SERVICES", function () {
+		it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
 					{
@@ -57,6 +57,23 @@ describe('/lib/strategies/api-strategy-config', function () {
 				]
 			});
 
+			var config = new Config();
+			assert.isObject(config);
+			assert.isObject(config.getConfig());
+			assert.equal(config.getOAuthServerUrl(), "http://abcd");
+		});
+		
+		it("Should succeed and get config from VCAP_SERVICES with Appid as the name", function () {
+			process.env.VCAP_SERVICES = JSON.stringify({
+																									 AppID: [
+																										 {
+																											 credentials: {
+																												 oauthServerUrl: "http://abcd"
+																											 }
+																										 }
+																									 ]
+																								 });
+			
 			var config = new Config();
 			assert.isObject(config);
 			assert.isObject(config.getConfig());

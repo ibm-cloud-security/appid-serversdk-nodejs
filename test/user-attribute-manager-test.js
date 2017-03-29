@@ -17,7 +17,8 @@ const proxyquire = require("proxyquire");
 const _ = require("underscore");
 const Q = require("q");
 
-describe("/lib/attribute-manager/user-attrubute-manager", function() {
+describe("/lib/attribute-manager/user-attrubute-manager", function () {
+	//setTimeout(15000);
 	console.log("Loading user-attribute-manager-test.js");
 
 	var UserAttributeManager;
@@ -28,19 +29,19 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 		});
 	});
 
-	describe("#UserAttributeManager.init", function(){
-		it("Should not be able to init without options and VCAP_SERVICS", function(){
+	describe("#UserAttributeManager.init", function () {
+		it("Should not be able to init without options and VCAP_SERVICS", function () {
 			UserAttributeManager.init();
 			// TODO: add validation that errors are printed to console
 		});
 
-		it("Should be able to init with options", function(){
+		it("Should be able to init with options", function () {
 			UserAttributeManager.init({
 				serverUrl: "dummyurl"
 			});
 		});
 
-		it("Should be able to init with VCAP_SERVICES", function(){
+		it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
 					{
@@ -52,132 +53,146 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 			});
 			UserAttributeManager.init();
 		});
-	});
 
-	describe("#UserAttributeManager.setAttribute", function(){
-		it("Should validate all parameters are present", function(done){
+		it("Should be able to init with VCAP_SERVICES (appid)", function () {
+			process.env.VCAP_SERVICES = JSON.stringify({
+				AppID: [
+					{
+						credentials: {
+							serverUrl: "http://abcd"
+						}
+					}
+				]
+			});
+			UserAttributeManager.init();
+		});
+	});
+	describe("#UserAttributeManager.setAttribute", function () {
+		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.setAttribute();
 			var p2 = UserAttributeManager.setAttribute("accessToken");
 			var p3 = UserAttributeManager.setAttribute("accessToken", "name");
 
-			Q.allSettled([p1, p2, p3]).spread(function(r1, r2, r3){
+			Q.allSettled([p1, p2, p3]).spread(function (r1, r2, r3) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should fail if there's an error", function(done){
+		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.setAttribute("return_error", "name", "value");
 			var p2 = UserAttributeManager.setAttribute("return_code_401", "name", "value");
 			var p3 = UserAttributeManager.setAttribute("return_code_403", "name", "value");
 			var p4 = UserAttributeManager.setAttribute("return_code_404", "name", "value");
 			var p5 = UserAttributeManager.setAttribute("return_code_500", "name", "value");
-			Q.allSettled([p1, p2, p3, p4, p5]).spread(function(r1, r2, r3, r4, r5){
+			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
 				assert.equal(r4.state, "rejected");
 				assert.equal(r5.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.setAttribute("access_token", "name", "value").then(function(result){
+		it("Should send proper access token, url and value", function (done) {
+
+			UserAttributeManager.setAttribute("access_token", "name", "value").then(function (result) {
 				assert.equal(result.url, "http://abcd/name");
 				assert.equal(result.method, "PUT");
 				assert.equal(result.body, "value");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
-			});
+			}).catch(done);
 		});
 	});
 
-	describe("#UserAttributeManager.getAttribute", function(){
-		it("Should validate all parameters are present", function(done){
+	describe("#UserAttributeManager.getAttribute", function () {
+		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.getAttribute();
 			var p2 = UserAttributeManager.getAttribute("accessToken");
 
-			Q.allSettled([p1, p2]).spread(function(r1, r2){
+			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should fail if there's an error", function(done){
+		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.getAttribute("return_error", "name");
 			var p2 = UserAttributeManager.getAttribute("return_code_401", "name");
 			var p3 = UserAttributeManager.getAttribute("return_code_403", "name");
 			var p4 = UserAttributeManager.getAttribute("return_code_404", "name");
 			var p5 = UserAttributeManager.getAttribute("return_code_500", "name");
-			Q.allSettled([p1, p2, p3, p4, p5]).spread(function(r1, r2, r3, r4, r5){
+			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
 				assert.equal(r4.state, "rejected");
 				assert.equal(r5.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.getAttribute("access_token", "name").then(function(result){
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.getAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/name");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
-			});
+			}).catch(done);
+
 		});
 	});
 
-	describe("#UserAttributeManager.deleteAttribute", function(){
-		it("Should validate all parameters are present", function(done){
+	describe("#UserAttributeManager.deleteAttribute", function () {
+		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.deleteAttribute();
 			var p2 = UserAttributeManager.deleteAttribute("accessToken");
 
-			Q.allSettled([p1, p2]).spread(function(r1, r2){
+			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should fail if there's an error", function(done){
+		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.deleteAttribute("return_error", "name", "value");
 			var p2 = UserAttributeManager.deleteAttribute("return_code_401", "name", "value");
 			var p3 = UserAttributeManager.deleteAttribute("return_code_403", "name", "value");
 			var p4 = UserAttributeManager.deleteAttribute("return_code_404", "name", "value");
 			var p5 = UserAttributeManager.deleteAttribute("return_code_500", "name", "value");
-			Q.allSettled([p1, p2, p3, p4, p5]).spread(function(r1, r2, r3, r4, r5){
+			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
 				assert.equal(r4.state, "rejected");
 				assert.equal(r5.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.deleteAttribute("access_token", "name").then(function(result){
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.deleteAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/name");
 				assert.equal(result.method, "DELETE");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -186,39 +201,39 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 		});
 	});
 
-	describe("#UserAttributeManager.getAllAttributes", function(){
-		it("Should validate all parameters are present", function(done){
+	describe("#UserAttributeManager.getAllAttributes", function () {
+		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.getAllAttributes();
 
-			Q.allSettled([p1]).spread(function(r1){
+			Q.allSettled([p1]).spread(function (r1) {
 				assert.equal(r1.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should fail if there's an error", function(done){
+		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.getAllAttributes("return_error");
 			var p2 = UserAttributeManager.getAllAttributes("return_code_401");
 			var p3 = UserAttributeManager.getAllAttributes("return_code_403");
 			var p4 = UserAttributeManager.getAllAttributes("return_code_404");
 			var p5 = UserAttributeManager.getAllAttributes("return_code_500");
-			Q.allSettled([p1, p2, p3, p4, p5]).spread(function(r1, r2, r3, r4, r5){
+			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
 				assert.equal(r4.state, "rejected");
 				assert.equal(r5.state, "rejected");
 				done();
-			}).catch(function(e){
+			}).catch(function (e) {
 				done(new Error(e));
 			});
 		});
 
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.getAllAttributes("access_token").then(function(result){
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.getAllAttributes("access_token").then(function (result) {
 				assert.equal(result.url, "http://abcd");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -229,12 +244,12 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 });
 
-function requestMock(options, callback){
+function requestMock(options, callback) {
 	var authHeader = options.headers["Authorization"];
 	console.log(authHeader);
-	if (authHeader.indexOf("return_error") > 0){
+	if (authHeader.indexOf("return_error") > 0) {
 		return callback(new Error("EXPECTED FAILURE"));
-	} else if (authHeader.indexOf("return_code") > 0){
+	} else if (authHeader.indexOf("return_code") > 0) {
 		var statusCode = parseInt(authHeader.split("_")[2]);
 		return callback(null, {
 			statusCode: parseInt(statusCode)

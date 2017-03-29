@@ -59,9 +59,34 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 
-		it("Should succeed and get config from VCAP_SERVICES", function () {
+		it("Should succeed and get config from VCAP_SERVICES (AdvancedMobileAccess)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
+					{
+						credentials: {
+							tenantId: "abcd",
+							clientId: "clientId",
+							secret: "secret",
+							oauthServerUrl: "oauthServerUrl"
+						}
+					}
+				]
+			});
+
+			process.env.redirectUri = "redirectUri";
+
+			var config = new Config();
+			assert.isObject(config);
+			assert.isObject(config.getConfig());
+			assert.equal(config.getTenantId(), "abcd");
+			assert.equal(config.getClientId(), "clientId");
+			assert.equal(config.getSecret(), "secret");
+			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
+			assert.equal(config.getRedirectUri(), "redirectUri");
+		});
+		it("Should succeed and get config from VCAP_SERVICES (Appid)", function () {
+			process.env.VCAP_SERVICES = JSON.stringify({
+				AppID: [
 					{
 						credentials: {
 							tenantId: "abcd",
