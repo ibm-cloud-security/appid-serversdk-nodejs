@@ -36,7 +36,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 		it("Should be able to init with options", function(){
 			UserAttributeManager.init({
-				serverUrl: "dummyurl"
+                profilesUrl: "dummyurl"
 			});
 		});
 
@@ -45,7 +45,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 				AdvancedMobileAccess: [
 					{
 						credentials: {
-							serverUrl: "http://abcd"
+                            profilesUrl: "http://abcd"
 						}
 					}
 				]
@@ -91,7 +91,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 		it("Should send proper access token, url and value", function(done){
 			UserAttributeManager.setAttribute("access_token", "name", "value").then(function(result){
-				assert.equal(result.url, "http://abcd/name");
+				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "PUT");
 				assert.equal(result.body, "value");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -135,11 +135,11 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 		it("Should send proper access token, url and value", function(done){
 			UserAttributeManager.getAttribute("access_token", "name").then(function(result){
-				assert.equal(result.url, "http://abcd/name");
+				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
-			});
+            })
 		});
 	});
 
@@ -178,7 +178,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 		it("Should send proper access token, url and value", function(done){
 			UserAttributeManager.deleteAttribute("access_token", "name").then(function(result){
-				assert.equal(result.url, "http://abcd/name");
+				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "DELETE");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
@@ -219,7 +219,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function() {
 
 		it("Should send proper access token, url and value", function(done){
 			UserAttributeManager.getAllAttributes("access_token").then(function(result){
-				assert.equal(result.url, "http://abcd");
+				assert.equal(result.url, "http://abcd/api/v1/attributes");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
