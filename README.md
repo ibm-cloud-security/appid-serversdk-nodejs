@@ -29,7 +29,7 @@ If you use the API protection strategy the unauthenticated client will get HTTP 
 
 If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
-Read the [official documentation](TODO: ADD LINK) for information about getting started with Bluemix App ID Service.
+Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with Bluemix App ID Service.
 
 ### Requirements
 * npm 4.+
