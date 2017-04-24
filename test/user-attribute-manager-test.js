@@ -18,7 +18,6 @@ const _ = require("underscore");
 const Q = require("q");
 
 describe("/lib/attribute-manager/user-attrubute-manager", function () {
-	//setTimeout(15000);
 	console.log("Loading user-attribute-manager-test.js");
 
 	var UserAttributeManager;
@@ -103,7 +102,6 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 		});
 
 		it("Should send proper access token, url and value", function (done) {
-
 			UserAttributeManager.setAttribute("access_token", "name", "value").then(function (result) {
 				assert.equal(result.url, "http://abcd/name");
 				assert.equal(result.method, "PUT");
