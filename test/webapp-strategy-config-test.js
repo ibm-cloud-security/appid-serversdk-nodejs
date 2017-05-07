@@ -67,7 +67,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 							tenantId: "abcd",
 							clientId: "clientId",
 							secret: "secret",
-							oauthServerUrl: "oauthServerUrl"
+							oauthServerUrl: "http://abcd"
 						}
 					}
 				]
@@ -81,7 +81,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getClientId(), "clientId");
 			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
+			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 		it("Should succeed and get config from VCAP_SERVICES (Appid)", function () {
@@ -92,7 +92,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 							tenantId: "abcd",
 							clientId: "clientId",
 							secret: "secret",
-							oauthServerUrl: "oauthServerUrl"
+							oauthServerUrl: "http://abcd"
 						}
 					}
 				]
@@ -106,7 +106,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getTenantId(), "abcd");
 			assert.equal(config.getClientId(), "clientId");
 			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
+			assert.equal(config.getOAuthServerUrl(), "http://abcd");
 			assert.equal(config.getRedirectUri(), "redirectUri");
 		});
 

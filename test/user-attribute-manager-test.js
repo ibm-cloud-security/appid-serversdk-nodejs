@@ -102,6 +102,20 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 		});
 
 		it("Should send proper access token, url and value", function(done){
+			process.env.VCAP_SERVICES = JSON.stringify({
+				AppID: [
+					{
+						credentials: {
+							tenantId: "abcd",
+							clientId: "clientId",
+							secret: "secret",
+							oauthServerUrl: "http://abcd",
+							profilesUrl:'http://abcd'
+						}
+					}
+				]
+			});
+			UserAttributeManager.init();
 			UserAttributeManager.setAttribute("access_token", "name", "value").then(function(result){
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "PUT");
@@ -111,8 +125,20 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 			}).catch(done);
 		});
 	});
-
 	describe("#UserAttributeManager.getAttribute", function () {
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AppID: [
+				{
+					credentials: {
+						tenantId: "abcd",
+						clientId: "clientId",
+						secret: "secret",
+						oauthServerUrl: "http://abcd",
+						profilesUrl:'http://abcd'
+					}
+				}
+			]
+		});
 		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.getAttribute();
@@ -157,6 +183,19 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 	});
 
 	describe("#UserAttributeManager.deleteAttribute", function () {
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AppID: [
+				{
+					credentials: {
+						tenantId: "abcd",
+						clientId: "clientId",
+						secret: "secret",
+						oauthServerUrl: "http://abcd",
+						profilesUrl:'http://abcd'
+					}
+				}
+			]
+		});
 		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserAttributeManager.deleteAttribute();
