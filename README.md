@@ -29,7 +29,7 @@ If you use the API protection strategy the unauthenticated client will get HTTP 
 
 If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
-Read the [official documentation](TODO: ADD LINK) for information about getting started with Bluemix App ID Service.
+Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with Bluemix App ID Service.
 
 ### Requirements
 * npm 4.+
@@ -225,6 +225,35 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 ```
 
 As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+
+### User profile attributes
+
+```javascript
+const userAttributeManager = require("bluemix-appid").UserAttributeManager;
+userAttributeManager.init();
+var accessToken = req.session[WebAppStrategy.AUTH_CONTEXT].accessToken;
+
+// get all attributes
+userAttributeManager.getAllAttributes(accessToken).then(function (attributes) {
+    	
+        });
+
+// get single attribute
+userAttributeManager.getAttribute(accessToken, name).then(function (attributes) {
+    	
+        });
+
+// set attribute value
+userAttributeManager.setAttribute(accessToken, name, value).then(function (attributes) {
+    	
+        });
+
+// delete attribute
+userAttributeManager.deleteAttribute(accessToken, name).then(function () {
+    	
+        });
+
+```
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
