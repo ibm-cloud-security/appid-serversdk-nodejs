@@ -20,8 +20,11 @@ const helmet = require("helmet");
 const app = express();
 const logger = log4js.getLogger("testApp");
 
-app.use(helmet());
 app.use(passport.initialize());
+
+// Security
+app.use("/api/protected", helmet());
+app.use("/api/protected", helmet().noCache());
 
 passport.use(new APIStrategy());
 

@@ -28,7 +28,9 @@ const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 
-app.use(helmet());
+// Security
+app.use("/protected", helmet());
+app.use("/protected", helmet().noCache());
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
