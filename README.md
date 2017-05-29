@@ -271,8 +271,8 @@ app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.auth
 * `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false
 
 Note:
-1. If you submitting the request using a html form, use [body-parser]:https://www.npmjs.com/package/body-parser middleware.
-2. Use [connect-flash]:https://www.npmjs.com/package/connect-flash for getting the returned error message. see the web-app-sample-server.js file.
+1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.
+2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
