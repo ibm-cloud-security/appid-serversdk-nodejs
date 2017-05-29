@@ -122,7 +122,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle callback if request contains grant code. Fail due to tokenEndpoint error", function(done){
 			webAppStrategy.fail = function(err){
-				assert.equal(err.message, "Failed to obtain tokens");
+				assert.equal(err.message, "STUBBED_ERROR");
 				done();
 			}
 			var req = {
