@@ -255,6 +255,25 @@ userAttributeManager.deleteAttribute(accessToken, name).then(function () {
 
 ```
 
+### Login using resource owner password flow
+WebAppStrategy allows users to login to your web application using username/password.
+After successful login the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the anonymous user access token will be destroyed as well.
+To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
+```javascript
+app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	failureRedirect: ROP_LOGIN_PAGE_URL,
+	failureFlash : true // allow flash messages
+}));
+```
+* `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")
+* `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: home page.
+* `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false
+
+Note:
+1. If you submitting the request using a html form, use [body-parser]:https://www.npmjs.com/package/body-parser middleware.
+2. Use [connect-flash]:https://www.npmjs.com/package/connect-flash for getting the returned error message. see the web-app-sample-server.js file.
+
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
