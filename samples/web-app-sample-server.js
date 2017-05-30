@@ -53,10 +53,10 @@ app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
 passport.use(new WebAppStrategy({
-	tenantId: "7ba1cd6a-0cf7-412c-b226-3a10c7c9020a",
-	clientId: "37edcd24-27fe-4a44-b546-9894bbf73b65",
-	secret: "M2ZkYmY2OTItZGMwOS00OTYwLWI2YTctMzNkZWNjNDdmMmNl",
-	oauthServerUrl: "https://appid-oauth.stage1.mybluemix.net/oauth/v3/7ba1cd6a-0cf7-412c-b226-3a10c7c9020a",
+	tenantId: "90ff4e45-dd1c-4367-b878-5307f68ee9ce",
+	clientId: "a7a75575-8763-4200-8165-58792e88b16e",
+	secret: "YmYwZmUwNTgtMTNkYi00ZDZiLTg0OTUtODIwNmM2M2RjNGEy",
+	oauthServerUrl: "https://appid-oauth.ng.bluemix.net/oauth/v3/90ff4e45-dd1c-4367-b878-5307f68ee9ce",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
 
