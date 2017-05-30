@@ -179,7 +179,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 						password: "good_password"
 					}
 				};
-				let options = {
+				var options = {
 					scope: "test_scope",
 					successRedirect: "test_success_url",
 					failureRedirect: "test_failure_url",
