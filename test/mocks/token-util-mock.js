@@ -23,6 +23,10 @@ function decode(accessTokenString) {
 		return {scope: "bad_scope"};
 	} else if (accessTokenString === "null_scope") {
 		return null;
+	} else if (accessTokenString === "access_token_mock_test_scope") {
+		return {scope: "test_scope"};
+	} else if (accessTokenString === "id_token_mock_test_scope") {
+			return {scope: "test_scope"};
 	} else {
 		return {scope: "appid_default"};
 	}

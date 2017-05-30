@@ -120,17 +120,134 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
+		describe("handle RoP flow", function () {
+			it("Should handle RoP flow successfully", function(done){
+				webAppStrategy.fail = function(err){
+					done(err);
+				};
+				webAppStrategy.success = function(user){
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT]);
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken, "access_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload.scope, "appid_default");
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken, "id_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+					assert.isObject(user);
+					assert.equal(user.scope, "appid_default");
+					done();
+				};
+				var req = {
+					session: {},
+					method: "POST",
+					body: {
+						username: "test_username",
+						password: "good_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+			
+			it("Should handle RoP flow successfully - check options", function(done){
+				webAppStrategy.fail = function(err){
+					done(err);
+				};
+				webAppStrategy.success = function(user) {
+					assert.equal(options.successRedirect, "test_success_url");
+					assert.equal(options.failureRedirect, "test_failure_url");
+					assert.equal(options.failureFlash, true);
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT]);
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken, "access_token_mock_test_scope");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload.scope, "test_scope");
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken, "id_token_mock_test_scope");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "test_scope");
+					assert.isObject(user);
+					assert.equal(user.scope, "test_scope");
+					done();
+				};
+				var req = {
+					session: {},
+					method: "POST",
+					body: {
+						username: "test_username",
+						password: "good_password"
+					}
+				};
+				let options = {
+					scope: "test_scope",
+					successRedirect: "test_success_url",
+					failureRedirect: "test_failure_url",
+					failureFlash : true
+				};
+				webAppStrategy.authenticate(req, options);
+			});
+			
+			it("Should handle RoP flow failure - bad credentials", function(done){
+				webAppStrategy.fail = function(err){
+					assert.equal(err.message, "wrong credentials");
+					done();
+				};
+				var req = {
+					session: {},
+					method: "POST",
+					body: {
+						username: "test_username",
+						password: "bad_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+			
+			it("Should handle RoP flow - request failure", function(done){
+				webAppStrategy.fail = function(err){
+					assert.equal(err.message, "REQUEST_ERROR");
+					done();
+				};
+				var req = {
+					session: {},
+					method: "POST",
+					body: {
+						username: "request_error",
+						password: "good_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+			
+			it("Should handle RoP flow - JSON parse failure", function(done){
+				webAppStrategy.fail = function(err){
+					assert.equal(err.message, "Failed to obtain tokens");
+					done();
+				};
+				var req = {
+					session: {},
+					method: "POST",
+					body: {
+						username: "parse_error",
+						password: "good_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+		});
+		
 		it("Should handle callback if request contains grant code. Fail due to tokenEndpoint error", function(done){
 			webAppStrategy.fail = function(err){
 				assert.equal(err.message, "STUBBED_ERROR");
 				done();
-			}
+			};
 			var req = {
 				session: {},
 				query: {
 					code: "FAILING_CODE"
 				}
-			}
+			};
 			webAppStrategy.authenticate(req);
 		});
 
@@ -328,19 +445,19 @@ describe("/lib/strategies/webapp-strategy", function(){
 });
 
 
-var requestMock = function (options, callback){
-	if (options.url.indexOf("FAIL-PUBLIC-KEY") >=0  || options.url.indexOf("FAIL_REQUEST") >= 0){ // Used in public-key-util-test
+var requestMock = function (options, callback) {
+	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1){ // Used in public-key-util-test
-		return callback(null, { statusCode: 200}, {"n":1, "e":2});
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1){ // Used in webapp-strategy-test
+	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
+		return callback(null, {statusCode: 200}, {"n": 1, "e": 2});
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1){ // Used in webapp-strategy-test
+	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
 		return callback(null, {statusCode: 200}, JSON.stringify({
 			"access_token": "access_token_mock",
 			"id_token": "id_token_mock"
 		}));
-	} else if (options.followRedirect === false){
+	} else if (options.followRedirect === false) {
 		return callback(null, {
 			statusCode: 302,
 			headers: {
@@ -352,7 +469,24 @@ var requestMock = function (options, callback){
 			"access_token": "access_token_mock",
 			"id_token": "null_scope"
 		}));
-	} else {
+	} else if (options.formData.username === "test_username" && options.formData.password === "bad_password") {
+		return callback(null, {statusCode: 401}, JSON.stringify({error:"invalid_grant", error_description:"wrong credentials"}));
+	}else if (options.formData.username === "request_error") {
+		return callback(new Error("REQUEST_ERROR"), {statusCode: 0}, null);
+	}else if (options.formData.username === "parse_error") {
+		return callback(null, {statusCode: 401}, JSON.stringify({error:"invalid_grant", error_description:"wrong credentials"})+"dddddd");
+	} else if (options.formData.username === "test_username" && options.formData.password === "good_password") {
+		if (options.formData.scope) {
+			return callback(null, {statusCode: 200}, JSON.stringify({
+				"access_token": "access_token_mock_test_scope",
+				"id_token": "id_token_mock_test_scope"
+			}));
+		}
+		return callback(null, {statusCode: 200}, JSON.stringify({
+			"access_token": "access_token_mock",
+			"id_token": "id_token_mock"
+		}));
+  } else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
 	}
 };
