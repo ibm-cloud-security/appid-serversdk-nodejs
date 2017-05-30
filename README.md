@@ -267,7 +267,7 @@ app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.auth
 }));
 ```
 * `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")
-* `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: home page.
+* `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: the original request url. (in this example:"/form/submit")
 * `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false
 
 Note:
