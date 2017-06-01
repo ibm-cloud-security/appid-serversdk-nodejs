@@ -261,9 +261,9 @@ userAttributeManager.deleteAttribute(accessToken, name).then(function () {
 <!--To allow login using username/password add to your app a post route that will be called with the username and password parameters. -->
 <!--```javascript-->
 <!--app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {-->
-	<!--successRedirect: LANDING_PAGE_URL,-->
-	<!--failureRedirect: ROP_LOGIN_PAGE_URL,-->
-	<!--failureFlash : true // allow flash messages-->
+<!--	<!--successRedirect: LANDING_PAGE_URL,-->-->
+<!--	<!--failureRedirect: ROP_LOGIN_PAGE_URL,-->-->
+<!--	<!--failureFlash : true // allow flash messages-->-->
 <!--}));-->
 <!--```-->
 <!--* `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")-->
