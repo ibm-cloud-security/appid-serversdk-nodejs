@@ -11,11 +11,11 @@
  limitations under the License.
  */
 
-const chai = require('chai');
+const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
 
-describe('/lib/strategies/api-strategy', function(){
+describe("/lib/strategies/api-strategy", function(){
 	console.log("Loading api-strategy-test.js");
 
 	var APIStrategy;
@@ -47,7 +47,7 @@ describe('/lib/strategies/api-strategy', function(){
 				assert.equal(msg, "Bearer scope=\"appid_default custom_scope\", error=\"invalid_token\"");
 				assert.equal(status, 401);
 				done();
-			}
+			};
 
 			apiStrategy.authenticate({
 				header: function(){

@@ -16,7 +16,7 @@ const assert = chai.assert;
 const proxyquire = require("proxyquire");
 const testServerUrl = "https://mobileclientaccess.ng.bluemix.net/imf-authserver";
 
-describe('/lib/utils/public-key-util', function(){
+describe("/lib/utils/public-key-util", function(){
 	console.log("Loading public-key-util-test.js");
 
 	var PublicKeyUtil;
@@ -30,7 +30,7 @@ describe('/lib/utils/public-key-util', function(){
 	this.timeout(5000);
 
 	describe('#retrievePublicKey()', function(){
-		it('Should fail retrieving public key from the server', function(done){
+		it("Should fail retrieving public key from the server", function(done){
 			PublicKeyUtil.retrievePublicKey(testServerUrl + "FAIL-PUBLIC-KEY").then(function(){
 				done(new Error("This is impossible!!!"));
 			}).catch(function(err){
@@ -47,7 +47,7 @@ describe('/lib/utils/public-key-util', function(){
 	});
 
 	describe('#retrievePublicKey()', function(){
-		it('Should successfully retrieve public key from OAuth server', function(done){
+		it("Should successfully retrieve public key from OAuth server", function(done){
 			PublicKeyUtil.retrievePublicKey(testServerUrl + "SUCCESS-PUBLIC-KEY").then(function(){
 				done();
 			}).catch(function(err){
