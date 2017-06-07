@@ -17,8 +17,8 @@ const log4js = require("log4js");
 const passport = require("passport");
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
 const helmet = require("helmet");
-const bodyParser = require('body-parser'); // get information from html forms
-const flash = require('connect-flash');
+const bodyParser = require("body-parser"); // get information from html forms
+const flash = require("connect-flash");
 const app = express();
 const logger = log4js.getLogger("testApp");
 
@@ -101,7 +101,7 @@ app.get(LOGOUT_URL, function(req, res){
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
 // In case user is authenticated - a page with current user information will be returned.
 app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
-	logger.debug('/protected');
+	logger.debug("/protected");
 	res.json(req.user);
 });
 
@@ -113,7 +113,7 @@ app.post("/rop/login/submit", bodyParser.urlencoded({extended: false}), passport
 
 app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 	// render the page and pass in any flash data if it exists
-	res.render('login.ejs', { message: req.flash('error') });
+	res.render("login.ejs", { message: req.flash('error') });
 });
 
 var port = process.env.PORT || 1234;

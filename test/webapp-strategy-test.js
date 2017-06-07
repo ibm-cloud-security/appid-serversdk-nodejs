@@ -68,7 +68,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.error = function(err){
 				assert.equal(err.message, "Can't find req.session");
 				done();
-			}
+			};
 
 			webAppStrategy.authenticate({});
 		});
@@ -355,7 +355,9 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			var req = {
 				session: {},
-				isAuthenticated: function(){ return false; }
+				isAuthenticated: function(){
+					return false;
+				}
 			};
 
 			var options = {

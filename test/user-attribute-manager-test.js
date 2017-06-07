@@ -19,40 +19,40 @@ const Q = require("q");
 
 describe("/lib/attribute-manager/user-attrubute-manager", function () {
 	console.log("Loading user-attribute-manager-test.js");
-
+	
 	var UserAttributeManager;
-
+	
 	before(function () {
 		UserAttributeManager = proxyquire("../lib/attribute-manager/user-attribute-manager", {
 			"request": requestMock
 		});
 	});
-
+	
 	describe("#UserAttributeManager.init", function () {
 		it("Should not be able to init without options and VCAP_SERVICS", function () {
 			UserAttributeManager.init();
 			// TODO: add validation that errors are printed to console
 		});
-
+		
 		it("Should be able to init with options", function () {
 			UserAttributeManager.init({
-                profilesUrl: "dummyurl"
+				profilesUrl: "dummyurl"
 			});
 		});
-
+		
 		it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
 					{
 						credentials: {
-                            profilesUrl: "http://abcd"
+							profilesUrl: "http://abcd"
 						}
 					}
 				]
 			});
 			UserAttributeManager.init();
 		});
-
+		
 		it("Should be able to init with VCAP_SERVICES (appid)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AppID: [
@@ -68,11 +68,11 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 	});
 	describe("#UserAttributeManager.setAttribute", function () {
 		it("Should validate all parameters are present", function (done) {
-
+			
 			var p1 = UserAttributeManager.setAttribute();
 			var p2 = UserAttributeManager.setAttribute("accessToken");
 			var p3 = UserAttributeManager.setAttribute("accessToken", "name");
-
+			
 			Q.allSettled([p1, p2, p3]).spread(function (r1, r2, r3) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -82,7 +82,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
+		
 		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.setAttribute("return_error", "name", "value");
 			var p2 = UserAttributeManager.setAttribute("return_code_401", "name", "value");
@@ -100,8 +100,8 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
-		it("Should send proper access token, url and value", function(done){
+		
+		it("Should send proper access token, url and value", function (done) {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AppID: [
 					{
@@ -110,13 +110,13 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 							clientId: "clientId",
 							secret: "secret",
 							oauthServerUrl: "http://abcd",
-							profilesUrl:'http://abcd'
+							profilesUrl: 'http://abcd'
 						}
 					}
 				]
 			});
 			UserAttributeManager.init();
-			UserAttributeManager.setAttribute("access_token", "name", "value").then(function(result){
+			UserAttributeManager.setAttribute("access_token", "name", "value").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "PUT");
 				assert.equal(result.body, "value");
@@ -134,16 +134,16 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 						clientId: "clientId",
 						secret: "secret",
 						oauthServerUrl: "http://abcd",
-						profilesUrl:'http://abcd'
+						profilesUrl: 'http://abcd'
 					}
 				}
 			]
 		});
 		it("Should validate all parameters are present", function (done) {
-
+			
 			var p1 = UserAttributeManager.getAttribute();
 			var p2 = UserAttributeManager.getAttribute("accessToken");
-
+			
 			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -152,7 +152,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
+		
 		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.getAttribute("return_error", "name");
 			var p2 = UserAttributeManager.getAttribute("return_code_401", "name");
@@ -170,18 +170,18 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.getAttribute("access_token", "name").then(function(result){
+		
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.getAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
 				done();
 			}).catch(done);
-
+			
 		});
 	});
-
+	
 	describe("#UserAttributeManager.deleteAttribute", function () {
 		process.env.VCAP_SERVICES = JSON.stringify({
 			AppID: [
@@ -191,16 +191,16 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 						clientId: "clientId",
 						secret: "secret",
 						oauthServerUrl: "http://abcd",
-						profilesUrl:'http://abcd'
+						profilesUrl: 'http://abcd'
 					}
 				}
 			]
 		});
 		it("Should validate all parameters are present", function (done) {
-
+			
 			var p1 = UserAttributeManager.deleteAttribute();
 			var p2 = UserAttributeManager.deleteAttribute("accessToken");
-
+			
 			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -209,7 +209,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
+		
 		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.deleteAttribute("return_error", "name", "value");
 			var p2 = UserAttributeManager.deleteAttribute("return_code_401", "name", "value");
@@ -227,9 +227,9 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.deleteAttribute("access_token", "name").then(function(result){
+		
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.deleteAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "DELETE");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -237,12 +237,12 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 			});
 		});
 	});
-
+	
 	describe("#UserAttributeManager.getAllAttributes", function () {
 		it("Should validate all parameters are present", function (done) {
-
+			
 			var p1 = UserAttributeManager.getAllAttributes();
-
+			
 			Q.allSettled([p1]).spread(function (r1) {
 				assert.equal(r1.state, "rejected");
 				done();
@@ -250,7 +250,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
+		
 		it("Should fail if there's an error", function (done) {
 			var p1 = UserAttributeManager.getAllAttributes("return_error");
 			var p2 = UserAttributeManager.getAllAttributes("return_code_401");
@@ -268,9 +268,9 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 				done(new Error(e));
 			});
 		});
-
-		it("Should send proper access token, url and value", function(done){
-			UserAttributeManager.getAllAttributes("access_token").then(function(result){
+		
+		it("Should send proper access token, url and value", function (done) {
+			UserAttributeManager.getAllAttributes("access_token").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -278,7 +278,7 @@ describe("/lib/attribute-manager/user-attrubute-manager", function () {
 			});
 		});
 	});
-
+	
 });
 
 function requestMock(options, callback) {
