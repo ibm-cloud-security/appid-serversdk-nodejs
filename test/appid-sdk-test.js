@@ -21,7 +21,7 @@ describe('/lib/appid-sdk', function(){
 
 	before(function(){
 		AppIdSDK = require("../lib/appid-sdk");
-	})
+	});
 
 	describe("#AppIdSDK", function(){
 		it("Should return APIStrategy and WebAppStrategy", function(){

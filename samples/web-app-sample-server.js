@@ -17,7 +17,8 @@ const log4js = require("log4js");
 const passport = require("passport");
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
 const helmet = require("helmet");
-
+const bodyParser = require("body-parser"); // get information from html forms
+const flash = require("connect-flash");
 const app = express();
 const logger = log4js.getLogger("testApp");
 
@@ -27,8 +28,11 @@ const LOGIN_URL = "/ibm/bluemix/appid/login";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
+const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
 
 app.use(helmet());
+app.use(flash());
+app.set('view engine', 'ejs'); // set up ejs for templating
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
@@ -41,7 +45,7 @@ app.use(session({
 }));
 
 // Use static resources from /samples directory
-app.use(express.static("samples"));
+app.use(express.static(__dirname ));
 
 // Configure express application to use passportjs
 app.use(passport.initialize());
@@ -97,7 +101,19 @@ app.get(LOGOUT_URL, function(req, res){
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
 // In case user is authenticated - a page with current user information will be returned.
 app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
+	logger.debug("/protected");
 	res.json(req.user);
+});
+
+app.post("/rop/login/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	failureRedirect: ROP_LOGIN_PAGE_URL,
+	failureFlash : true // allow flash messages
+}));
+
+app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
+	// render the page and pass in any flash data if it exists
+	res.render("login.ejs", { message: req.flash('error') });
 });
 
 var port = process.env.PORT || 1234;
