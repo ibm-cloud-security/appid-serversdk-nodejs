@@ -14,13 +14,14 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
+var previousAccessToken = "test.previousAccessToken.test";
 
 describe("/lib/strategies/webapp-strategy", function(){
 	console.log("Loading webapp-strategy-test.js");
 
 	var WebAppStrategy;
 	var webAppStrategy;
-
+	
 	before(function(){
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"./../utils/token-util": require("./mocks/token-util-mock"),
@@ -141,6 +142,45 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 				var req = {
 					session: {},
+					method: "POST",
+					body: {
+						username: "test_username",
+						password: "good_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+			
+			it("Should handle RoP flow successfully with previous access token", function(done){
+				webAppStrategy.fail = function(err){
+					done(err);
+				};
+				webAppStrategy.success = function(user){
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT]);
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken, "access_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload.scope, "appid_default");
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken, "id_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+					assert.isObject(user);
+					assert.equal(user.scope, "appid_default");
+					done();
+				};
+				var session = {};
+				var accessTokenPayload = {
+					amr: ['appid_anon']
+				};
+				var accessToken = previousAccessToken;
+				var appIdAuthContext = {
+					accessToken: accessToken,
+					accessTokenPayload: accessTokenPayload
+				};
+				session[WebAppStrategy.AUTH_CONTEXT] = appIdAuthContext;
+				var req = {
+					session: session,
 					method: "POST",
 					body: {
 						username: "test_username",
@@ -483,6 +523,16 @@ var requestMock = function (options, callback) {
 				"access_token": "access_token_mock_test_scope",
 				"id_token": "id_token_mock_test_scope"
 			}));
+		}
+		if (options.formData.appid_access_token) {
+			if (options.formData.appid_access_token === previousAccessToken) {
+				return callback(null, {statusCode: 200}, JSON.stringify({
+					"access_token": "access_token_mock",
+					"id_token": "id_token_mock",
+					"previousAccessToken": previousAccessToken
+				}));
+			}
+			return callback(null, {statusCode: 400}, {});
 		}
 		return callback(null, {statusCode: 200}, JSON.stringify({
 			"access_token": "access_token_mock",
