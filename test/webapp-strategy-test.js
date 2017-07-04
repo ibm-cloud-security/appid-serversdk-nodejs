@@ -171,7 +171,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 				var session = {};
 				var accessTokenPayload = {
-					amr: ['appid_anon']
+					amr: ["appid_anon"]
 				};
 				var accessToken = previousAccessToken;
 				var appIdAuthContext = {
