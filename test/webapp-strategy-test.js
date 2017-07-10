@@ -467,7 +467,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		it("Should be able to login anonymously", function(done){
+		it("Should be able to login anonymously", function(done) {
 			var req = {
 				session: {},
 				isAuthenticated: function(){ return false; }
@@ -483,6 +483,23 @@ describe("/lib/strategies/webapp-strategy", function(){
 				allowCreateNewAnonymousUser: true
 			});
 		});
+		
+		it("Should show sign up screen", function(done) {
+			var req = {
+				session: {},
+				isAuthenticated: function(){ return false; }
+			};
+			
+			webAppStrategy.redirect = function(url){
+				assert.include(url, "response_type=sign_up");
+				done();
+			};
+			
+			webAppStrategy.authenticate(req, {
+				showSignUp: true
+			});
+		});
+		
 	});
 });
 
