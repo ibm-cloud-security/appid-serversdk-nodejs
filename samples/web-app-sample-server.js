@@ -25,6 +25,7 @@ const logger = log4js.getLogger("testApp");
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
 const LOGIN_URL = "/ibm/bluemix/appid/login";
+const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
@@ -76,6 +77,13 @@ passport.deserializeUser(function(obj, cb) {
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	forceLogin: true
+}));
+
+// Explicit sign up endpoint. Will always redirect browser to sign up widget screen due to {showSignUp: true}.
+// default value - false
+app.get(SIGN_UP_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	showSignUp: true
 }));
 
 // Explicit anonymous login endpoint. Will always redirect browser for anonymous login due to forceLogin: true
