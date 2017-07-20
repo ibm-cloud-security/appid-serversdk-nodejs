@@ -496,10 +496,74 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 			
 			webAppStrategy.authenticate(req, {
-				showSignUp: true
+				show: WebAppStrategy.SIGN_UP
 			});
 		});
 		
+		describe ("change password tests", function () {
+			it("user not authenticated", function(done) {
+				var req = {
+					session: {},
+					isAuthenticated: function(){ return false; },
+					isUnauthenticated: function(){ return true; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "No identity token found.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+			it("user authenticated but not with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "The identity token was not retrieved using cloud directory idp.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+			it("happy flow - user authenticated with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					 }
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/change_password?client_id=clientId&redirect_uri=https://redirectUri&user_id=testUserId");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+		});
 	});
 });
 
