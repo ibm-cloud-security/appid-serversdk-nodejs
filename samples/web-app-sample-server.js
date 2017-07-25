@@ -26,6 +26,7 @@ const logger = log4js.getLogger("testApp");
 const LANDING_PAGE_URL = "/web-app-sample.html";
 const LOGIN_URL = "/ibm/bluemix/appid/login";
 const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
+const CHANGE_PASSWORD_URL = "/ibm/bluemix/appid/change_password";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
@@ -79,11 +80,17 @@ app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	forceLogin: true
 }));
 
-// Explicit sign up endpoint. Will always redirect browser to sign up widget screen due to {showSignUp: true}.
+// Explicit change password endpoint. Will always redirect browser to change password widget screen.
+app.get(CHANGE_PASSWORD_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.CHANGE_PASSWORD
+}));
+
+// Explicit sign up endpoint. Will always redirect browser to sign up widget screen.
 // default value - false
 app.get(SIGN_UP_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
-	showSignUp: true
+	show: WebAppStrategy.SIGN_UP
 }));
 
 // Explicit anonymous login endpoint. Will always redirect browser for anonymous login due to forceLogin: true
