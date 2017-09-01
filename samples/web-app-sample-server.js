@@ -27,6 +27,7 @@ const LANDING_PAGE_URL = "/web-app-sample.html";
 const LOGIN_URL = "/ibm/bluemix/appid/login";
 const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
 const CHANGE_PASSWORD_URL = "/ibm/bluemix/appid/change_password";
+const CHANGE_DETAILS_URL = "/ibm/bluemix/appid/change_details";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
@@ -78,6 +79,12 @@ passport.deserializeUser(function(obj, cb) {
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	forceLogin: true
+}));
+
+// Explicit change details endpoint. Will always redirect browser to change details widget screen.
+app.get(CHANGE_DETAILS_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.CHANGE_DETAILS
 }));
 
 // Explicit change password endpoint. Will always redirect browser to change password widget screen.
