@@ -564,11 +564,132 @@ describe("/lib/strategies/webapp-strategy", function(){
 				});
 			});
 		});
+		
+		describe ("change details tests", function () {
+			it("user not authenticated", function(done) {
+				var req = {
+					session: {},
+					isAuthenticated: function(){ return false; },
+					isUnauthenticated: function(){ return true; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "No identity token found.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("user authenticated but not with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "The identity token was not retrieved using cloud directory idp.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("happy flow - user authenticated with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/change_details?client_id=clientId&redirect_uri=https://redirectUri&code=1234");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("Bad flow - error on generate code request", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityToken: 'error',
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error){
+					assert.include(error.message, "STUBBED_ERROR");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("Bad flow - not 200 response on generate code request", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityToken: 'statusNot200',
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error){
+					assert.include(error.message, "generate code: response status code:400");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+		});
+		
 	});
 });
 
 
 var requestMock = function (options, callback) {
+	if (options.url.indexOf("generate_code") >= 0) {
+		if (options.auth.bearer.indexOf("error") >= 0) {
+			return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+		}
+		if (options.auth.bearer.indexOf("statusNot200") >= 0) {
+			return callback(null, {statusCode: 400}, null);
+		}
+		return callback(null, {statusCode: 200}, "1234");
+	}
 	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
