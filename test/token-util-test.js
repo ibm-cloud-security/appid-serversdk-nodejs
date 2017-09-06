@@ -30,14 +30,16 @@ describe("/lib/utils/token-util", function(){
 
 	describe("#decodeAndValidate()", function(){
 		it("Should return undefined since token is expired", function(){
-			var decodedToken = TokenUtil.decodeAndValidate(ACCESS_TOKEN);
-			assert.isUndefined(decodedToken);
+			TokenUtil.decodeAndValidate(ACCESS_TOKEN).then(function (decodedToken) {
+                assert.isUndefined(decodedToken);
+            });
 		});
 
 		it("Should succeed since APPID_ALLOW_EXPIRED_TOKENS=true", function(){
 			process.env[APPID_ALLOW_EXPIRED_TOKENS] = true;
-			var decodedToken = TokenUtil.decodeAndValidate(ACCESS_TOKEN);
-			assert.isObject(decodedToken);
+			TokenUtil.decodeAndValidate(ACCESS_TOKEN).then(function (decodedToken) {
+                assert.isObject(decodedToken);
+            });
 		});
 	});
 

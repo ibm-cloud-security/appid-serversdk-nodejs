@@ -29,9 +29,9 @@ describe("/lib/utils/public-key-util", function(){
 
 	this.timeout(5000);
 
-	describe('#retrievePublicKey()', function(){
+	describe('#retrievePublicKeys()', function(){
 		it("Should fail retrieving public key from the server", function(done){
-			PublicKeyUtil.retrievePublicKey(testServerUrl + "FAIL-PUBLIC-KEY").then(function(){
+			PublicKeyUtil.retrievePublicKeys(testServerUrl + "FAIL-PUBLIC-KEY").then(function(){
 				done(new Error("This is impossible!!!"));
 			}).catch(function(err){
 				done();
@@ -41,14 +41,15 @@ describe("/lib/utils/public-key-util", function(){
 
 	describe("#getPublicKeyPem()", function(){
 		it("Should fail to get previously retrieved public key", function(){
-			var publicKey = PublicKeyUtil.getPublicKeyPem();
-			assert.isUndefined(publicKey);
+			PublicKeyUtil.getPublicKeyPemBykid().then(function (publicKey) {
+				assert.isUndefined(publicKey);
+			});
 		});
 	});
 
-	describe('#retrievePublicKey()', function(){
+	describe('#retrievePublicKeys()', function(){
 		it("Should successfully retrieve public key from OAuth server", function(done){
-			PublicKeyUtil.retrievePublicKey(testServerUrl + "SUCCESS-PUBLIC-KEY").then(function(){
+			PublicKeyUtil.retrievePublicKeys(testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function(){
 				done();
 			}).catch(function(err){
 				done(new Error(err));
@@ -58,19 +59,34 @@ describe("/lib/utils/public-key-util", function(){
 
 	describe("#getPublicKeyPem()", function(){
 		it("Should get previously retrieved public key", function(){
-			var publicKey = PublicKeyUtil.getPublicKeyPem();
-			assert.isNotNull(publicKey);
-			assert.isString(publicKey);
-			assert.include(publicKey, "BEGIN RSA PUBLIC KEY");
+			PublicKeyUtil.getPublicKeyPemBykid("123").then(function (publicKey){
+				assert.isNotNull(publicKey);
+				assert.isString(publicKey);
+				assert.include(publicKey, "BEGIN RSA PUBLIC KEY");
+			});
 		});
 	});
+
+    describe("#getPublicKeyPemMultipleRequests()", function(){
+        it("Should get public keys from multiple requests and empty the requests cache", function(){
+            PublicKeyUtil.retrievePublicKeys(testServerUrl + "SETTIMEOUT-PUBLIC-KEYs").then(function(){
+			});
+            for(i=0;i<5;i++) {
+                PublicKeyUtil.getPublicKeyPemBykid("123").then(function (publicKey) {
+                    assert.isNotNull(publicKey);
+                    assert.isString(publicKey);
+                    assert.include(publicKey, "BEGIN RSA PUBLIC KEY");
+                });
+            }
+        });
+    });
 });
 
 var requestMock = function (options, callback){
 	if (options.url.indexOf("FAIL-PUBLIC-KEY") >=0  || options.url.indexOf("FAIL_REQUEST") >= 0){ // Used in public-key-util-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1){ // Used in public-key-util-test
-		return callback(null, { statusCode: 200}, {"n":"1", "e":"2"});
+		return callback(null, { statusCode: 200}, {"keys": [{"n":"1", "e":"2", "kid":"123"}]});
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1){ // Used in webapp-strategy-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1){ // Used in webapp-strategy-test
@@ -85,6 +101,10 @@ var requestMock = function (options, callback){
 				location: "test-location?code=WORKING_CODE"
 			}
 		});
+	} else if (options.url.indexOf("SETTIMEOUT-PUBLIC-KEYs") > -1){
+		setTimeout(function() {
+            return callback(null, { statusCode: 200}, {"keys": [{"n":"1", "e":"2", "kid":"123"}]});
+		}, 3000);
 	} else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
 	}
