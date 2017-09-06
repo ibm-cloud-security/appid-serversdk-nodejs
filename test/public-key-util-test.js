@@ -31,17 +31,19 @@ describe("/lib/utils/public-key-util", function(){
 
 	describe('#retrievePublicKeys()', function(){
 		it("Should fail retrieving public key from the server", function(done){
-			PublicKeyUtil.retrievePublicKeys(testServerUrl + "FAIL-PUBLIC-KEY").then(function(){
-				done(new Error("This is impossible!!!"));
-			}).catch(function(err){
+			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl);
+			try {
+				assert.equal(testServerUrl + "/publickeys", PublicKeyUtil.getPublicKeysEndpoint());
 				done();
-			});
+			} catch(e) {
+				done(e);
+			}
 		});
 	});
 
 	describe("#getPublicKeyPem()", function(){
 		it("Should fail to get previously retrieved public key", function(){
-			PublicKeyUtil.getPublicKeyPemBykid().then(function (publicKey) {
+			PublicKeyUtil.getPublicKeyPemByKid().then(function (publicKey) {
 				assert.isUndefined(publicKey);
 			});
 		});
@@ -49,7 +51,8 @@ describe("/lib/utils/public-key-util", function(){
 
 	describe('#retrievePublicKeys()', function(){
 		it("Should successfully retrieve public key from OAuth server", function(done){
-			PublicKeyUtil.retrievePublicKeys(testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function(){
+			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "SUCCESS-PUBLIC-KEYs");
+			PublicKeyUtil.getPublicKeyPemByKid("123").then(function(){
 				done();
 			}).catch(function(err){
 				done(new Error(err));
@@ -59,7 +62,7 @@ describe("/lib/utils/public-key-util", function(){
 
 	describe("#getPublicKeyPem()", function(){
 		it("Should get previously retrieved public key", function(){
-			PublicKeyUtil.getPublicKeyPemBykid("123").then(function (publicKey){
+			PublicKeyUtil.getPublicKeyPemByKid("123").then(function (publicKey){
 				assert.isNotNull(publicKey);
 				assert.isString(publicKey);
 				assert.include(publicKey, "BEGIN RSA PUBLIC KEY");
@@ -69,10 +72,13 @@ describe("/lib/utils/public-key-util", function(){
 
     describe("#getPublicKeyPemMultipleRequests()", function(){
         it("Should get public keys from multiple requests and empty the requests cache", function(){
-            PublicKeyUtil.retrievePublicKeys(testServerUrl + "SETTIMEOUT-PUBLIC-KEYs").then(function(){
-			});
+	        PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
+		        "request": requestMock
+	        });
+	        PublicKeyUtilNew.setPublicKeysEndpoint(testServerUrl + "SETTIMEOUT-PUBLIC-KEYs");
+	        PublicKeyUtilNew.getPublicKeyPemByKid("123").then(function(){});
             for (var i=0;i<5;i++) {
-                PublicKeyUtil.getPublicKeyPemBykid("123").then(function (publicKey) {
+	            PublicKeyUtilNew.getPublicKeyPemByKid("123").then(function (publicKey) {
                     assert.isNotNull(publicKey);
                     assert.isString(publicKey);
                     assert.include(publicKey, "BEGIN RSA PUBLIC KEY");

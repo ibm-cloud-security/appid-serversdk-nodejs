@@ -23,7 +23,7 @@ module.exports = {
 		return deferred.promise;
     },
 
-    getPublicKeyPemBykid: function () {
+    getPublicKeyPemByKid: function () {
         var deferred = Q.defer();
         deferred.resolve(pemFromModExp(DEV_PUBLIC_KEYS[0].n, DEV_PUBLIC_KEYS[0].e));
         return deferred.promise;
