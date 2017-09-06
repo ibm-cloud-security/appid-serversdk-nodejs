@@ -71,7 +71,7 @@ describe("/lib/utils/public-key-util", function(){
         it("Should get public keys from multiple requests and empty the requests cache", function(){
             PublicKeyUtil.retrievePublicKeys(testServerUrl + "SETTIMEOUT-PUBLIC-KEYs").then(function(){
 			});
-            for(i=0;i<5;i++) {
+            for (var i=0;i<5;i++) {
                 PublicKeyUtil.getPublicKeyPemBykid("123").then(function (publicKey) {
                     assert.isNotNull(publicKey);
                     assert.isString(publicKey);
