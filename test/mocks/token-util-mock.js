@@ -35,7 +35,7 @@ function decode(accessTokenString) {
 }
 
 function decodeAndValidate(accessTokenString) {
-    let deferred = Q.defer();
+    var deferred = Q.defer();
     if (accessTokenString === "invalid_token") {
         deferred.resolve();
     } else if (accessTokenString === "bad_scope") {
