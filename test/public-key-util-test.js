@@ -141,10 +141,10 @@ describe("/lib/utils/public-key-util", function () {
 			Q.all(requestArray).then(function (publicKeysArray) {
 				try {
 					assert.equal(1, requestCounter, "more then one request triggered");
-					for (i = 0; i < 5; i++) {
-						assert.isNotNull(publicKeysArray[i]);
-						assert.isString(publicKeysArray[i]);
-						assert.include(publicKeysArray[i], "BEGIN RSA PUBLIC KEY");
+					for (var j = 0; j < 5; j++) {
+						assert.isNotNull(publicKeysArray[j]);
+						assert.isString(publicKeysArray[j]);
+						assert.include(publicKeysArray[j], "BEGIN RSA PUBLIC KEY");
 					}
 					done();
 				} catch (e) {
