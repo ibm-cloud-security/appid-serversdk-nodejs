@@ -47,7 +47,7 @@ describe("/lib/utils/public-key-util", function () {
 	describe("getPublicKeyPemByKid", function () {
 		
 		it("public key dont have kid value", function (done) {
-			var kid = undefined;
+			var kid;
 			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
 				done("should get to catch");
 			}).catch(function (err) {
@@ -74,10 +74,10 @@ describe("/lib/utils/public-key-util", function () {
 		it("request to public keys endpoint update failure", function (done) {
 			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "SUCCESS-PUBLIC-KEYs");
 			var kid = "123";
-			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
+			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function () {
 				PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "FAIL-PUBLIC-KEYs");
 				kid = "not_found_kid";
-				PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
+				PublicKeyUtil.getPublicKeyPemByKid(kid).then(function () {
 					done("should get reject");
 				}).catch(function (err) {
 					try {
@@ -88,7 +88,7 @@ describe("/lib/utils/public-key-util", function () {
 					}
 				});
 			}).catch(function (err) {
-				done(e);
+				done(err);
 			});
 		});
 		
@@ -98,8 +98,8 @@ describe("/lib/utils/public-key-util", function () {
 			});
 			PublicKeyUtilNew.setPublicKeysEndpoint(testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs");
 			var kid = "123";
-			PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function (publicKey) {
-				PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function (publicKey) {
+			PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function () {
+				PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function () {
 					assert.equal(1, seqRequestCounter, "more then one request triggered");
 					done();
 				}).catch(function (err) {
@@ -141,7 +141,7 @@ describe("/lib/utils/public-key-util", function () {
 			Q.all(requestArray).then(function (publicKeysArray) {
 				try {
 					assert.equal(1, requestCounter, "more then one request triggered");
-					for (var i = 0; i < 5; i++) {
+					for (i = 0; i < 5; i++) {
 						assert.isNotNull(publicKeysArray[i]);
 						assert.isString(publicKeysArray[i]);
 						assert.include(publicKeysArray[i], "BEGIN RSA PUBLIC KEY");
