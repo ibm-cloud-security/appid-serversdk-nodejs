@@ -14,13 +14,14 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
+var previousAccessToken = "test.previousAccessToken.test";
 
 describe("/lib/strategies/webapp-strategy", function(){
 	console.log("Loading webapp-strategy-test.js");
 
 	var WebAppStrategy;
 	var webAppStrategy;
-
+	
 	before(function(){
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"./../utils/token-util": require("./mocks/token-util-mock"),
@@ -141,6 +142,45 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 				var req = {
 					session: {},
+					method: "POST",
+					body: {
+						username: "test_username",
+						password: "good_password"
+					}
+				};
+				webAppStrategy.authenticate(req);
+			});
+			
+			it("Should handle RoP flow successfully with previous access token", function(done){
+				webAppStrategy.fail = function(err){
+					done(err);
+				};
+				webAppStrategy.success = function(user){
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT]);
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessToken, "access_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].accessTokenPayload.scope, "appid_default");
+					assert.isString(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityToken, "id_token_mock");
+					assert.isObject(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload);
+					assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+					assert.isObject(user);
+					assert.equal(user.scope, "appid_default");
+					done();
+				};
+				var session = {};
+				var accessTokenPayload = {
+					amr: ["appid_anon"]
+				};
+				var accessToken = previousAccessToken;
+				var appIdAuthContext = {
+					accessToken: accessToken,
+					accessTokenPayload: accessTokenPayload
+				};
+				session[WebAppStrategy.AUTH_CONTEXT] = appIdAuthContext;
+				var req = {
+					session: session,
 					method: "POST",
 					body: {
 						username: "test_username",
@@ -427,7 +467,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		it("Should be able to login anonymously", function(done){
+		it("Should be able to login anonymously", function(done) {
 			var req = {
 				session: {},
 				isAuthenticated: function(){ return false; }
@@ -443,11 +483,213 @@ describe("/lib/strategies/webapp-strategy", function(){
 				allowCreateNewAnonymousUser: true
 			});
 		});
+		
+		it("Should show sign up screen", function(done) {
+			var req = {
+				session: {},
+				isAuthenticated: function(){ return false; }
+			};
+			
+			webAppStrategy.redirect = function(url){
+				assert.include(url, "response_type=sign_up");
+				done();
+			};
+			
+			webAppStrategy.authenticate(req, {
+				show: WebAppStrategy.SIGN_UP
+			});
+		});
+		
+		describe ("change password tests", function () {
+			it("user not authenticated", function(done) {
+				var req = {
+					session: {},
+					isAuthenticated: function(){ return false; },
+					isUnauthenticated: function(){ return true; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "No identity token found.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+			it("user authenticated but not with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "The identity token was not retrieved using cloud directory idp.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+			it("happy flow - user authenticated with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					 }
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/change_password?client_id=clientId&redirect_uri=https://redirectUri&user_id=testUserId");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_PASSWORD
+				});
+			});
+		});
+		
+		describe ("change details tests", function () {
+			it("user not authenticated", function(done) {
+				var req = {
+					session: {},
+					isAuthenticated: function(){ return false; },
+					isUnauthenticated: function(){ return true; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "No identity token found.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("user authenticated but not with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error) {
+					try{
+						assert.equal(error.message, "The identity token was not retrieved using cloud directory idp.");
+						done();
+					}catch (e) {
+						done(e);
+					}
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("happy flow - user authenticated with cloud directory", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/change_details?client_id=clientId&redirect_uri=https://redirectUri&code=1234");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("Bad flow - error on generate code request", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityToken: 'error',
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error){
+					assert.include(error.message, "STUBBED_ERROR");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+			it("Bad flow - not 200 response on generate code request", function(done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityToken: 'statusNot200',
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.fail = function(error){
+					assert.include(error.message, "generate code: response status code:400");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.CHANGE_DETAILS
+				});
+			});
+		});
+		
 	});
 });
 
 
 var requestMock = function (options, callback) {
+	if (options.url.indexOf("generate_code") >= 0) {
+		if (options.auth.bearer.indexOf("error") >= 0) {
+			return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+		}
+		if (options.auth.bearer.indexOf("statusNot200") >= 0) {
+			return callback(null, {statusCode: 400}, null);
+		}
+		return callback(null, {statusCode: 200}, "1234");
+	}
 	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
@@ -483,6 +725,16 @@ var requestMock = function (options, callback) {
 				"access_token": "access_token_mock_test_scope",
 				"id_token": "id_token_mock_test_scope"
 			}));
+		}
+		if (options.formData.appid_access_token) {
+			if (options.formData.appid_access_token === previousAccessToken) {
+				return callback(null, {statusCode: 200}, JSON.stringify({
+					"access_token": "access_token_mock",
+					"id_token": "id_token_mock",
+					"previousAccessToken": previousAccessToken
+				}));
+			}
+			return callback(null, {statusCode: 400}, {});
 		}
 		return callback(null, {statusCode: 200}, JSON.stringify({
 			"access_token": "access_token_mock",

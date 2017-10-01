@@ -12,9 +12,11 @@
  */
 
 module.exports = {
-	decodeAndValidate: decode,
+	decodeAndValidate: decodeAndValidate,
 	decode: decode
 }
+
+const Q = require("q");
 
 function decode(accessTokenString) {
 	if (accessTokenString === "invalid_token") {
@@ -30,4 +32,22 @@ function decode(accessTokenString) {
 	} else {
 		return {scope: "appid_default"};
 	}
+}
+
+function decodeAndValidate(accessTokenString) {
+    var deferred = Q.defer();
+    if (accessTokenString === "invalid_token") {
+        deferred.resolve();
+    } else if (accessTokenString === "bad_scope") {
+        deferred.resolve({scope: "bad_scope"});
+    } else if (accessTokenString === "null_scope") {
+         deferred.resolve(null);
+    } else if (accessTokenString === "access_token_mock_test_scope") {
+         deferred.resolve({scope: "test_scope"});
+    } else if (accessTokenString === "id_token_mock_test_scope") {
+         deferred.resolve({scope: "test_scope"});
+    } else {
+         deferred.resolve({scope: "appid_default"});
+    }
+    return deferred.promise;
 }

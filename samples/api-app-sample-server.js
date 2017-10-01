@@ -39,7 +39,7 @@ app.get("/api/protected",
 		appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
 
 		// Or use user object provided by passport.js
-		var username = req.user.name || "Anonymous";
+		var username = req.user ? req.user.name : "Anonymous";
 		res.send("Hello from protected resource " + username);
 	}
 );
