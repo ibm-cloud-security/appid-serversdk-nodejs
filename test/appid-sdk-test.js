@@ -11,8 +11,8 @@
  limitations under the License.
  */
 
-const chai = require('chai');
-const assert = chai.assert;
+var chai = require('chai');
+var assert = chai.assert;
 
 describe('/lib/appid-sdk', function(){
 	console.log("Loading appid-sdk-test.js");

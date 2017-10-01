@@ -16,7 +16,7 @@ module.exports = {
 	decode: decode
 }
 
-const Q = require("q");
+var Q = require("q");
 
 function decode(accessTokenString) {
 	if (accessTokenString === "invalid_token") {
