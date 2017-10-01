@@ -11,11 +11,11 @@
  limitations under the License.
  */
 
-const chai = require("chai");
-const assert = chai.assert;
-const proxyquire = require("proxyquire");
-const _ = require("underscore");
-const Q = require("q");
+var chai = require("chai");
+var assert = chai.assert;
+var proxyquire = require("proxyquire");
+var _ = require("underscore");
+var Q = require("q");
 
 describe("/lib/attribute-manager/user-attrubute-manager", function () {
 	console.log("Loading user-attribute-manager-test.js");
