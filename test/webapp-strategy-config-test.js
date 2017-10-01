@@ -11,8 +11,8 @@
  limitations under the License.
  */
 
-const chai = require("chai");
-const assert = chai.assert;
+var chai = require("chai");
+var assert = chai.assert;
 
 describe("/lib/strategies/webapp-strategy-config", function () {
 	console.log("Loading webapp-strategy-config-test.js");

@@ -11,13 +11,13 @@
  limitations under the License.
  */
 
-const chai = require("chai");
-const assert = chai.assert;
-const proxyquire = require("proxyquire");
-const testServerUrl = "https://mobileclientaccess.test.url/imf-authserver";
+var chai = require("chai");
+var assert = chai.assert;
+var proxyquire = require("proxyquire");
+var testServerUrl = "https://mobileclientaccess.test.url/imf-authserver";
 var requestCounter = 0;
 var seqRequestCounter = 0;
-const Q = require("q");
+var Q = require("q");
 
 describe("/lib/utils/public-key-util", function () {
 	console.log("Loading public-key-util-test.js");

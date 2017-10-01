@@ -11,9 +11,9 @@
  limitations under the License.
  */
 
-const chai = require("chai");
-const assert = chai.assert;
-const proxyquire = require("proxyquire");
+var chai = require("chai");
+var assert = chai.assert;
+var proxyquire = require("proxyquire");
 var previousAccessToken = "test.previousAccessToken.test";
 
 describe("/lib/strategies/webapp-strategy", function(){
