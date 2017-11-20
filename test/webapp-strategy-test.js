@@ -676,6 +676,33 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 		
+		describe("forgot password tests", function () {
+			it("Happy flow", function (done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+				
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/forgot_password?client_id=clientId");
+					done();
+				};
+				
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.FORGOT_PASSWORD
+				});
+				
+			});
+			
+		});
+		
 	});
 });
 
