@@ -188,5 +188,5 @@ var requestMock = function (options, callback) {
 		return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
 	} else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
-	}
+	} 
 };
