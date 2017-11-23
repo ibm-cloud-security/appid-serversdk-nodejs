@@ -84,6 +84,7 @@ app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 
 // Explicit forgot password endpoint. Will always redirect browser to forgot password widget screen.
 app.get(FORGOT_PASSWORD_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
 	show: WebAppStrategy.FORGOT_PASSWORD
 }));
 
