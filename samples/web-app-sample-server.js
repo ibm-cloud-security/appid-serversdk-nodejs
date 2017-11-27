@@ -28,6 +28,7 @@ const LOGIN_URL = "/ibm/bluemix/appid/login";
 const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
 const CHANGE_PASSWORD_URL = "/ibm/bluemix/appid/change_password";
 const CHANGE_DETAILS_URL = "/ibm/bluemix/appid/change_details";
+const FORGOT_PASSWORD_URL = "/ibm/bluemix/appid/forgot_password";
 const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
@@ -79,6 +80,12 @@ passport.deserializeUser(function(obj, cb) {
 app.get(LOGIN_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	forceLogin: true
+}));
+
+// Explicit forgot password endpoint. Will always redirect browser to forgot password widget screen.
+app.get(FORGOT_PASSWORD_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.FORGOT_PASSWORD
 }));
 
 // Explicit change details endpoint. Will always redirect browser to change details widget screen.
