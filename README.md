@@ -285,7 +285,8 @@ app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 Note:
-If your Cloud directory setting "Allow users to sign-in without email verification" is set to "No", the process will end without retrieving App ID access and id tokens.
+1. If your Cloud directory setting ***Allow users to sign-in without email verification** is set to **No**, the process will end without retrieving App ID access and id tokens.
+2. Be sure to set **Allow users to sign up and reset their password" to **ON**, in the settings for Cloud Directory.
 
 
 ### Forgot Password
