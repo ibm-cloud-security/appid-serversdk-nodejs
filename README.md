@@ -1,5 +1,4 @@
-# IBM Cloud App ID
-Node.js SDK for the IBM Cloud App ID service
+# IBM Cloud App ID Node.js SDK
 
 [![Bluemix powered][img-bluemix-powered]][url-bluemix]
 [![Travis][img-travis-master]][url-travis-master]
@@ -14,14 +13,14 @@ Node.js SDK for the IBM Cloud App ID service
 [![GithubStars][img-github-stars]][url-github-stars]
 [![GithubForks][img-github-forks]][url-github-forks]
 
-### Table of Contents
+## Table of Contents
 * [Summary](#summary)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Example Usage](#example-usage)
 * [License](#license)
 
-### Summary
+## Summary
 
 This SDK provides Passport.js strategies for protecting two types of resources - APIs and Web applications. The major difference between these two resource types is the way client is challenged.
 
@@ -31,16 +30,16 @@ If you use the Web application protection strategy the unauthenticated client wi
 
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
-### Requirements
+## Requirements
 * npm 4.+
 * node 4.+
 
-### Installation
+## Installation
 ```
 npm install --save bluemix-appid
 ```
 
-### Example Usage
+## Example Usage
 Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository.
 
 Note that below examples are using additional npm modules. In order to install required npm modules run below commands in your node.js application.
@@ -255,13 +254,12 @@ userAttributeManager.deleteAttribute(accessToken, name).then(function () {
         });
 
 ```
-### Cloud Directory 
-Make sure to that Cloud Directory identity provider set to ON at AppID dashboard,
-and include the callback endpoint when using the following.
+## Cloud Directory 
+Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
-#### Login using resource owner password flow
+### Login using resource owner password flow
 WebAppStrategy allows users to login to your web application using username/password.
-After successful login the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
+After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
 To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
 ```javascript
 app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -278,7 +276,7 @@ Note:
 1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.
 2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.
 
-#### Sign up
+### Sign up
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.SIGN_UP, will launch the App ID sign up form.
 ```javascript
 app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -287,11 +285,10 @@ app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 Note:
-1. If your Cloud directory setting "Allow users to sign-in without email verification" set to "No", the process will end without retrieving App ID access and id tokens.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+If your Cloud directory setting "Allow users to sign-in without email verification" is set to "No", the process will end without retrieving App ID access and id tokens.
 
 
-#### Forgot Password
+### Forgot Password
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.FORGOT_PASSWORD, will launch the App ID forgot password from.
 ```javascript
 app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -301,9 +298,9 @@ app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, 
 ```
 Note:
 1. This process will end without retrieving App ID access and id tokens.
-2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
-#### Change Details
+### Change Details
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_DETAILS, will launch the App ID change details from.
 ```javascript
 app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -313,9 +310,9 @@ app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 ```
 Note:
 1. This call requires that the user is authenticated with Cloud directory identity provider.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
-#### Change Password
+### Change Password
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_PASSWORD, will launch the App ID change password from.
 ```javascript
 app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -325,7 +322,7 @@ app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, 
 ```
 Note:
 1. This call requires that the user is authenticated with Cloud directory identity provider.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in App ID dashboard.
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
