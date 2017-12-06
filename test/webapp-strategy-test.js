@@ -275,6 +275,27 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 				webAppStrategy.authenticate(req);
 			});
+
+
+			it("Happy SIGN_UP flow - check req.session.originalUrl = successRedirect", function (done) {
+				var req = {
+					session: {},
+					isAuthenticated: function(){ return false; },
+					isUnauthenticated: function(){ return true; }
+				};
+
+				webAppStrategy.redirect = function(url){
+					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-redirect");
+					assert.include(url, "response_type=sign_up");
+					done();
+				};
+
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.SIGN_UP,
+					successRedirect: "success-redirect"
+				});
+
+			});
 		});
 		
 		it("Should handle callback if request contains grant code. Fail due to tokenEndpoint error", function(done){
@@ -676,6 +697,57 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 		
+		describe("forgot password tests", function () {
+			it("Happy flow", function (done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+
+				webAppStrategy.redirect = function(url){
+					assert.include(url, "/cloud_directory/forgot_password?client_id=clientId");
+					done();
+				};
+
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.FORGOT_PASSWORD
+				});
+
+			});
+
+			it("Happy FORGOT_PASSWORD flow - check req.session.originalUrl = successRedirect", function (done) {
+				var req = {
+					session: {APPID_AUTH_CONTEXT: {
+						identityTokenPayload: {
+							amr: ["cloud_directory"],
+							identities: [{id: "testUserId"}]
+						}
+					}
+					},
+					isAuthenticated: function(){ return true; },
+					isUnauthenticated: function(){ return false; }
+				};
+
+				webAppStrategy.redirect = function(url){
+					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-redirect");
+					assert.include(url, "/cloud_directory/forgot_password?client_id=clientId");
+					done();
+				};
+
+				webAppStrategy.authenticate(req, {
+					show: WebAppStrategy.FORGOT_PASSWORD,
+					successRedirect: "success-redirect"
+				});
+
+			});
+		});
 	});
 });
 

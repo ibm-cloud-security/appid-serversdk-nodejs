@@ -1,5 +1,4 @@
-# Bluemix App ID
-Node.js SDK for the Bluemix App ID service
+# IBM Cloud App ID Node.js SDK
 
 [![Bluemix powered][img-bluemix-powered]][url-bluemix]
 [![Travis][img-travis-master]][url-travis-master]
@@ -14,14 +13,14 @@ Node.js SDK for the Bluemix App ID service
 [![GithubStars][img-github-stars]][url-github-stars]
 [![GithubForks][img-github-forks]][url-github-forks]
 
-### Table of Contents
+## Table of Contents
 * [Summary](#summary)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Example Usage](#example-usage)
 * [License](#license)
 
-### Summary
+## Summary
 
 This SDK provides Passport.js strategies for protecting two types of resources - APIs and Web applications. The major difference between these two resource types is the way client is challenged.
 
@@ -29,18 +28,18 @@ If you use the API protection strategy the unauthenticated client will get HTTP 
 
 If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
-Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with Bluemix App ID Service.
+Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
-### Requirements
+## Requirements
 * npm 4.+
 * node 4.+
 
-### Installation
+## Installation
 ```
 npm install --save bluemix-appid
 ```
 
-### Example Usage
+## Example Usage
 Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository.
 
 Note that below examples are using additional npm modules. In order to install required npm modules run below commands in your node.js application.
@@ -72,7 +71,7 @@ app.use(passport.initialize());
 
 // The oauthServerUrl value can be obtained from Service Credentials
 // tab in the App ID Dashboard. You're not required to provide this argument if
-// your node.js application runs on Bluemix and is bound to the
+// your node.js application runs on IBM Cloud and is bound to the
 // App ID service instance. In this case App ID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
@@ -148,7 +147,7 @@ app.use(passport.session());
 
 // Below configuration can be obtained from Service Credentials
 // tab in the App ID Dashboard. You're not required to manually provide below
-// configuration if your node.js application runs on Bluemix and is bound to the
+// configuration if your node.js application runs on IBM Cloud and is bound to the
 // App ID service instance. In this case App ID configuration will be obtained
 // automatically using VCAP_SERVICES environment variable.
 //
@@ -156,7 +155,7 @@ app.use(passport.session());
 // 1. Manually in new WebAppStrategy({redirectUri: "...."})
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the App ID SDK will try to retrieve
-//    application_uri of the application running on Bluemix and append a
+//    application_uri of the application running on IBM Cloud and append a
 //    default suffix "/ibm/bluemix/appid/callback"
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
@@ -227,6 +226,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
 
 ### User profile attributes
+Use the user UserAttributeManager to store and retrieve attribute of the user.
 
 ```javascript
 const userAttributeManager = require("bluemix-appid").UserAttributeManager;
@@ -254,25 +254,76 @@ userAttributeManager.deleteAttribute(accessToken, name).then(function () {
         });
 
 ```
+## Cloud Directory 
+Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
-<!--### Login using resource owner password flow-->
-<!--WebAppStrategy allows users to login to your web application using username/password.-->
-<!--After successful login the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the anonymous user access token will be destroyed as well.-->
-<!--To allow login using username/password add to your app a post route that will be called with the username and password parameters. -->
-<!--```javascript-->
-<!--app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {-->
-<!--	<!--successRedirect: LANDING_PAGE_URL,-->
-<!--	<!--failureRedirect: ROP_LOGIN_PAGE_URL,-->
-<!--	<!--failureFlash : true // allow flash messages-->
-<!--}));-->
-<!--```-->
-<!--* `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")-->
-<!--* `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: the original request url. (in this example:"/form/submit")-->
-<!--* `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false-->
+### Login using resource owner password flow
+WebAppStrategy allows users to login to your web application using username/password.
+After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
+To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
+```javascript
+app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	failureRedirect: ROP_LOGIN_PAGE_URL,
+	failureFlash : true // allow flash messages
+}));
+```
+* `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")
+* `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: the original request url. (in this example:"/form/submit")
+* `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false
 
-<!--Note:-->
-<!--1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.-->
-<!--2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.-->
+Note:
+1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.
+2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.
+
+### Sign up
+Pass WebAppStrategy "show" property and set it to WebAppStrategy.SIGN_UP, will launch the App ID sign up form.
+```javascript
+app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.SIGN_UP
+}));
+```
+Note:
+1. If your Cloud directory setting ***Allow users to sign-in without email verification** is set to **No**, the process will end without retrieving App ID access and id tokens.
+2. Be sure to set **Allow users to sign up and reset their password" to **ON**, in the settings for Cloud Directory.
+
+
+### Forgot Password
+Pass WebAppStrategy "show" property and set it to WebAppStrategy.FORGOT_PASSWORD, will launch the App ID forgot password from.
+```javascript
+app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.FORGOT_PASSWORD
+}));
+```
+Note:
+1. This process will end without retrieving App ID access and id tokens.
+2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in the App ID dashboard.
+
+### Change Details
+Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_DETAILS, will launch the App ID change details from.
+```javascript
+app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.CHANGE_DETAILS
+}));
+```
+Note:
+1. This call requires that the user is authenticated with Cloud directory identity provider.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in the App ID dashboard.
+
+### Change Password
+Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_PASSWORD, will launch the App ID change password from.
+```javascript
+app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+	successRedirect: LANDING_PAGE_URL,
+	show: WebAppStrategy.CHANGE_PASSWORD
+}));
+```
+Note:
+1. This call requires that the user is authenticated with Cloud directory identity provider.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in App ID dashboard.
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
