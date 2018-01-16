@@ -751,7 +751,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		describe ("set preferred locale tests", function () {
+		describe ("Preferred locale tests", function () {
 			const french = 'fr';
 			var req;
 
@@ -772,10 +772,19 @@ describe("/lib/strategies/webapp-strategy", function(){
 				}
 			};
 
-			var checkCustomLocale = function (done) {
+			var checkCustomLocaleFromSession = function (done) {
 				return function(url) {
 					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
+					done();
+				}
+			};
+
+			var checkCustomLocaleFromInit = function (done) {
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
+					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
+					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
 					done();
 				}
 			};
@@ -788,17 +797,31 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 				//2. overwrite it to 'fr' with setPreferredLocale
 				webAppStrategy.setPreferredLocale(req, french);
-				webAppStrategy.redirect = checkCustomLocale(done);
+				webAppStrategy.redirect = checkCustomLocaleFromSession(done);
 				webAppStrategy.authenticate(req, {});
 			});
 
 			it("Should redirect to authorization with custom preferred locale from session", function(done) {
 
 				webAppStrategy.setPreferredLocale(req, french);
-				webAppStrategy.redirect = checkCustomLocale(done);
+				webAppStrategy.redirect = checkCustomLocaleFromSession(done);
 				webAppStrategy.authenticate(req, {});
 			});
 
+			it("Should redirect to authorization with custom preferred locale from init", function(done) {
+
+				webAppStrategy = new WebAppStrategy({
+					tenantId: "tenantId",
+					clientId: "clientId",
+					secret: "secret",
+					oauthServerUrl: "https://oauthServerUrlMock",
+					redirectUri: "https://redirectUri",
+					preferredLocale: french
+				});
+
+				webAppStrategy.redirect = checkCustomLocaleFromInit(done);
+				webAppStrategy.authenticate(req, {});
+			});
 		});
 	});
 });
