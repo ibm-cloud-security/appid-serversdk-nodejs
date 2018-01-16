@@ -751,7 +751,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		describe ("Preferred locale tests", function (){
+		describe ("Preferred locale tests", function(){
 			const french = "fr";
 			var req;
 
