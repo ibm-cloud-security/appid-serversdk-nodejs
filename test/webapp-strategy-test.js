@@ -14,7 +14,7 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
-const osLocale = require('os-locale');
+const osLocale = require("os-locale");
 const defaultLocale = osLocale.sync();
 var previousAccessToken = "test.previousAccessToken.test";
 
@@ -751,8 +751,8 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		describe ("Preferred locale tests", function () {
-			const french = 'fr';
+		describe ("Preferred locale tests", function (){
+			const french = "fr";
 			var req;
 
 			beforeEach(function() {
