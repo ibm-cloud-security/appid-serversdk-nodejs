@@ -14,6 +14,8 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
+const osLocale = require('os-locale');
+const defaultLocale = osLocale.sync();
 var previousAccessToken = "test.previousAccessToken.test";
 
 describe("/lib/strategies/webapp-strategy", function(){
@@ -84,7 +86,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
 				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
 				done();
 			};
@@ -409,7 +411,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
 				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-callback");
 				done();
 			};
@@ -431,7 +433,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle authorization redirect to App ID /authorization endpoint with default scope", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale));
 				done();
 			}
 			webAppStrategy.authenticate({
@@ -442,7 +444,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle authorization redirect to App ID /authorization endpoint with custom scope", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope&language=" + defaultLocale));
 				done();
 			};
 			webAppStrategy.authenticate({
@@ -747,6 +749,56 @@ describe("/lib/strategies/webapp-strategy", function(){
 				});
 
 			});
+		});
+
+		describe ("set preferred locale tests", function () {
+			const french = 'fr';
+			var req;
+
+			beforeEach(function() {
+				req = {
+					isAuthenticated: function(){
+						return false;
+					},
+					session: {}
+				};
+			});
+
+			var checkDefaultLocale = function (done) {
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
+					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
+					done();
+				}
+			};
+
+			var checkCustomLocale = function (done) {
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
+					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
+					done();
+				}
+			};
+
+			it("Should redirect to authorization with os locale, overwrite it to 'fr' with setPreferredLocale and expect Should redirect to authorization with 'fr' custom locale", function(done) {
+
+				//1. redirect to authorization with os locale
+				webAppStrategy.redirect = checkDefaultLocale(done);
+				webAppStrategy.authenticate(req, {});
+
+				//2. overwrite it to 'fr' with setPreferredLocale
+				webAppStrategy.setPreferredLocale(req, french);
+				webAppStrategy.redirect = checkCustomLocale(done);
+				webAppStrategy.authenticate(req, {});
+			});
+
+			it("Should redirect to authorization with custom preferred locale from session", function(done) {
+
+				webAppStrategy.setPreferredLocale(req, french);
+				webAppStrategy.redirect = checkCustomLocale(done);
+				webAppStrategy.authenticate(req, {});
+			});
+
 		});
 	});
 });
