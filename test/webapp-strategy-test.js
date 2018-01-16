@@ -751,7 +751,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 		});
 
-		describe ("Preferred locale tests", function(){
+		describe("Preferred locale tests", function(){
 			const french = "fr";
 			var req;
 
@@ -772,7 +772,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				}
 			};
 
-			var checkCustomLocaleFromSession = function (done) {
+			var checkCustomLocaleFromSession = function(done) {
 				return function(url) {
 					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
@@ -780,7 +780,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				}
 			};
 
-			var checkCustomLocaleFromInit = function (done) {
+			var checkCustomLocaleFromInit = function(done) {
 				return function(url) {
 					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
