@@ -145,7 +145,7 @@ app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 	res.render("login.ejs", { message: req.flash('error') });
 });
 
-var port = process.env.PORT || 1234;
+var port = process.env.PORT || 4321;
 app.listen(port, function(){
 	logger.info("Listening on http://localhost:" + port + "/web-app-sample.html");
 });
