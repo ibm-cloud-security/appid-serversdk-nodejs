@@ -64,7 +64,7 @@ passport.use(new WebAppStrategy({
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL,
-	getRefreshToken: req => { /* just an example of getting a refresh token from cookies */
+	getRefreshToken: function(req) { /* just an example of getting a refresh token from cookies */
 		return req.cookies.refreshToken
 	}
 }));
