@@ -65,7 +65,7 @@ passport.use(new WebAppStrategy({
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL,
 	getRefreshToken: function(req) { /* just an example of getting a refresh token from cookies */
-		return req.cookies.refreshToken
+		return req.cookies.refreshToken;
 	}
 }));
 
@@ -136,7 +136,7 @@ function storeRefreshTokenInCookie(req, res, next) {
 	const refreshToken = req.session[WebAppStrategy.AUTH_CONTEXT].refreshToken;
 	if (refreshToken) {
 		/* An example of storing user's refresh-token in a cookie with expiration of a month */
-		res.cookie('refreshToken', refreshToken, {maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */});
+		res.cookie("refreshToken", refreshToken, {maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */});
 	}
 	next();
 }
