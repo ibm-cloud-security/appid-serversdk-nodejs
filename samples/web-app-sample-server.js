@@ -132,14 +132,18 @@ app.get(LOGOUT_URL, function(req, res){
 	res.redirect(LANDING_PAGE_URL);
 });
 
-// Protected area. If current user is not authenticated - redirect to the login widget will be returned.
-// In case user is authenticated - a page with current user information will be returned.
-app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
+function storeRefreshTokenInCookie(req, res, next) {
 	const refreshToken = req.session[WebAppStrategy.AUTH_CONTEXT].refreshToken;
 	if (refreshToken) {
-		/* Just an example of storing user's refresh-token in a cookie with expiration of a month */
+		/* An example of storing user's refresh-token in a cookie with expiration of a month */
 		res.cookie('refreshToken', refreshToken, {maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */});
 	}
+	next();
+}
+
+// Protected area. If current user is not authenticated - redirect to the login widget will be returned.
+// In case user is authenticated - a page with current user information will be returned.
+app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
 });
