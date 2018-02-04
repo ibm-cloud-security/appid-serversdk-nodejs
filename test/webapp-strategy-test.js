@@ -77,7 +77,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					oauthServerUrl: "https://oauthServerUrlMock",
 					redirectUri: "https://redirectUri",
 					getRefreshToken: getRefreshToken
-				})
+				});
 			}
 
 			function validateRedirect(strategy, done) {
@@ -103,8 +103,12 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 
 			it("Should success if it has a valid refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() { return Q.resolve("WORKING_REFRESH_TOKEN"); });
-				customWebAppStrategy.fail = function(err) { done(err) };
+				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
+					return Q.resolve("WORKING_REFRESH_TOKEN");
+				});
+				customWebAppStrategy.fail = function(err) {
+					done(err)
+				};
 				customWebAppStrategy.success = function() {
 					var context = req.session[WebAppStrategy.AUTH_CONTEXT];
 					try {
@@ -120,22 +124,30 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 
 			it("Should redirect to login upon invalid refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() { return "INVALID_REFRESH_TOKEN"; });
+				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
+					return "INVALID_REFRESH_TOKEN";
+				});
 				validateRedirect(customWebAppStrategy, done);
 			});
 
 			it("Should redirect to login if it has an empty refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() { return null; });
+				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
+					return null;
+				});
 				validateRedirect(customWebAppStrategy, done);
 			});
 
 			it("Should redirect to login if it has an error when getting a refresh-token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() { throw new Error("error on getting refresh-token") });
+				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
+					throw new Error("error on getting refresh-token");
+				});
 				validateRedirect(customWebAppStrategy, done);
 			});
 
 			it("Should redirect to login if getting refresh token rejects", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() { return Q.reject("rejection on getting refresh-token") });
+				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
+					return Q.reject("rejection on getting refresh-token");
+				});
 				validateRedirect(customWebAppStrategy, done);
 			});
 		});
