@@ -14,7 +14,8 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
-var previousAccessToken = "test.previousAccessToken.test";
+const previousAccessToken = "test.previousAccessToken.test";
+const Q = require("q");
 
 describe("/lib/strategies/webapp-strategy", function(){
 	console.log("Loading webapp-strategy-test.js");
@@ -25,7 +26,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 	before(function(){
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"./../utils/token-util": require("./mocks/token-util-mock"),
-			"request": requestMock
+			"request": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
 			tenantId: "tenantId",
@@ -63,8 +64,121 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 	});
 
-
 	describe("#authenticate()", function(){
+		it("Should success if it has a valid refresh token", function(done) {
+			var customWebAppStrategy = new WebAppStrategy({
+				tenantId: "tenantId",
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: "https://oauthServerUrlMock",
+				redirectUri: "https://redirectUri",
+				getRefreshToken: function() {
+					return Q.resolve("WORKING_REFRESH_TOKEN");
+				}
+			});
+			var req = {
+				isAuthenticated: function() {
+					return false;
+				},
+				session: {}
+			};
+			customWebAppStrategy.fail = function(err) { done(err) };
+			customWebAppStrategy.success = function() {
+				var context = req.session[WebAppStrategy.AUTH_CONTEXT];
+				try {
+					assert.equal(context.accessToken, "access_token_mock");
+					assert.equal(context.refreshToken, "refresh_token_mock");
+					assert.equal(context.refreshToken, "refresh_token_mock");
+				} catch(e) {
+					return done(e);
+				}
+				done();
+			};
+			customWebAppStrategy.authenticate(req, {});
+		});
+
+		it("Should redirect to login upon invalid refresh token", function(done) {
+			var customWebAppStrategy = new WebAppStrategy({
+				tenantId: "tenantId",
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: "https://oauthServerUrlMock",
+				redirectUri: "https://redirectUri",
+				getRefreshToken: function() {
+					return "INVALID_REFRESH_TOKEN";
+				}
+			});
+			var req = {
+				isAuthenticated: function(){
+					return false;
+				},
+				url: "originalUrl",
+				session: {}
+			};
+
+			customWebAppStrategy.redirect = function (url) {
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
+				done();
+			};
+
+			customWebAppStrategy.authenticate(req, {});
+		});
+
+		it("Should redirect to login if it has an empty refresh token", function(done) {
+			var customWebAppStrategy = new WebAppStrategy({
+				tenantId: "tenantId",
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: "https://oauthServerUrlMock",
+				redirectUri: "https://redirectUri",
+				getRefreshToken: function() {
+					return null;
+				}
+			});
+			var req = {
+				isAuthenticated: function(){
+					return false;
+				},
+				url: "originalUrl",
+				session: {}
+			};
+			customWebAppStrategy.redirect = function (url) {
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
+				done();
+			};
+
+			customWebAppStrategy.authenticate(req, {});
+		});
+
+		it("Should redirect to login if it has an error when getting a refresh-token", function(done) {
+			var customWebAppStrategy = new WebAppStrategy({
+				tenantId: "tenantId",
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: "https://oauthServerUrlMock",
+				redirectUri: "https://redirectUri",
+				getRefreshToken: function() {
+					throw new Error('Some error');
+				}
+			});
+			var req = {
+				isAuthenticated: function(){
+					return false;
+				},
+				url: "originalUrl",
+				session: {}
+			};
+			customWebAppStrategy.redirect = function (url) {
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
+				done();
+			};
+
+			customWebAppStrategy.authenticate(req, {});
+		});
+
 		it("Should fail if request doesn't have session", function(done){
 			webAppStrategy.error = function(err){
 				assert.equal(err.message, "Can't find req.session");
@@ -102,7 +216,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			webAppStrategy.pass = function(){
 				done();
-			}
+			};
 
 			webAppStrategy.authenticate(req, {});
 		});
@@ -542,6 +656,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_PASSWORD
 				});
 			});
+
 			it("user authenticated but not with cloud directory", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
@@ -562,6 +677,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_PASSWORD
 				});
 			});
+
 			it("happy flow - user authenticated with cloud directory", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {
@@ -607,6 +723,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_DETAILS
 				});
 			});
+
 			it("user authenticated but not with cloud directory", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
@@ -627,6 +744,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_DETAILS
 				});
 			});
+
 			it("happy flow - user authenticated with cloud directory", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {
@@ -649,6 +767,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_DETAILS
 				});
 			});
+
 			it("Bad flow - error on generate code request", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {
@@ -672,6 +791,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 					show: WebAppStrategy.CHANGE_DETAILS
 				});
 			});
+
 			it("Bad flow - not 200 response on generate code request", function(done) {
 				var req = {
 					session: {APPID_AUTH_CONTEXT: {
@@ -747,72 +867,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				});
 
 			});
+
 		});
 	});
 });
-
-
-var requestMock = function (options, callback) {
-	if (options.url.indexOf("generate_code") >= 0) {
-		if (options.auth.bearer.indexOf("error") >= 0) {
-			return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-		}
-		if (options.auth.bearer.indexOf("statusNot200") >= 0) {
-			return callback(null, {statusCode: 400}, null);
-		}
-		return callback(null, {statusCode: 200}, "1234");
-	}
-	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
-		return callback(null, {statusCode: 200}, {"n": 1, "e": 2});
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(null, {statusCode: 200}, JSON.stringify({
-			"access_token": "access_token_mock",
-			"id_token": "id_token_mock"
-		}));
-	} else if (options.followRedirect === false) {
-		return callback(null, {
-			statusCode: 302,
-			headers: {
-				location: "test-location?code=WORKING_CODE"
-			}
-		});
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("NULL_ID_TOKEN") !== -1) {
-		return callback(null, {statusCode: 200}, JSON.stringify({
-			"access_token": "access_token_mock",
-			"id_token": "null_scope"
-		}));
-	} else if (options.formData.username === "test_username" && options.formData.password === "bad_password") {
-		return callback(null, {statusCode: 401}, JSON.stringify({error:"invalid_grant", error_description:"wrong credentials"}));
-	}else if (options.formData.username === "request_error") {
-		return callback(new Error("REQUEST_ERROR"), {statusCode: 0}, null);
-	}else if (options.formData.username === "parse_error") {
-		return callback(null, {statusCode: 401}, JSON.stringify({error:"invalid_grant", error_description:"wrong credentials"})+"dddddd");
-	} else if (options.formData.username === "test_username" && options.formData.password === "good_password") {
-		if (options.formData.scope) {
-			return callback(null, {statusCode: 200}, JSON.stringify({
-				"access_token": "access_token_mock_test_scope",
-				"id_token": "id_token_mock_test_scope"
-			}));
-		}
-		if (options.formData.appid_access_token) {
-			if (options.formData.appid_access_token === previousAccessToken) {
-				return callback(null, {statusCode: 200}, JSON.stringify({
-					"access_token": "access_token_mock",
-					"id_token": "id_token_mock",
-					"previousAccessToken": previousAccessToken
-				}));
-			}
-			return callback(null, {statusCode: 400}, {});
-		}
-		return callback(null, {statusCode: 200}, JSON.stringify({
-			"access_token": "access_token_mock",
-			"id_token": "id_token_mock"
-		}));
-  } else {
-		throw "Unhandled case!!!" + JSON.stringify(options);
-	}
-};
