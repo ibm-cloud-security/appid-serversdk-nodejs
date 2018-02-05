@@ -102,7 +102,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 			});
 
-			it("Should success if it has a valid refresh token", function(done) {
+			it("Should succeed if it has a valid refresh token", function(done) {
 				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
 					return Q.resolve("WORKING_REFRESH_TOKEN");
 				});
