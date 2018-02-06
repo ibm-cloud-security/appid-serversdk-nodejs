@@ -37,6 +37,34 @@ describe("/lib/strategies/webapp-strategy", function(){
 		});
 	});
 
+	describe("#setPreferredLocale", function(){
+        it("Should fail if request doesn't have session", function(done){
+        	var failed = false;
+            webAppStrategy.error = function(err){
+                assert.equal(err.message, "Can't find req.session");
+                failed = true;
+
+            };
+
+            webAppStrategy.setPreferredLocale({}, 'fr');
+            assert.equal(true, failed);
+            done();
+
+        });
+
+        it("Should succeed if request has session", function(done){
+            var failed = false;
+            var req = {session:{}};
+        	webAppStrategy.error = function(err){
+                failed = true;
+            };
+
+            webAppStrategy.setPreferredLocale(req, 'fr');
+            assert.equal('fr', req.session["language"]);
+            done();
+        });
+	});
+
 	describe("#properties", function(){
 		it("Should have all properties", function(){
 			assert.isFunction(WebAppStrategy);
