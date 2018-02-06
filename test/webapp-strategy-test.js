@@ -14,8 +14,7 @@
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
-const osLocale = require("os-locale");
-const defaultLocale = osLocale.sync();
+const defaultLocale = 'en';
 var previousAccessToken = "test.previousAccessToken.test";
 
 describe("/lib/strategies/webapp-strategy", function(){
@@ -86,7 +85,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
 				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
 				done();
 			};
@@ -411,7 +410,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
 				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-callback");
 				done();
 			};
@@ -433,7 +432,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle authorization redirect to App ID /authorization endpoint with default scope", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
 				done();
 			}
 			webAppStrategy.authenticate({
@@ -444,7 +443,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle authorization redirect to App ID /authorization endpoint with custom scope", function(done){
 			webAppStrategy.redirect = function(url){
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope&language=" + defaultLocale));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
 				done();
 			};
 			webAppStrategy.authenticate({
@@ -766,7 +765,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			var checkDefaultLocale = function (done) {
 				return function(url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + defaultLocale);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
 					done();
 				}
