@@ -780,25 +780,30 @@ describe("/lib/strategies/webapp-strategy", function(){
 			};
 
 			var checkCustomLocaleFromInit = function(done) {
+				var expect = french;
 				return function(url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
-					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
+					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), expect);
 					done();
 				}
 			};
 
-			it("Should redirect to authorization with os locale, overwrite it to 'fr' with setPreferredLocale and expect Should redirect to authorization with 'fr' custom locale", function(done) {
+            var checkCustomLocaleFromInitAndSession = function(done) {
+                var expect = 'de';
+                return function(url) {
+                    assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
+                    assert.equal(req.session[WebAppStrategy.LANGUAGE], expect);
+                    assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
+                    done();
+                }
+            };
 
-				//1. redirect to authorization with os locale
+			it("Should redirect to authorization with no locale, overwrite it to 'fr' with setPreferredLocale and expect Should redirect to authorization with 'fr' custom locale", function(done) {
+
 				webAppStrategy.redirect = checkDefaultLocale(done);
 				webAppStrategy.authenticate(req, {});
-
-				//2. overwrite it to 'fr' with setPreferredLocale
-				webAppStrategy.setPreferredLocale(req, french);
-				webAppStrategy.redirect = checkCustomLocaleFromSession(done);
-				webAppStrategy.authenticate(req, {});
-			});
+            });
 
 			it("Should redirect to authorization with custom preferred locale from session", function(done) {
 
@@ -821,6 +826,22 @@ describe("/lib/strategies/webapp-strategy", function(){
 				webAppStrategy.redirect = checkCustomLocaleFromInit(done);
 				webAppStrategy.authenticate(req, {});
 			});
+
+            it("Should redirect to authorization with custom preferred locale from session even though it has one in init too", function(done) {
+
+                webAppStrategy = new WebAppStrategy({
+                    tenantId: "tenantId",
+                    clientId: "clientId",
+                    secret: "secret",
+                    oauthServerUrl: "https://oauthServerUrlMock",
+                    redirectUri: "https://redirectUri",
+                    preferredLocale: french
+                });
+
+                webAppStrategy.setPreferredLocale(req, 'de');
+                webAppStrategy.redirect = checkCustomLocaleFromInitAndSession(done);
+                webAppStrategy.authenticate(req, {});
+            });
 		});
 	});
 });
