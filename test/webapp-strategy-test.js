@@ -70,6 +70,11 @@ describe("/lib/strategies/webapp-strategy", function(){
 			var req;
 
 			function getStrategyWithRefreshToken(getRefreshToken) {
+				if (!getRefreshToken) {
+					getRefreshToken = function() {
+						return Q.resolve("WORKING_REFRESH_TOKEN")
+					};
+				}
 				return new WebAppStrategy({
 					tenantId: "tenantId",
 					clientId: "clientId",
@@ -92,6 +97,18 @@ describe("/lib/strategies/webapp-strategy", function(){
 				strategy.authenticate(req, {});
 			}
 
+			function validateContext(done) {
+				var context = req.session[WebAppStrategy.AUTH_CONTEXT];
+				try {
+					assert.equal(context.accessToken, "access_token_mock");
+					assert.equal(context.refreshToken, "refresh_token_mock");
+					assert.equal(context.refreshToken, "refresh_token_mock");
+				} catch(e) {
+					return done(e);
+				}
+				done();
+			}
+
 			beforeEach(function() {
 				req = {
 					isAuthenticated: function() {
@@ -103,22 +120,10 @@ describe("/lib/strategies/webapp-strategy", function(){
 			});
 
 			it("Should succeed if it has a valid refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
-					return Q.resolve("WORKING_REFRESH_TOKEN");
-				});
-				customWebAppStrategy.fail = function(err) {
-					done(err)
-				};
+				var customWebAppStrategy = getStrategyWithRefreshToken();
+				customWebAppStrategy.fail = done;
 				customWebAppStrategy.success = function() {
-					var context = req.session[WebAppStrategy.AUTH_CONTEXT];
-					try {
-						assert.equal(context.accessToken, "access_token_mock");
-						assert.equal(context.refreshToken, "refresh_token_mock");
-						assert.equal(context.refreshToken, "refresh_token_mock");
-					} catch(e) {
-						return done(e);
-					}
-					done();
+					validateContext(done);
 				};
 				customWebAppStrategy.authenticate(req, {});
 			});
@@ -149,6 +154,45 @@ describe("/lib/strategies/webapp-strategy", function(){
 					return Q.reject("rejection on getting refresh-token");
 				});
 				validateRedirect(customWebAppStrategy, done);
+			});
+
+			describe("refreshTokens option", function(){
+				var customWebAppStrategy;
+				beforeEach(function() {
+					customWebAppStrategy = getStrategyWithRefreshToken();
+				});
+				it("Should succeed if already logged-in with refreshTokens option", function(done) {
+					customWebAppStrategy.fail = done;
+					customWebAppStrategy.success = function() {
+						done();
+					};
+					req.isAuthenticated = function () {
+						return true;
+					};
+					req.session[WebAppStrategy.AUTH_CONTEXT] = {
+						identityTokenPayload: {}
+					};
+					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
+				});
+
+				it("Should pass if failed to refreshTokens with refreshTokens option", function(done) {
+					customWebAppStrategy.fail = done;
+					customWebAppStrategy.pass = function() {
+						done();
+					};
+					customWebAppStrategy.obtainTokensWithRefreshToken = function() {
+						throw new Error();
+					};
+					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
+				});
+
+				it("Should refresh tokens with refreshTokens option", function(done) {
+					customWebAppStrategy.fail = done;
+					customWebAppStrategy.success = function() {
+						validateContext(done);
+					};
+					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
+				});
 			});
 		});
 
