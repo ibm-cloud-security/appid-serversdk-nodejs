@@ -58,16 +58,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
-passport.use(new WebAppStrategy({
+let webAppStrategy = new WebAppStrategy({
 	tenantId: "TENANT_ID",
 	clientId: "CLIENT_ID",
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
-	redirectUri: "http://localhost:3000" + CALLBACK_URL,
-	getRefreshToken: function(req) { /* just an example of getting a refresh token from cookies */
-		return req.cookies.refreshToken;
-	}
-}));
+	redirectUri: "http://localhost:3000" + CALLBACK_URL
+});
+passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
@@ -141,9 +139,21 @@ function storeRefreshTokenInCookie(req, res, next) {
 	next();
 }
 
+function isLoggedIn(req) {
+	return req.session[WebAppStrategy.AUTH_CONTEXT];
+}
+
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
 // In case user is authenticated - a page with current user information will be returned.
-app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
+app.get("/protected", function tryToRefreshTokenIfNotLoggedIn(req, res, next) {
+	if (isLoggedIn(req)) {
+		return next();
+	}
+
+	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).finally(function() {
+		next();
+	});
+}, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
 });
