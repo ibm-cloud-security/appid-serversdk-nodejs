@@ -13,9 +13,10 @@
 
 const chai = require("chai");
 const assert = chai.assert;
+const expect = chai.expect;
 const proxyquire = require("proxyquire");
 const previousAccessToken = "test.previousAccessToken.test";
-const Q = require("q");
+chai.use(require('chai-as-promised'));
 
 describe("/lib/strategies/webapp-strategy", function(){
 	console.log("Loading webapp-strategy-test.js");
@@ -42,7 +43,6 @@ describe("/lib/strategies/webapp-strategy", function(){
 			assert.isFunction(WebAppStrategy);
 			assert.equal(WebAppStrategy.STRATEGY_NAME, "appid-webapp-strategy");
 			assert.equal(WebAppStrategy.DEFAULT_SCOPE, "appid_default");
-			assert.equal(WebAppStrategy.ORIGINAL_URL, "APPID_ORIGINAL_URL");
 			assert.equal(WebAppStrategy.AUTH_CONTEXT, "APPID_AUTH_CONTEXT");
 		});
 	});
@@ -67,35 +67,14 @@ describe("/lib/strategies/webapp-strategy", function(){
 	describe("#authenticate()", function(){
 
 		describe("refresh-token", function() {
+
 			var req;
 
-			function getStrategyWithRefreshToken(getRefreshToken) {
-				if (!getRefreshToken) {
-					getRefreshToken = function() {
-						return Q.resolve("WORKING_REFRESH_TOKEN")
-					};
+			beforeEach(function() {
+				req = {
+					session: {}
 				}
-				return new WebAppStrategy({
-					tenantId: "tenantId",
-					clientId: "clientId",
-					secret: "secret",
-					oauthServerUrl: "https://oauthServerUrlMock",
-					redirectUri: "https://redirectUri",
-					getRefreshToken: getRefreshToken
-				});
-			}
-
-			function validateRedirect(strategy, done) {
-				strategy.redirect = function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
-					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
-					done();
-				};
-				strategy.fail = function(err) {
-					done(err);
-				};
-				strategy.authenticate(req, {});
-			}
+			});
 
 			function validateContext(done) {
 				var context = req.session[WebAppStrategy.AUTH_CONTEXT];
@@ -109,89 +88,30 @@ describe("/lib/strategies/webapp-strategy", function(){
 				done();
 			}
 
-			beforeEach(function() {
-				req = {
-					isAuthenticated: function() {
-						return false;
-					},
-					url: "originalUrl",
-					session: {}
-				};
-			});
-
 			it("Should succeed if it has a valid refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken();
-				customWebAppStrategy.fail = done;
-				customWebAppStrategy.success = function() {
+				webAppStrategy.refreshTokens(req, "WORKING_REFRESH_TOKEN").then(function() {
 					validateContext(done);
-				};
-				customWebAppStrategy.authenticate(req, {});
+				}).catch(done);
 			});
 
-			it("Should redirect to login upon invalid refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
-					return "INVALID_REFRESH_TOKEN";
-				});
-				validateRedirect(customWebAppStrategy, done);
+			it("Should fail if it has no refresh token", function() {
+				return expect(webAppStrategy.refreshTokens(req, null)).to.be.rejectedWith("no refresh");
 			});
 
-			it("Should redirect to login if it has an empty refresh token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
-					return null;
-				});
-				validateRedirect(customWebAppStrategy, done);
+			it("Should fail for invalid refresh token", function() {
+				return expect(webAppStrategy.refreshTokens(req, "INVALID_REFRESH_TOKEN")).to.be.rejectedWith("invalid grant");
 			});
 
-			it("Should redirect to login if it has an error when getting a refresh-token", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
-					throw new Error("error on getting refresh-token");
-				});
-				validateRedirect(customWebAppStrategy, done);
-			});
-
-			it("Should redirect to login if getting refresh token rejects", function(done) {
-				var customWebAppStrategy = getStrategyWithRefreshToken(function() {
-					return Q.reject("rejection on getting refresh-token");
-				});
-				validateRedirect(customWebAppStrategy, done);
-			});
-
-			describe("refreshTokens option", function(){
-				var customWebAppStrategy;
-				beforeEach(function() {
-					customWebAppStrategy = getStrategyWithRefreshToken();
-				});
-				it("Should succeed if already logged-in with refreshTokens option", function(done) {
-					customWebAppStrategy.fail = done;
-					customWebAppStrategy.success = function() {
+			it("Should keep the context empty for invalid refresh token", function(done) {
+				webAppStrategy.refreshTokens(req, "INVALID_REFRESH_TOKEN").then(function () {
+					done(new Error("should fail"));
+				}).catch(function () {
+					try {
+						assert(!req.session[WebAppStrategy.AUTH_CONTEXT], "context shouldn't exist");
 						done();
-					};
-					req.isAuthenticated = function () {
-						return true;
-					};
-					req.session[WebAppStrategy.AUTH_CONTEXT] = {
-						identityTokenPayload: {}
-					};
-					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
-				});
-
-				it("Should pass if failed to refreshTokens with refreshTokens option", function(done) {
-					customWebAppStrategy.fail = done;
-					customWebAppStrategy.pass = function() {
-						done();
-					};
-					customWebAppStrategy.obtainTokensWithRefreshToken = function() {
-						throw new Error();
-					};
-					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
-				});
-
-				it("Should refresh tokens with refreshTokens option", function(done) {
-					customWebAppStrategy.fail = done;
-					customWebAppStrategy.success = function() {
-						validateContext(done);
-					};
-					customWebAppStrategy.authenticate(req, {action: "refreshTokens"});
+					} catch (e) {
+						done(e);
+					}
 				});
 			});
 		});
@@ -208,16 +128,13 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should be able to detect unauthenticated request and redirect to authorization", function(done){
 			var req = {
-				isAuthenticated: function(){
-					return false;
-				},
-				url: "originalUrl",
+				originalUrl: "originalUrl",
 				session: {}
 			};
 
 			webAppStrategy.redirect = function (url) {
 				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
-				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "originalUrl");
+				assert.equal(req.session.returnTo, "originalUrl");
 				done();
 			};
 
@@ -231,8 +148,9 @@ describe("/lib/strategies/webapp-strategy", function(){
 				},
 				session: {}
 			};
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {identityTokenPayload: {}};
 
-			webAppStrategy.pass = function(){
+			webAppStrategy.success = function(){
 				done();
 			};
 
@@ -417,7 +335,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 
 				webAppStrategy.redirect = function(url){
-					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-redirect");
+					assert.equal(req.session.returnTo, "success-redirect");
 					assert.include(url, "response_type=sign_up");
 					done();
 				};
@@ -480,15 +398,19 @@ describe("/lib/strategies/webapp-strategy", function(){
 			webAppStrategy.authenticate(req, options);
 		});
 
-		it("Should handle callback if request contains grant code. Success with WebAppStrategy.ORIGINAL_URL", function(done){
+		it("Should handle callback if request contains grant code. Success with original URL", function(done){
 			webAppStrategy.success = function(){
-				assert.equal(options.successRedirect, "originalUri");
-				done();
+				try {
+					assert(options.successReturnToOrRedirect);
+					done();
+				} catch(e) {
+					done(e);
+				}
 			};
 
 			var req = {
 				session: {
-					APPID_ORIGINAL_URL: "originalUri"
+					returnTo: "originalUri"
 				},
 				query: {
 					code: "WORKING_CODE"
@@ -502,13 +424,17 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should be able to login with null identity token", function(done){
 			webAppStrategy.success = function(){
-				assert.equal(options.successRedirect, "originalUri");
-				done();
+				try {
+					assert(options.successReturnToOrRedirect);
+					done();
+				} catch(e) {
+					done(e);
+				}
 			};
 
 			var req = {
 				session: {
-					APPID_ORIGINAL_URL: "originalUri"
+					returnTo: "originalUri"
 				},
 				query: {
 					code: "NULL_ID_TOKEN"
@@ -522,7 +448,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should handle callback if request contains grant code. Success with redirect to /", function(done){
 			webAppStrategy.success = function(){
-				assert.equal(options.successRedirect, "/");
+				assert(options.successReturnToOrRedirect);
 				done();
 			};
 
@@ -542,15 +468,12 @@ describe("/lib/strategies/webapp-strategy", function(){
 		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function(done){
 			webAppStrategy.redirect = function(url){
 				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
-				assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-callback");
+				assert.equal(req.session.returnTo, "success-callback");
 				done();
 			};
 
 			var req = {
 				session: {},
-				isAuthenticated: function(){
-					return false;
-				}
 			};
 
 			var options = {
@@ -587,8 +510,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 		it("Should inject anonymous access token into request url if one is present", function(done){
 			var req = {
-				session: {},
-				isAuthenticated: function(){ return false; }
+				session: {}
 			};
 			req.session[WebAppStrategy.AUTH_CONTEXT] =  {
 				accessTokenPayload: {
@@ -597,11 +519,15 @@ describe("/lib/strategies/webapp-strategy", function(){
 				accessToken: "test_access_token"
 			};
 			webAppStrategy.redirect = function(url){
-				assert.include(url, "appid_access_token=test_access_token");
-				done();
+				try {
+					assert.include(url, "appid_access_token=test_access_token");
+					done();
+				} catch(e) {
+					done(e);
+				}
 			};
 
-			webAppStrategy.authenticate(req);
+			webAppStrategy.authenticate(req, {forceLogin: true});
 		});
 
 		it("Should fail if previous anonymous access token is not found and anon user is not allowed", function(done){
@@ -874,7 +800,7 @@ describe("/lib/strategies/webapp-strategy", function(){
 				};
 
 				webAppStrategy.redirect = function(url){
-					assert.equal(req.session[WebAppStrategy.ORIGINAL_URL], "success-redirect");
+					assert.equal(req.session.returnTo, "success-redirect");
 					assert.include(url, "/cloud_directory/forgot_password?client_id=clientId");
 					done();
 				};
