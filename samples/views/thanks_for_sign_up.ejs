@@ -123,7 +123,7 @@
 		$.post("/resend_notification?language=" + "<%= language %>",
 			{
               uuid: "<%= uuid %>",
-              templateName: "CONFIRMATION"
+              templateName: "USER_VERIFICATION"
 			},
 			function(data, status){
 				document.getElementById("msg").innerHTML = data;

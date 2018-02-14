@@ -41,14 +41,14 @@
                 <input id="email" type="text" class="form-control" name="username" required>
             </div>
             <div class="form-group">
-                <a class="pull-right whiteText Bold" href="/ibm/bluemix/appid/view/forgot_password" id="forgot_password_button"><%= ForgotPasswordLabel %></a>
+                <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/forgot_password');" id="forgot_password_button"><%= forgotPasswordLink %></a>
                 <label for="password" class="whiteText"><%= passwordLabel %></label>
                 <input id="password" type="password" class="form-control" name="password" required>
             </div>
 
             <button type="submit" class="btn btn-lg btn-primary center-block btn-login"><%= loginLabel %></button>
             <div class="pull-right whiteText"> <%= DontHaveLabel %>
-                <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/sign_up');" id="sign_up_button"><%= signUpLabel %></a>
+                <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/sign_up');" id="sign_up_button"><%= signUpLink %></a>
             </div>
         </form>
 

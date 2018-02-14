@@ -123,13 +123,13 @@
 
 </div>
 <script>
-    if (!"<%= error %>") {
+    if (!"<%= errorStatusCode %>") {
 	    document.getElementById("pageHeader").innerHTML = "<%= confirmHeader1 %>";
-    } else if ("<%= errorCode %>" === "404") {
+    } else if ("<%= errorStatusCode %>" === "NOT_FOUND") {
 	    document.getElementById("pageHeader").innerHTML = "<%= confirmHeader2 %>";
 	    document.getElementById("resendOption").setAttribute("style", "display:visible");
 	    document.getElementById("accessOk").setAttribute("style", "display:none");
-    } else if ("<%= errorCode %>" === "410") {
+    } else if ("<%= errorStatusCode %>" === "GONE") {
 	    document.getElementById("pageHeader").innerHTML = "<%= confirmHeader3 %>";
     } else {
       document.getElementById("pageHeader").innerHTML = "<%= errorDescription %>";
@@ -141,7 +141,7 @@
 		$.post("/resend_notification?language=" + "<%= language %>",
 			{
               uuid: "<%= uuid %>",
-              templateName: "CONFIRMATION"
+              templateName: "USER_VERIFICATION"
 			},
 			function(data, status){
 				document.getElementById("msg").innerHTML = data;

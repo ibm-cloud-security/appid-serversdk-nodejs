@@ -22,7 +22,7 @@
 
     <div class="col-sm-6 col-sm-offset-3">
 
-        <h1 class="whiteText"><span class="fa fa-sign-up"></span><%= signUpLabel %></h1>
+        <h1 class="whiteText"><span class="fa fa-sign-up"></span><%= signUpLink %></h1>
 
         <!-- show any messages that come back with authentication -->
         <% if (message && message.length > 0) { %>
@@ -56,7 +56,7 @@
             </div>
 
             <input type="hidden" name="language" value="<%= language %>">
-            <button type="submit" onclick="document.getElementById('errorDiv').style='display:none'" class="btn btn-lg btn-primary center-block btn-login"><%= signUpLabel %></button>
+            <button type="submit" onclick="document.getElementById('errorDiv').style='display:none'" class="btn btn-lg btn-primary center-block btn-login"><%= signUpLink %></button>
         </form>
 
     </div>

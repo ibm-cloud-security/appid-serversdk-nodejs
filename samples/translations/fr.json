@@ -3,9 +3,9 @@
   "emailLabel": "Email",
   "passwordLabel": "Mot de passe",
   "loginLabel": "S'identifier",
-  "ForgotPasswordLabel": "Mot de passe oublié?",
+  "forgotPasswordLink": "Mot de passe oublié?",
   "DontHaveLabel": "Vous n'avez pas de compte?",
-  "signUpLabel": "S'inscrire",
+  "signUpLink": "S'inscrire",
   "firstNameLabel": "Prénom",
   "lastNameLabel": "Nom de famille",
   "phoneLabel": "Numéro de téléphone",
@@ -25,6 +25,23 @@
   "confirmHeader1": "Votre compte est maintenant confirmé!",
   "confirmHeader2": "Code de confirmation expiré",
   "confirmHeader3": "Votre compte a déjà été confirmé",
+
+  "forgotPasswordLabel": "Mot de passe oublié",
+  "ResetPasswordButton": "réinitialiser le mot de passe",
+  "checkYourMail": "Vérifier votre courrier",
+  "resetLinkWasSent": "Le lien de réinitialisation a été envoyé",
+
+  "resetPasswordLabel": "réinitialiser le mot de passe",
+  "saveChangesButton": "Sauvegarder les modifications",
+  "newPassword": "Nouveau mot de passe",
+  "reEnterNewPassword": "Ré-entrez le nouveau mot de passe",
+
+  "expiredMsg": "Cette demande de réinitialisation du mot de passe a expiré, veuillez lancer une nouvelle demande de mot de passe oublié",
+
+  "passwordChanged1": "votre mot de passe a été changé",
+  "passwordChanged2": "Votre mot de passe a été modifié pour votre compte",
+  "passwordChanged3": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+
   "messages": {
     "sent": "Nous avons envoyé une nouvelle notification",
     "confirmed": "Compte déjà confirmé",
@@ -36,6 +53,7 @@
     "invalid_grant": "mauvais nom d'utilisateur ou mot de passe",
     "passwords_mismatch": "les mots de passe ne sont pas les mêmes",
     "invalidValue":"Mot de passe doit être d'au moins 8 caractères",
-    "general_error": "Quelque chose s'est mal passé essaie encore"
+    "general_error": "Quelque chose s'est mal passé essaie encore",
+    "userNotFound": "Nous ne reconnaissons pas cet e-mail"
   }
 }
