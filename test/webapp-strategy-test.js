@@ -15,6 +15,7 @@ const chai = require("chai");
 const assert = chai.assert;
 const expect = chai.expect;
 const proxyquire = require("proxyquire");
+const defaultLocale = 'en';
 const previousAccessToken = "test.previousAccessToken.test";
 chai.use(require('chai-as-promised'));
 
@@ -36,6 +37,34 @@ describe("/lib/strategies/webapp-strategy", function(){
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
 		});
+	});
+
+	describe("#setPreferredLocale", function(){
+        it("Should fail if request doesn't have session", function(done){
+        	var failed = false;
+            webAppStrategy.error = function(err){
+                assert.equal(err.message, "Can't find req.session");
+                failed = true;
+
+            };
+
+            webAppStrategy.setPreferredLocale({}, 'fr');
+            assert.equal(true, failed);
+            done();
+
+        });
+
+        it("Should succeed if request has session", function(done){
+            var failed = false;
+            var req = {session:{}};
+        	webAppStrategy.error = function(err){
+                failed = true;
+            };
+
+            webAppStrategy.setPreferredLocale(req, 'fr');
+            assert.equal('fr', req.session["language"]);
+            done();
+        });
 	});
 
 	describe("#properties", function(){
@@ -812,6 +841,100 @@ describe("/lib/strategies/webapp-strategy", function(){
 
 			});
 
+		});
+
+		describe("Preferred locale tests", function(){
+			const french = "fr";
+			var req;
+
+			beforeEach(function() {
+				req = {
+					isAuthenticated: function(){
+						return false;
+					},
+					session: {}
+				};
+			});
+
+			var checkDefaultLocale = function (done) {
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
+					done();
+				}
+			};
+
+			var checkCustomLocaleFromSession = function(done) {
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
+					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
+					done();
+				}
+			};
+
+			var checkCustomLocaleFromInit = function(done) {
+				var expect = french;
+				return function(url) {
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
+					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
+					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), expect);
+					done();
+				}
+			};
+
+            var checkCustomLocaleFromInitAndSession = function(done) {
+                var expect = 'de';
+                return function(url) {
+                    assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
+                    assert.equal(req.session[WebAppStrategy.LANGUAGE], expect);
+                    assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
+                    done();
+                }
+            };
+
+			it("Should redirect to authorization with no locale, overwrite it to 'fr' with setPreferredLocale and expect Should redirect to authorization with 'fr' custom locale", function(done) {
+
+				webAppStrategy.redirect = checkDefaultLocale(done);
+				webAppStrategy.authenticate(req, {});
+            });
+
+			it("Should redirect to authorization with custom preferred locale from session", function(done) {
+
+				webAppStrategy.setPreferredLocale(req, french);
+				webAppStrategy.redirect = checkCustomLocaleFromSession(done);
+				webAppStrategy.authenticate(req, {});
+			});
+
+			it("Should redirect to authorization with custom preferred locale from init", function(done) {
+
+				webAppStrategy = new WebAppStrategy({
+					tenantId: "tenantId",
+					clientId: "clientId",
+					secret: "secret",
+					oauthServerUrl: "https://oauthServerUrlMock",
+					redirectUri: "https://redirectUri",
+					preferredLocale: french
+				});
+
+				webAppStrategy.redirect = checkCustomLocaleFromInit(done);
+				webAppStrategy.authenticate(req, {});
+			});
+
+            it("Should redirect to authorization with custom preferred locale from session even though it has one in init too", function(done) {
+
+                webAppStrategy = new WebAppStrategy({
+                    tenantId: "tenantId",
+                    clientId: "clientId",
+                    secret: "secret",
+                    oauthServerUrl: "https://oauthServerUrlMock",
+                    redirectUri: "https://redirectUri",
+                    preferredLocale: french
+                });
+
+                webAppStrategy.setPreferredLocale(req, 'de');
+                webAppStrategy.redirect = checkCustomLocaleFromInitAndSession(done);
+                webAppStrategy.authenticate(req, {});
+            });
 		});
 	});
 });
