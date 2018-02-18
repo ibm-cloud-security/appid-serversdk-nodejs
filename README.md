@@ -224,15 +224,16 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 
-As mentioned previously the anonymous access_token, identity_token and refresh_token will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+As mentioned previously the anonymous access_token, identity_token and refresh_token (optional) will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
 
 ### Refresh Token
+Refresh Token may be used to acquire new access and identity tokens without the need to re-authenticate. Refresh Token is usually configured to have longer expiration than access token. Refresh Token is optional and can be configured in your AppID Dashboard.
+
 After a successful login, in addition to access_token and identity_token, a refresh_token will be persisted in the HTTP session as well.
 
 You may persist the refresh_token in any method you'd like. By doing so, you can avoid your users login after the HTTP session has expired as long as the refresh_token is valid. `web-app-sample-server.js` contains an example of storing a refresh-token in a cookie and how to use it.
 
-Usage of refresh-token is simple. You need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
-
+In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
 ### User profile attributes
 Use the user UserAttributeManager to store and retrieve attribute of the user.
