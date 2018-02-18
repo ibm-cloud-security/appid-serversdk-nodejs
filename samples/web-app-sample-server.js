@@ -18,6 +18,7 @@ const passport = require("passport");
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
 const helmet = require("helmet");
 const bodyParser = require("body-parser"); // get information from html forms
+const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -36,6 +37,7 @@ const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
 
 app.use(helmet());
 app.use(flash());
+app.use(cookieParser());
 app.set('view engine', 'ejs'); // set up ejs for templating
 
 // Setup express application to use express-session middleware
@@ -56,13 +58,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
-passport.use(new WebAppStrategy({
-	tenantId: "90ff4e45-dd1c-4367-b878-5307f68ee9ce",
-	clientId: "a7a75575-8763-4200-8165-58792e88b16e",
-	secret: "YmYwZmUwNTgtMTNkYi00ZDZiLTg0OTUtODIwNmM2M2RjNGEy",
-	oauthServerUrl: "https://appid-oauth.ng.bluemix.net/oauth/v3/90ff4e45-dd1c-4367-b878-5307f68ee9ce",
-	redirectUri: "http://localhost:1234" + CALLBACK_URL
-}));
+let webAppStrategy = new WebAppStrategy({
+	tenantId: "TENANT_ID",
+	clientId: "CLIENT_ID",
+	secret: "SECRET",
+	oauthServerUrl: "OAUTH_SERVER_URL",
+	redirectUri: "http://localhost:3000" + CALLBACK_URL
+});
+passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
@@ -127,9 +130,30 @@ app.get(LOGOUT_URL, function(req, res){
 	res.redirect(LANDING_PAGE_URL);
 });
 
+function storeRefreshTokenInCookie(req, res, next) {
+	const refreshToken = req.session[WebAppStrategy.AUTH_CONTEXT].refreshToken;
+	if (refreshToken) {
+		/* An example of storing user's refresh-token in a cookie with expiration of a month */
+		res.cookie("refreshToken", refreshToken, {maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */});
+	}
+	next();
+}
+
+function isLoggedIn(req) {
+	return req.session[WebAppStrategy.AUTH_CONTEXT];
+}
+
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
 // In case user is authenticated - a page with current user information will be returned.
-app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
+app.get("/protected", function tryToRefreshTokenIfNotLoggedIn(req, res, next) {
+	if (isLoggedIn(req)) {
+		return next();
+	}
+
+	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).finally(function() {
+		next();
+	});
+}, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
 });
@@ -145,7 +169,7 @@ app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 	res.render("login.ejs", { message: req.flash('error') });
 });
 
-var port = process.env.PORT || 1234;
+var port = process.env.PORT || 3000;
 app.listen(port, function(){
 	logger.info("Listening on http://localhost:" + port + "/web-app-sample.html");
 });
