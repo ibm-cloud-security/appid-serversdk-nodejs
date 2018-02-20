@@ -35,12 +35,17 @@
   "saveChangesButton": "Sauvegarder les modifications",
   "newPassword": "Nouveau mot de passe",
   "reEnterNewPassword": "Ré-entrez le nouveau mot de passe",
+  "currentPassword": "Mot de passe actuel",
 
   "expiredMsg": "Cette demande de réinitialisation du mot de passe a expiré, veuillez lancer une nouvelle demande de mot de passe oublié",
 
   "passwordChanged1": "votre mot de passe a été changé",
   "passwordChanged2": "Votre mot de passe a été modifié pour votre compte",
   "passwordChanged3": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+
+
+  "changeDetails": "Modifier les détails",
+  "changePassword": "Changer le mot de passe",
 
   "messages": {
     "sent": "Nous avons envoyé une nouvelle notification",
@@ -54,6 +59,7 @@
     "passwords_mismatch": "les mots de passe ne sont pas les mêmes",
     "invalidValue":"Mot de passe doit être d'au moins 8 caractères",
     "general_error": "Quelque chose s'est mal passé essaie encore",
-    "userNotFound": "Nous ne reconnaissons pas cet e-mail"
+    "userNotFound": "Nous ne reconnaissons pas cet e-mail",
+    "incorrect_password": "Mot de passe actuel incorrect"
   }
 }

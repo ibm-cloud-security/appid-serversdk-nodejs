@@ -14,15 +14,21 @@
 					// Already authenticated
 					$("#WhenAuthenticated").show();
 					$("#logoutButton").show();
-					$("#sub").text(data.sub);
 					$("#name").text(data.name);
 					$("#email").text(data.email);
 				}).fail(function () {
 					// Not authenticated yet
 					$("#WhenNotAuthenticated").show();
 					$("#loginButton").show();
-				});
+				}).always(function() {
+                  var languageQuery = window.location.href.slice(window.location.href.indexOf('?'));
+                  var changeDetails = document.getElementById('changeDetails');
+                  changeDetails.href = "/ibm/cloud/appid/cloudLand/view/change/details" + languageQuery;
+                  var changePassword = document.getElementById('changePassword');
+                  changePassword.href = "/ibm/cloud/appid/cloudLand/view/change/password" + languageQuery;
+                });
 			});
+
     </script>
     <style>
         body {
@@ -56,8 +62,9 @@
     <h3>You're authenticated :)</h3>
     <h3>Hello <span id="name"></span></h3>
     <h4>Your email is <span id="email"></span></h4>
-    <h4>Your userId is <span id="sub"></span></h4>
     <br/><br/>
+    <a class="btn btn-lg btn-primary btn-login" id="changeDetails">Change details</a>
+    <a class="btn btn-lg btn-primary btn-login" id="changePassword">Change password</a>
 </div>
 
 <a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/bluemix/appid/rop/login" id="loginButton">Login</a>
