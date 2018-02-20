@@ -1,5 +1,4 @@
-# IBM Cloud App ID
-Node.js SDK for the IBM Cloud App ID service
+# IBM Cloud App ID Node.js SDK
 
 [![Bluemix powered][img-bluemix-powered]][url-bluemix]
 [![Travis][img-travis-master]][url-travis-master]
@@ -14,14 +13,14 @@ Node.js SDK for the IBM Cloud App ID service
 [![GithubStars][img-github-stars]][url-github-stars]
 [![GithubForks][img-github-forks]][url-github-forks]
 
-### Table of Contents
+## Table of Contents
 * [Summary](#summary)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Example Usage](#example-usage)
 * [License](#license)
 
-### Summary
+## Summary
 
 This SDK provides Passport.js strategies for protecting two types of resources - APIs and Web applications. The major difference between these two resource types is the way client is challenged.
 
@@ -31,16 +30,16 @@ If you use the Web application protection strategy the unauthenticated client wi
 
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
-### Requirements
+## Requirements
 * npm 4.+
 * node 4.+
 
-### Installation
+## Installation
 ```
 npm install --save bluemix-appid
 ```
 
-### Example Usage
+## Example Usage
 Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository.
 
 Note that below examples are using additional npm modules. In order to install required npm modules run below commands in your node.js application.
@@ -93,6 +92,7 @@ app.get("/api/protected",
 		appIdAuthContext.accessTokenPayload; // Decoded access_token JSON
 		appIdAuthContext.identityToken; // Raw identity_token
 		appIdAuthContext.identityTokenPayload; // Decoded identity_token JSON
+		appIdAuthContext.refreshToken // Raw refresh_token
 
 		// Or use user object provided by passport.js
 		var username = req.user.name || "Anonymous";
@@ -109,7 +109,7 @@ app.listen(port, function(){
 ```
 
 #### Protecting web applications using WebAppStrategy
-WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access and identity tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
+WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access, identity and refresh tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
 
 ```JavaScript
 const express = require('express');
@@ -224,7 +224,16 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 
-As mentioned previously the anonymous access_token and identity_token will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+As mentioned previously the anonymous access_token, identity_token and refresh_token (optional) will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
+
+### Refresh Token
+Refresh Token may be used to acquire new access and identity tokens without the need to re-authenticate. Refresh Token is usually configured to have longer expiration than access token. Refresh Token is optional and can be configured in your AppID Dashboard.
+
+After a successful login, in addition to access_token and identity_token, a refresh_token will be persisted in the HTTP session as well.
+
+You may persist the refresh_token in any method you'd like. By doing so, you can avoid your users login after the HTTP session has expired as long as the refresh_token is valid. `web-app-sample-server.js` contains an example of storing a refresh-token in a cookie and how to use it.
+
+In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
 ### User profile attributes
 Use the user UserAttributeManager to store and retrieve attribute of the user.
@@ -255,13 +264,12 @@ userAttributeManager.deleteAttribute(accessToken, name).then(function () {
         });
 
 ```
-### Cloud Directory 
-Make sure to that Cloud Directory identity provider set to ON at AppID dashboard,
-and include the callback endpoint when using the following.
+## Cloud Directory 
+Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
-#### Login using resource owner password flow
+### Login using resource owner password flow
 WebAppStrategy allows users to login to your web application using username/password.
-After successful login the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
+After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
 To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
 ```javascript
 app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -278,7 +286,7 @@ Note:
 1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.
 2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.
 
-#### Sign up
+### Sign up
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.SIGN_UP, will launch the App ID sign up form.
 ```javascript
 app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -287,11 +295,11 @@ app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 }));
 ```
 Note:
-1. If your Cloud directory setting "Allow users to sign-in without email verification" set to "No", the process will end without retrieving App ID access and id tokens.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+1. If your Cloud directory setting ***Allow users to sign-in without email verification** is set to **No**, the process will end without retrieving App ID access and id tokens.
+2. Be sure to set **Allow users to sign up and reset their password" to **ON**, in the settings for Cloud Directory.
 
 
-#### Forgot Password
+### Forgot Password
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.FORGOT_PASSWORD, will launch the App ID forgot password from.
 ```javascript
 app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -301,9 +309,9 @@ app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, 
 ```
 Note:
 1. This process will end without retrieving App ID access and id tokens.
-2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
-#### Change Details
+### Change Details
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_DETAILS, will launch the App ID change details from.
 ```javascript
 app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -313,9 +321,9 @@ app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 ```
 Note:
 1. This call requires that the user is authenticated with Cloud directory identity provider.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
-#### Change Password
+### Change Password
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_PASSWORD, will launch the App ID change password from.
 ```javascript
 app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -325,7 +333,7 @@ app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, 
 ```
 Note:
 1. This call requires that the user is authenticated with Cloud directory identity provider.
-2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in AppID dashboard.
+2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in App ID dashboard.
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
