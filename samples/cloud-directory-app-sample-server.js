@@ -40,7 +40,7 @@ const SIGN_UP_SUBMIT = "/sign_up/submit";
 const SIGN_UP_SUBMIT_MOBILE = "/sign_up/mobile/submit";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit";
 const FORGOT_PASSWORD_SUBMIT_MOBILE = "/forgot_password/mobile/submit";
-const RESEND_NOTIFICATION = "/resend_notification";
+const RESEND = "/resend/:templateName";
 const RESET_PASSWORD_SUBMIT = "/reset_password/submit";
 const CHANGE_DETAILS_SUBMIT = "/change_details/submit";
 const CHANGE_PASSWORD_SUBMIT = "/change_password/submit";
@@ -60,7 +60,8 @@ const resetPasswordSuccessEjs = 'reset_password_success.ejs';
 const changeDetailsEjs = 'change_details.ejs';
 const changePasswordEjs = 'change_password.ejs';
 
-const mobileScheme = 'cloudLand://';
+const mobileSignUpConfirmation = 'cloudland://sign.up';
+const mobileResetPasswordConfirmation = 'cloudland://reset.password';
 
 let resetPasswordCodesMap = new Map();
 
@@ -207,12 +208,11 @@ app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME)
 	logger.debug(CHANGE_DETAILS_PAGE);
 	let uuid = req.user.identities[0].id;
 	selfServiceManager.getUserDetails(uuid).then(function (user) {
-		let userObj = JSON.parse(user);
 		let inputs = {
-			email: userObj.emails[0].value,
-			firstName: userObj.name && userObj.name.givenName,
-			lastName: userObj.name && userObj.name.familyName,
-			phoneNumber: userObj.phoneNumbers && userObj.phoneNumbers[0].value
+			email: user.emails[0].value,
+			firstName: user.name && user.name.givenName,
+			lastName: user.name && user.name.familyName,
+			phoneNumber: user.phoneNumbers && user.phoneNumbers[0].value
 		};
 		_render(req, res, changeDetailsEjs, inputs, req.query.language);
 	}).catch(function (err) {
@@ -227,7 +227,6 @@ app.post(CHANGE_DETAILS_SUBMIT, bodyParser.urlencoded({extended: false}), passpo
 	let languageQuery = '?language=' + language;
 	let uuid = req.user.identities[0].id;
 	selfServiceManager.updateUserDetails(uuid, userData).then(function () {
-		//todo: use refresh token to get new id token with updated info
 		res.redirect(LANDING_PAGE_URL + languageQuery);
 	}).catch(function (err) {
 		logger.error(err);
@@ -296,14 +295,30 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 		Object.assign(languageStrings, inputs);
 	}
 	
-	let userAgent = req.get('User-Agent');
-	let isRunningOnMobile = userAgent.indexOf('Mobile') > -1;
-	if (!isRunningOnMobile) {
-		res.render(ejs, languageStrings);
-	} else {
-		res.redirect(mobileScheme);
+	//handling the case if running on mobile
+	if (ejs === accountConfirmedEjs || ejs === resetPasswordFormEjs || ejs === resetPasswordExpiredEjs) {
+		let userAgent = req.get('User-Agent');
+		let isRunningOnMobile = userAgent.indexOf('Mobile') > -1;
+		if (isRunningOnMobile) {
+			let mobileRedirectUri;
+			if (ejs === accountConfirmedEjs) {
+				mobileRedirectUri = encodeURI(mobileSignUpConfirmation);
+			} else {
+				mobileRedirectUri = encodeURI(mobileResetPasswordConfirmation);
+			}
+			mobileRedirectUri += encodeURIComponent('?uuid=' + inputs.uuid);
+			mobileRedirectUri += encodeURIComponent('&language=' + language);
+			if (inputs.errorStatusCode) {
+				mobileRedirectUri += encodeURIComponent('&errorStatusCode=' + inputs.errorStatusCode);
+				mobileRedirectUri += encodeURIComponent('&errorDescription=' + inputs.errorDescription);
+				return res.redirect(mobileRedirectUri);
+			} else {
+				return res.redirect(mobileRedirectUri);
+			}
+		}
 	}
 	
+	res.render(ejs, languageStrings);
 }
 
 //sign up for mobile
@@ -405,9 +420,9 @@ app.get(FORGOT_PASSWORD_PAGE, function(req, res) {
 });
 
 //resend notification endpoint
-app.post(RESEND_NOTIFICATION, bodyParser.urlencoded({extended: false}), function(req, res) {
+app.post(RESEND, bodyParser.urlencoded({extended: false}), function(req, res) {
 	let uuid = req.body && req.body.uuid;
-	let templateName = req.body && req.body.templateName;
+	let templateName = req.params && req.params.templateName;
 	let language = req.query.language || 'en';
 	let languageMessages = require("./translations/" + language).messages;
 	selfServiceManager.resendNotification(uuid, templateName, language).then(function (success) {
