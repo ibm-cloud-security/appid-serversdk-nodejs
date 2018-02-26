@@ -37,9 +37,7 @@ const FORGOT_PASSWORD_PAGE = "/ibm/bluemix/appid/view/forgot_password";
 const ACCOUNT_CONFIRMED_PAGE = "/ibm/bluemix/appid/view/account_confirmed";
 const RESET_PASSWORD_PAGE = "/ibm/bluemix/appid/view/reset_password_form";
 const SIGN_UP_SUBMIT = "/sign_up/submit";
-const SIGN_UP_SUBMIT_MOBILE = "/sign_up/mobile/submit";
-const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit";
-const FORGOT_PASSWORD_SUBMIT_MOBILE = "/forgot_password/mobile/submit";
+const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform";
 const RESEND = "/resend/:templateName";
 const RESET_PASSWORD_SUBMIT = "/reset_password/submit";
 const CHANGE_DETAILS_SUBMIT = "/change_details/submit";
@@ -47,6 +45,7 @@ const CHANGE_PASSWORD_SUBMIT = "/change_password/submit";
 
 const GENERAL_ERROR = "GENERAL_ERROR";
 const USER_NOT_FOUND = "userNotFound";
+const MOBILE_PLATFORM = "mobile";
 
 const loginEjs = 'cd_login.ejs';
 const selfSignUpEjs = 'self_sign_up.ejs';
@@ -60,8 +59,8 @@ const resetPasswordSuccessEjs = 'reset_password_success.ejs';
 const changeDetailsEjs = 'change_details.ejs';
 const changePasswordEjs = 'change_password.ejs';
 
-const mobileSignUpConfirmation = 'cloudland://sign.up';
-const mobileResetPasswordConfirmation = 'cloudland://reset.password';
+const mobileSignUpConfirmation = 'cloudland.sign.up://sample.com';
+const mobileResetPasswordConfirmation = 'cloudland.reset.password://sample.com';
 
 let resetPasswordCodesMap = new Map();
 
@@ -86,9 +85,14 @@ app.use(express.static(__dirname ));
 app.use(passport.initialize());
 app.use(passport.session());
 
+// parse application/x-www-form-urlencoded for web
+app.use(bodyParser.urlencoded({extended: false}));
+// parse application/json for mobile
+app.use(bodyParser.json());
+
 const tenantId = "379c9bd2-8d02-4b5b-83d3-24ad9440a0e3";
 
-// Configure passportjs to use WebAppStrategy
+// Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy({
 	tenantId: tenantId,
 	clientId: "dfbd817a-f12e-4d06-9e98-a8863085856b",
@@ -118,7 +122,7 @@ app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 	_render(req, res, loginEjs, {email: req.body && req.body.email}, req.query.language, req.flash('errorCode')[0]);
 });
 
-app.post(ROP_SUBMIT, bodyParser.urlencoded({extended: false}), function(req, res, next) {
+app.post(ROP_SUBMIT, function(req, res, next) {
 	passport.authenticate(WebAppStrategy.STRATEGY_NAME, function (err, user, info) {
 		if (err) {
 			return next(err);
@@ -158,8 +162,7 @@ app.get(CHANGE_PASSWORD_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME
 	_render(req, res, changePasswordEjs, {email: req.user.email}, req.query.language, req.flash('errorCode'));
 });
 
-app.post(CHANGE_PASSWORD_SUBMIT, bodyParser.urlencoded({extended: false}),
-	function (req, res, next) {
+app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 		let language = req.query.language || 'en';
 		let languageQuery = '?language=' + language;
 	  let currentPassword = req.body['current_password'];
@@ -221,7 +224,7 @@ app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME)
 	});
 });
 
-app.post(CHANGE_DETAILS_SUBMIT, bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res) {
+app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res) {
 	let userData = _generateUserScim(req.body);
 	let language = req.query.language || 'en';
 	let languageQuery = '?language=' + language;
@@ -279,27 +282,14 @@ function isSamePasswords(password1, password2) {
 function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	let languageStrings = require("./translations/" + language);
 	let errorMsg = errorCode ? (languageStrings.errors[errorCode] || languageStrings.errors[GENERAL_ERROR]): '';
-	if (ejs === selfSignUpEjs) {
-		let previousInputs = {
-			firstName: inputs.firstName,
-			lastName: inputs.lastName,
-			phoneNumber: inputs.phoneNumber,
-			email: inputs.email,
-			message: errorMsg
-		};
-		Object.assign(languageStrings, previousInputs);
-	} else if(ejs === loginEjs || ejs === selfForgotPasswordEjs || ejs === resetPasswordFormEjs || ejs === changePasswordEjs) {
-		Object.assign(languageStrings, {message: errorMsg});
-		Object.assign(languageStrings, inputs);
-	} else {
-		Object.assign(languageStrings, inputs);
-	}
+	Object.assign(languageStrings, {message: errorMsg});
+	Object.assign(languageStrings, inputs);
 	
-	//handling the case if running on mobile
+	//handling the case if running on mobile web, redirect with the custom scheme that will launch the handle activity
 	if (ejs === accountConfirmedEjs || ejs === resetPasswordFormEjs || ejs === resetPasswordExpiredEjs) {
 		let userAgent = req.get('User-Agent');
-		let isRunningOnMobile = userAgent.indexOf('Mobile') > -1;
-		if (isRunningOnMobile) {
+		let isRunningOnMobileWeb = userAgent.indexOf('Mobile') > -1;
+		if (isRunningOnMobileWeb) {
 			let mobileRedirectUri;
 			if (ejs === accountConfirmedEjs) {
 				mobileRedirectUri = encodeURI(mobileSignUpConfirmation);
@@ -308,6 +298,9 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 			}
 			mobileRedirectUri += encodeURIComponent('?uuid=' + inputs.uuid);
 			mobileRedirectUri += encodeURIComponent('&language=' + language);
+			if (inputs.code) {
+				mobileRedirectUri += encodeURIComponent('&code=' + inputs.code);
+			}
 			if (inputs.errorStatusCode) {
 				mobileRedirectUri += encodeURIComponent('&errorStatusCode=' + inputs.errorStatusCode);
 				mobileRedirectUri += encodeURIComponent('&errorDescription=' + inputs.errorDescription);
@@ -321,49 +314,43 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	res.render(ejs, languageStrings);
 }
 
-//sign up for mobile
-app.post(SIGN_UP_SUBMIT_MOBILE, bodyParser.json(), function(req, res) {
-	let userData = _generateUserScim(req.body);
-	let language = req.query.language || 'en';
-	selfServiceManager.signUp(userData, language).then(function (user) {
-		logger.debug('user created successfully');
-		res.status(201).send(user);
-	}).catch(function (err) {
-		res.status(err && err.code || 500);
-		if (err && err.code >= 400 && err.code < 500) {
-			logger.debug("bad sign up input: " + err.message);
-			res.status(err.code).send(err.message);
-		} else {
-			logger.error(err);
-			res.status(500).send('Something went wrong');
-		}
-	});
-});
-
-//sign up for web
-app.post(SIGN_UP_SUBMIT, bodyParser.urlencoded({extended: false}), function(req, res) {
+app.post(SIGN_UP_SUBMIT, function(req, res) {
 	let userData = _generateUserScim(req.body);
 	let language = req.query.language || 'en';
 	let password = req.body.password;
 	let rePassword  = req.body['confirmed_password'];
+	let platform = req.params.platform;
 	if (!isSamePasswords(password, rePassword)) {
 		logger.debug("Error: password are not the same");
-		_render(req, res, selfSignUpEjs, req.body, language, 'passwords_mismatch');
+		if (platform === MOBILE_PLATFORM) {
+			logger.debug("bad sign up input: password not the same" );
+			res.status(400).send("password not the same");
+		} else {
+			_render(req, res, selfSignUpEjs, req.body, language, 'passwords_mismatch');
+		}
 	} else {
 		selfServiceManager.signUp(userData, language).then(function (user) {
-			_render(req, res, thanksForSignUpEjs,  {
-				displayName: user.displayName ,
-				email: user.emails[0].value,
-				uuid: user.id
-			}, language);
+			logger.debug('user created successfully');
+			if (platform === MOBILE_PLATFORM) {
+				res.status(201).send(user);
+			} else {
+				_render(req, res, thanksForSignUpEjs,  {
+					displayName: user.displayName ,
+					email: user.emails[0].value,
+					uuid: user.id
+				}, language);
+			}
 		}).catch(function (err) {
-			if (err.code) {
+			if (err && err.code) {
 				logger.debug("error code:" + err.code + " ,bad sign up input: " + err.message);
-				_render(req, res, selfSignUpEjs, req.body, language, err.code);
+				if (platform === MOBILE_PLATFORM) {
+					res.status(err.code).send(err.message);
+				} else {
+					_render(req, res, selfSignUpEjs, req.body, language, err.code);
+				}
 			} else {
 				logger.error(err);
-				res.status(500);
-				res.send('Something went wrong');
+				res.status(500).send('Something went wrong');
 			}
 		});
 	}
@@ -373,43 +360,33 @@ app.get(SIGN_UP_PAGE, function(req, res) {
 	_render(req, res, selfSignUpEjs, {}, req.query.language);
 });
 
-
-//forgot password for mobile
-app.post(FORGOT_PASSWORD_SUBMIT_MOBILE, bodyParser.json(), function(req, res) {
+app.post(FORGOT_PASSWORD_SUBMIT, function(req, res) {
 	let email = req.body && req.body.email;
-	let language = req.query.language;
+	let language = req.query.language || 'en';
+	let platform = req.params.platform;
 	selfServiceManager.forgotPassword(email, language).then(function (user) {
 		logger.debug('forgot password success');
-		res.status(202).send(user);
+		if (platform === MOBILE_PLATFORM) {
+			res.status(202).send(user);
+		} else {
+			_render(req, res, resetPasswordSentEjs,  {
+				displayName: user.displayName ,
+				email: user.emails[0].value,
+				uuid: user.id
+			}, language);
+		}
 	}).catch(function (err) {
 		res.status(err && err.statusCode || 500);
 		if (err && err.statusCode >= 400 && err.statusCode < 500) {
 			logger.debug("bad input for forgot password: " + err.message);
+			if (platform !== MOBILE_PLATFORM) {
+				if (err && err.statusCode === 404) {
+					return _render(req, res, selfForgotPasswordEjs, req.body, language, USER_NOT_FOUND);
+				}
+			}
 			res.send(err.message);
 		} else {
 			logger.error(err);
-			res.send('Something went wrong');
-		}
-	});
-});
-
-//forgot password for web
-app.post(FORGOT_PASSWORD_SUBMIT, bodyParser.urlencoded({extended: false}), function(req, res) {
-	let email = req.body && req.body.email;
-	let language = req.query.language;
-	selfServiceManager.forgotPassword(email, language).then(function (user) {
-		_render(req, res, resetPasswordSentEjs,  {
-			displayName: user.displayName ,
-			email: user.emails[0].value,
-			uuid: user.id
-		}, language);
-	}).catch(function (err) {
-		if (err && err.statusCode === 404) {
-			logger.debug("bad input for forgot password: " + err.message);
-			_render(req, res, selfForgotPasswordEjs, req.body, language, USER_NOT_FOUND);
-		} else {
-			logger.error(err);
-			res.status(500);
 			res.send('Something went wrong');
 		}
 	});
@@ -420,7 +397,7 @@ app.get(FORGOT_PASSWORD_PAGE, function(req, res) {
 });
 
 //resend notification endpoint
-app.post(RESEND, bodyParser.urlencoded({extended: false}), function(req, res) {
+app.post(RESEND, function(req, res) {
 	let uuid = req.body && req.body.uuid;
 	let templateName = req.params && req.params.templateName;
 	let language = req.query.language || 'en';
@@ -477,20 +454,19 @@ app.get(ACCOUNT_CONFIRMED_PAGE, function (req, res) {
 app.get(RESET_PASSWORD_PAGE, function (req, res) {
 	let context = req.query.context;
 	let language = req.query.language;
-	
 	selfServiceManager.getForgotPasswordConfirmationResult(context).then(function (result) {
+		let uuid = result && result.uuid;
 		if (result && result.success) {
 			//generate one time code and pass it to the reset password form,
 			// here we do that in memory but it better to use DB like Redis to do that and store it for temporary time.
 			let oneTimeCode = base64url.encode(crypto.randomBytes(24));
-			let uuid = result.uuid;
 			resetPasswordCodesMap.set(oneTimeCode, {uuid: uuid ,tenantId: tenantId});
 			logger.debug('rendering ' + resetPasswordFormEjs);
 			_render(req, res, resetPasswordFormEjs, {uuid: uuid, code: oneTimeCode}, language);
 		} else {
 			if (result.error.code === 'NOT_FOUND') {
 				logger.debug('forgot password result - failure: ' + result.error.description);
-				_render(req, res, resetPasswordExpiredEjs, {}, language);
+				_render(req, res, resetPasswordExpiredEjs, {uuid: uuid, errorStatusCode: 'NOT_FOUND', errorDescription: result.error.description}, language);
 			} else {
 				logger.error('unexpected forgot password result ' + result);
 				res.status(500);
@@ -504,16 +480,21 @@ app.get(RESET_PASSWORD_PAGE, function (req, res) {
 	});
 });
 
-app.post(RESET_PASSWORD_SUBMIT, bodyParser.urlencoded({extended: false}), function(req, res) {
+app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 	let uuid = req.body && req.body.uuid;
 	let code = req.body && req.body.code;
 	let newPassword = req.body['new_password'];
 	let confirmNewPassword = req.body['confirmed_new_password'];
 	let language = req.query.language || 'en';
+	let platform = req.params.platform;
 	
-	if (newPassword !== confirmNewPassword) {
+	if (!isSamePasswords(newPassword, confirmNewPassword)) {
 		logger.debug('rendering reset password with error: password not the same');
-		_render(req, res, resetPasswordFormEjs, {}, language, "passwords_mismatch");
+		if (platform === MOBILE_PLATFORM) {
+			res.status(400).send("passwords_mismatch");
+		} else {
+			_render(req, res, resetPasswordFormEjs, {}, language, "passwords_mismatch");
+		}
 	} else {
 		//validate the the passed code was generate by us
 		let codeObject = resetPasswordCodesMap.get(code);
@@ -523,34 +504,34 @@ app.post(RESET_PASSWORD_SUBMIT, bodyParser.urlencoded({extended: false}), functi
 				//update the password and render the success page
 				selfServiceManager.setUserNewPassword(uuid, newPassword).then(function (user) {
 					logger.debug('successfully update user password');
-					let email = user.emails[0].value;
-					_render(req, res, resetPasswordSuccessEjs, {email: email}, language);
+					if (platform === MOBILE_PLATFORM) {
+						res.status(200).send(user);
+					} else {
+						let email = user.emails[0].value;
+						_render(req, res, resetPasswordSuccessEjs, {email: email}, language);
+					}
 				}).catch(function (err) {
 					if (err.code) {
 						logger.debug("error code:" + err.code + " ,bad reset password input: " + err.message);
-						_render(req, res, resetPasswordFormEjs, {}, language, err.code);
+						if (platform === MOBILE_PLATFORM) {
+							res.status(400).send(err.code);
+						} else {
+							_render(req, res, resetPasswordFormEjs, {}, language, err.code);
+						}
 					} else {
 						logger.error('Error while trying to save user new password: ' + err.message);
-						res.status(500);
-						res.send('Something went wrong');
+						res.status(500).send('Something went wrong');
 					}
 				});
-				
 			} else {
 				logger.error('The stored code object does not match the passed parameters');
-				res.status(500);
-				res.send('Something went wrong');
+				res.status(500).send('Something went wrong');
 			}
-			
 		} else {
 			logger.error('The supplied code was not found in the resetPasswordCodesMap');
-			res.status(500);
-			res.send('Something went wrong');
+			res.status(500).send('Something went wrong');
 		}
 	}
-	
-
-	
 });
 
 var port = process.env.PORT || 1234;
