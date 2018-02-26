@@ -36,10 +36,10 @@ const SIGN_UP_PAGE = "/ibm/bluemix/appid/view/sign_up";
 const FORGOT_PASSWORD_PAGE = "/ibm/bluemix/appid/view/forgot_password";
 const ACCOUNT_CONFIRMED_PAGE = "/ibm/bluemix/appid/view/account_confirmed";
 const RESET_PASSWORD_PAGE = "/ibm/bluemix/appid/view/reset_password_form";
-const SIGN_UP_SUBMIT = "/sign_up/submit";
-const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform";
+const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
+const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
-const RESET_PASSWORD_SUBMIT = "/reset_password/submit";
+const RESET_PASSWORD_SUBMIT = "/reset_password/submit/:platform?";
 const CHANGE_DETAILS_SUBMIT = "/change_details/submit";
 const CHANGE_PASSWORD_SUBMIT = "/change_password/submit";
 
