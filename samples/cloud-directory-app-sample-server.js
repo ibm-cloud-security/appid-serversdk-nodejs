@@ -105,7 +105,8 @@ const selfServiceManager = require("./../lib/appid-sdk").selfServiceManager;
 selfServiceManager.init({
 	iamApiKey: "vtPMY4LXkZWX1FCjRKf7qb1f-yh8y-jDLhTWVMVXJNmA",
 	tenantId: tenantId,
-	managementUrl: "https://appid-management.stage1.eu-gb.mybluemix.net/management/v4/379c9bd2-8d02-4b5b-83d3-24ad9440a0e3"
+	managementUrl: "https://appid-management.stage1.eu-gb.mybluemix.net/management/v4/379c9bd2-8d02-4b5b-83d3-24ad9440a0e3",
+	iamTokenEndpoint: "https://iam.stage1.ng.bluemix.net/oidc/token"
 });
 
 // Configure passportjs with user serialization/deserialization. This is required
