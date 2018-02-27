@@ -24,6 +24,7 @@ describe("/lib/self-service/self-service-manager", function () {
 	var SelfServiceManager;
 	
 	before(function () {
+		delete process.env["VCAP_SERVICES"];
 		SelfServiceManager = rewire("../lib/self-service/self-service-manager");
 	});
 	
@@ -694,8 +695,16 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
 		let _getIAMTokenRevert, _handleRequestRevert;
+		let testIpAddress = '127.0.0.1';
 		
 		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+			if (body.changedIpAddress) {
+				if (body.changedIpAddress !== testIpAddress) {
+					return deferred.reject('wrong ip address passed in setUserNewPassword API');
+				} else {
+					return deferred.resolve(testUuid);
+				}
+			}
 			if (iamToken !== testIamToken ||
 				method !== 'POST' ||
 				url !== 'managementUrlTest/cloud_directory/change_password' ||
@@ -741,6 +750,15 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it ("Should successfully set new password", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (res) {
+				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+				done();
+			}).catch(function (err) {
+				done(err);
+			})
+		});
+		
+		it ("Should successfully set new password with ipAddress", function (done) {
+			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, testIpAddress).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
 			}).catch(function (err) {
@@ -1006,7 +1024,7 @@ describe("/lib/self-service/self-service-manager", function () {
 	});
 	
 	describe("test _getIAMToken function", function () {
-		let _getIAMToken;
+		let _getIAMToken,stubRequestRevert;
 		let testToken = "testToken";
 		let netError = "netError";
 		let badInputError = "badInputError";
@@ -1043,7 +1061,11 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		before(function (done) {
 			_getIAMToken = SelfServiceManager.__get__('_getIAMToken');
-			SelfServiceManager.__set__('request', stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__('request', stubRequest);
+			done();
+		});
+		after(function (done) {
+			stubRequestRevert();
 			done();
 		});
 		
@@ -1134,16 +1156,16 @@ describe("/lib/self-service/self-service-manager", function () {
 		let action = "action";
 		let method = "POST";
 		let successBody = {e:'e'};
+		let stubRequestRevert;
 		
 		let expectedInput = {
 			url: testUrl,
 			method: method,
 			qs: queryObject,
-			json: true,
+			json: body,
 			headers: {
 				"Authorization": "Bearer " + testToken
-			},
-			json: body
+			}
 		};
 		let expectedInputForGet = {
 			url: testUrl,
@@ -1160,7 +1182,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				if (JSON.stringify(options) !== JSON.stringify(expectedInputForGet)) {
 					return callback(error, {}, {});
 				}
-				callback(null, {statusCode: 200}, successBody);
+				return callback(null, {statusCode: 200}, successBody);
 			}
 			if (options.url === netError) {
 				return callback(netErrorObject, {}, {});
@@ -1180,15 +1202,18 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
 				return callback(error, {}, {});
 			}
-			callback(null, {statusCode: 200}, successBody);
+			return callback(null, {statusCode: 200}, successBody);
 			
 		};
 		before(function (done) {
 			_handleRequest = SelfServiceManager.__get__('_handleRequest');
-			SelfServiceManager.__set__('request', stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__('request', stubRequest);
 			done();
 		});
-		
+		after(function(done){
+			stubRequestRevert();
+			done();
+		});
 		
 		it("happy flow - should return success response", function (done) {
 			let deferred = {
