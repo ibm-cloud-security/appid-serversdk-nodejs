@@ -358,7 +358,7 @@ app.post(SIGN_UP_SUBMIT, function(req, res) {
 });
 
 app.get(SIGN_UP_PAGE, function(req, res) {
-	_render(req, res, selfSignUpEjs, {}, req.query.language);
+	_render(req, res, selfSignUpEjs, {firstName:'', lastName:'', email:'', phoneNumber:''}, req.query.language);
 });
 
 app.post(FORGOT_PASSWORD_SUBMIT, function(req, res) {
@@ -394,7 +394,7 @@ app.post(FORGOT_PASSWORD_SUBMIT, function(req, res) {
 });
 
 app.get(FORGOT_PASSWORD_PAGE, function(req, res) {
-	_render(req, res, selfForgotPasswordEjs, { message: req.flash('error')}, req.query.language);
+	_render(req, res, selfForgotPasswordEjs, { message: req.flash('error'), email: req.query.email}, req.query.language);
 });
 
 //resend notification endpoint

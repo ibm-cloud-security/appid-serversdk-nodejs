@@ -62,7 +62,7 @@
 <script>
 	document.getElementById('languageCode').value = "<%= language %>";
     function moveTo(path) {
-        location.href = path + '?language='+ document.getElementById('languageCode')[document.getElementById('languageCode').selectedIndex].value;
+        location.href = path + '?language='+ document.getElementById('languageCode')[document.getElementById('languageCode').selectedIndex].value + '&email=' + document.getElementById('email').value;
     }
 </script>
 </html>
