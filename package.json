@@ -25,7 +25,8 @@
     "mocha": "^3.2.0",
     "passport": "^0.3.2",
     "proxyquire": "^1.7.11",
-    "base64url": "^1.0.6"
+    "base64url": "^1.0.6",
+    "rewire": "^3.0.2"
   },
   "dependencies": {
     "body-parser": "^1.17.2",

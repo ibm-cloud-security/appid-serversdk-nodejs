@@ -16,6 +16,7 @@ const session = require("express-session");
 const log4js = require("log4js");
 const passport = require("passport");
 const WebAppStrategy = require("./../lib/appid-sdk").WebAppStrategy;
+const SelfServiceManager = require("./../lib/appid-sdk").selfServiceManager;
 const helmet = require("helmet");
 const bodyParser = require("body-parser"); // get information from html forms
 const flash = require("connect-flash");
@@ -101,12 +102,11 @@ passport.use(new WebAppStrategy({
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
 
-const selfServiceManager = require("./../lib/appid-sdk").selfServiceManager;
-selfServiceManager.init({
+let selfServiceManager = new SelfServiceManager({
 	iamApiKey: "vtPMY4LXkZWX1FCjRKf7qb1f-yh8y-jDLhTWVMVXJNmA",
 	tenantId: tenantId,
 	managementUrl: "https://appid-management.stage1.eu-gb.mybluemix.net/management/v4/379c9bd2-8d02-4b5b-83d3-24ad9440a0e3",
-	iamTokenEndpoint: "https://iam.stage1.ng.bluemix.net/oidc/token"
+	iamTokenUrl: "https://iam.stage1.ng.bluemix.net/oidc/token"
 });
 
 // Configure passportjs with user serialization/deserialization. This is required
