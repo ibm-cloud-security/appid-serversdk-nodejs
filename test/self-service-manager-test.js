@@ -34,8 +34,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				let test = new SelfServiceManager();
 				done("This should throw");
 			} catch (e) {
-				assert.equal(e.message, initError);
-				done();
+				try {
+					assert.equal(e.message, initError);
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}
 		});
 		
@@ -46,8 +50,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				});
 				done("This should throw");
 			} catch (e) {
-				assert.equal(e.message, initError);
-				done();
+				try {
+					assert.equal(e.message, initError);
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}
 		});
 		
@@ -59,8 +67,29 @@ describe("/lib/self-service/self-service-manager", function () {
 				});
 				done("This should throw");
 			} catch (e) {
-				assert.equal(e.message, initError);
-				done();
+				try {
+					assert.equal(e.message, initError);
+					done();
+				} catch (err) {
+					done(err);
+				}
+			}
+		});
+		
+		it("Should not be able to init with options with server with not /oauth/v3", function (done) {
+			try {
+				let test = new SelfServiceManager({
+					tenantId: "dummy_tenant",
+					oauthServerUrl: "http://appid-oauth.com/oauth/v123"
+				});
+				done("This should throw");
+			} catch (e) {
+				try {
+					assert.equal(e.message, initError);
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}
 		});
 		
@@ -79,7 +108,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("Should be able to init with options with only tenantId and oauthServerUrl", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
-					oauthServerUrl: "https://appid-oauth.com",
+					oauthServerUrl: "https://appid-oauth.com/oauth/v3",
 					tenantId: "123"
 				});
 				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
@@ -92,7 +121,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("Should be able to init with options check iamTokenUrl and iamApiKey", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
-					oauthServerUrl: "https://appid-oauth.com",
+					oauthServerUrl: "https://appid-oauth.com/oauth/v3",
 					tenantId: "123",
 					iamTokenUrl:"xxx",
 					iamApiKey:"yyy"
@@ -130,7 +159,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				AppID: [
 					{
 						credentials: {
-							oauthServerUrl: "https://appid-oauth.com",
+							oauthServerUrl: "https://appid-oauth.com/oauth/v3",
 							tenantId: "123"
 						}
 					}
@@ -202,8 +231,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully create new user", function (done) {
 			selfServiceManager.signUp(testUserJson, language).then(function (user) {
-				assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
-				done();
+				try {
+					assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			});
@@ -214,8 +247,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager2.signUp(testUserJson, language, providedIamToken).then(function (user) {
-				assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
-				done();
+				try {
+					assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -308,8 +345,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully return user", function (done) {
 			selfServiceManager.forgotPassword(testEmail, language).then(function (user) {
-				assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
-				done();
+				try {
+					assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -320,8 +361,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.forgotPassword(testEmail, language, providedIamToken).then(function (user) {
-				assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
-				done();
+				try {
+					assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -416,8 +461,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully resend", function (done) {
 			selfServiceManager.resendNotification(testUuid, testTemplateName, language).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -428,8 +477,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.resendNotification(testUuid, testTemplateName, language, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -523,8 +576,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getSignUpConfirmationResult(testContext).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testContext));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -535,8 +592,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.getSignUpConfirmationResult(testContext, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testContext));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -630,8 +691,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getForgotPasswordConfirmationResult(testContext).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testContext));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -642,8 +707,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.getForgotPasswordConfirmationResult(testContext, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testContext));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -745,8 +814,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully set new password", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -754,8 +827,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully set new password with ipAddress", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, testIpAddress).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -766,8 +843,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, null, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -860,8 +941,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully get user details", function (done) {
 			selfServiceManager.getUserDetails(testUuid).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -872,8 +957,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.getUserDetails(testUuid, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -966,8 +1055,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should successfully update user details", function (done) {
 			selfServiceManager.updateUserDetails(testUuid, testUserJson).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})
@@ -978,8 +1071,12 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest"
 			});
 			selfServiceManager.updateUserDetails(testUuid, testUserJson, providedIamToken).then(function (res) {
-				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
-				done();
+				try {
+					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
+					done();
+				} catch (err) {
+					done(err);
+				}
 			}).catch(function (err) {
 				done(err);
 			})

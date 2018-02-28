@@ -38,7 +38,7 @@
         <form action="/rop/login/submit?language=<%= language %>" data-toggle="validator" method="post" id="loginForm">
             <div class="form-group">
                 <label for="email" class="whiteText"><%= emailLabel %></label>
-                <input id="email" type="text" class="form-control" name="username" required>
+                <input id="email" type="text" class="form-control" name="username" value="<%= email %>" required>
             </div>
             <div class="form-group">
                 <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/forgot_password');" id="forgot_password_button"><%= forgotPasswordLink %></a>

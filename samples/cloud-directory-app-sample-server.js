@@ -91,22 +91,18 @@ app.use(bodyParser.urlencoded({extended: false}));
 // parse application/json for mobile
 app.use(bodyParser.json());
 
-const tenantId = "379c9bd2-8d02-4b5b-83d3-24ad9440a0e3";
-
 // Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy({
-	tenantId: tenantId,
-	clientId: "dfbd817a-f12e-4d06-9e98-a8863085856b",
-	secret: "NTgyMzE5YjctNTM3OS00YWE0LWIzYTItYTc0N2MwNzkxODU1",
-	oauthServerUrl: "https://appid-oauth.stage1.eu-gb.bluemix.net/oauth/v3/379c9bd2-8d02-4b5b-83d3-24ad9440a0e3",
+	tenantId: "TENANT_ID",
+	clientId: "CLIENT_ID",
+	secret: "SECRET",
+	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:1234" + CALLBACK_URL
 }));
 
 let selfServiceManager = new SelfServiceManager({
-	iamApiKey: "vtPMY4LXkZWX1FCjRKf7qb1f-yh8y-jDLhTWVMVXJNmA",
-	tenantId: tenantId,
-	managementUrl: "https://appid-management.stage1.eu-gb.mybluemix.net/management/v4/379c9bd2-8d02-4b5b-83d3-24ad9440a0e3",
-	iamTokenUrl: "https://iam.stage1.ng.bluemix.net/oidc/token"
+	iamApiKey: "IAM_API_KEY",
+	managementUrl: "MANAGEMENT_URL"
 });
 
 // Configure passportjs with user serialization/deserialization. This is required
@@ -120,7 +116,7 @@ passport.deserializeUser(function(obj, cb) {
 });
 
 app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
-	_render(req, res, loginEjs, {email: req.body && req.body.email}, req.query.language, req.flash('errorCode')[0]);
+	_render(req, res, loginEjs, {email: req.query && req.query.email}, req.query.language, req.flash('errorCode')[0]);
 });
 
 app.post(ROP_SUBMIT, function(req, res, next) {
@@ -130,9 +126,10 @@ app.post(ROP_SUBMIT, function(req, res, next) {
 		}
 		let language = req.query.language || 'en';
 		let languageQuery = '?language=' + language;
+		let emailInputQuery = '&email=' + req.body.username;
 		if (!user) {
 			req.flash('errorCode', info.code);
-			return res.redirect(ROP_LOGIN_PAGE_URL + languageQuery);
+			return res.redirect(ROP_LOGIN_PAGE_URL + languageQuery + emailInputQuery);
 		}
 		req.logIn(user, function (err) {
 			if (err) {
