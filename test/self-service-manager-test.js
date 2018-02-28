@@ -31,8 +31,8 @@ describe("/lib/self-service/self-service-manager", function () {
 	describe("#SelfserviceManager constructor", function () {
 		it("Should not be able to init without options and VCAP_SERVICS", function (done) {
 			try {
-				new SelfServiceManager();
-				done('This should throw');
+				let test = new SelfServiceManager();
+				done("This should throw");
 			} catch (e) {
 				assert.equal(e.message, initError);
 				done();
@@ -41,10 +41,10 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should not be able to init with options with only tenantId", function (done) {
 			try {
-				new SelfServiceManager({
+				let test = new SelfServiceManager({
 					tenantId: "dummy_tenant"
 				});
-				done('This should throw');
+				done("This should throw");
 			} catch (e) {
 				assert.equal(e.message, initError);
 				done();
@@ -53,11 +53,11 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("Should not be able to init with options with server with host not equal to appid-oauth", function (done) {
 			try {
-				new SelfServiceManager({
+				let test = new SelfServiceManager({
 					tenantId: "dummy_tenant",
 					oauthServerUrl: "http://a.com"
 				});
-				done('This should throw');
+				done("This should throw");
 			} catch (e) {
 				assert.equal(e.message, initError);
 				done();
@@ -69,7 +69,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				let selfServiceManager = new SelfServiceManager({
 					managementUrl: "dummy_managementUrl"
 				});
-				assert.equal('dummy_managementUrl', selfServiceManager.managementUrl);
+				assert.equal("dummy_managementUrl", selfServiceManager.managementUrl);
 				done();
 			} catch (e) {
 				done(e);
@@ -82,7 +82,7 @@ describe("/lib/self-service/self-service-manager", function () {
 					oauthServerUrl: "https://appid-oauth.com",
 					tenantId: "123"
 				});
-				assert.equal('https://appid-management.com/management/v4/123', selfServiceManager.managementUrl);
+				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
 				done();
 			} catch (e) {
 				done(e);
@@ -97,9 +97,9 @@ describe("/lib/self-service/self-service-manager", function () {
 					iamTokenUrl:"xxx",
 					iamApiKey:"yyy"
 				});
-				assert.equal('https://appid-management.com/management/v4/123', selfServiceManager.managementUrl);
-				assert.equal('xxx', selfServiceManager.iamTokenUrl);
-				assert.equal('yyy', selfServiceManager.iamApiKey);
+				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
+				assert.equal("xxx", selfServiceManager.iamTokenUrl);
+				assert.equal("yyy", selfServiceManager.iamApiKey);
 				done();
 			} catch (e) {
 				done(e);
@@ -120,7 +120,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				new SelfServiceManager();
 				done();
 			} catch (e) {
-				done(e)
+				done(e);
 			}
 			
 		});
@@ -139,7 +139,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			
 			try {
 				let selfServiceManager = new SelfServiceManager();
-				assert.equal('https://appid-management.com/management/v4/123', selfServiceManager.managementUrl);
+				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
 				done();
 			} catch (e) {
 				done(e)
@@ -157,23 +157,22 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, querys , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, querys , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/sign_up' ||
-				action !== 'sign up' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/sign_up" ||
+				action !== "sign up" ||
 				JSON.stringify(body) !== JSON.stringify(testUserJson) ||
-				JSON.stringify(querys) !== JSON.stringify(expectedQuery))
-			{
-				return deferred.reject('wrong input to _handleRequest in signUp API');
+				JSON.stringify(querys) !== JSON.stringify(expectedQuery)) {
+				return deferred.reject("wrong input to _handleRequest in signUp API");
 			}
 			return deferred.resolve(testUserJson);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -181,14 +180,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in signUp API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in signUp API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -201,7 +200,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully create new user", function (done) {
+		it("Should successfully create new user", function (done) {
 			selfServiceManager.signUp(testUserJson, language).then(function (user) {
 				assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
 				done();
@@ -210,11 +209,11 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully create new user with provided iamToken", function (done) {
-			let selfServiceManager = new SelfServiceManager({
+		it("Should successfully create new user with provided iamToken", function (done) {
+			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
-			selfServiceManager.signUp(testUserJson, language, providedIamToken).then(function (user) {
+			selfServiceManager2.signUp(testUserJson, language, providedIamToken).then(function (user) {
 				assert.equal(JSON.stringify(user), JSON.stringify(testUserJson));
 				done();
 			}).catch(function (err) {
@@ -222,13 +221,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.signUp(testUserJson, language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -239,9 +238,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.signUp({}, language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in signUp API", err);
@@ -264,23 +263,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, querys , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, querys , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/forgot_password' ||
-				action !== 'forgot password' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/forgot_password" ||
+				action !== "forgot password" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(querys) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in forgotPassword API');
+				return deferred.reject("wrong input to _handleRequest in forgotPassword API");
 			}
 			return deferred.resolve(testEmail);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -288,14 +287,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in forgotPassword API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in forgotPassword API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -308,7 +307,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully return user", function (done) {
+		it("Should successfully return user", function (done) {
 			selfServiceManager.forgotPassword(testEmail, language).then(function (user) {
 				assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
 				done();
@@ -317,7 +316,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully return user with provided iamToken", function (done) {
+		it("Should successfully return user with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -329,13 +328,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.forgotPassword(testEmail, language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -346,9 +345,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.forgotPassword({}, language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in forgotPassword API", err);
@@ -372,23 +371,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/resend/testTemplateName' ||
-				action !== 'resend notification' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/resend/testTemplateName" ||
+				action !== "resend notification" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in resendNotification API');
+				return deferred.reject("wrong input to _handleRequest in resendNotification API");
 			}
 			return deferred.resolve(testUuid);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -396,14 +395,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in resendNotification API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in resendNotification API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -417,7 +416,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully resend", function (done) {
+		it("Should successfully resend", function (done) {
 			selfServiceManager.resendNotification(testUuid, testTemplateName, language).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
@@ -426,7 +425,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully resend with provided iamToken", function (done) {
+		it("Should successfully resend with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -438,13 +437,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.resendNotification(testUuid, testTemplateName, language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -455,9 +454,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.resendNotification({}, testTemplateName ,language).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in resendNotification API", err);
@@ -481,23 +480,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/sign_up/confirmation_result' ||
-				action !== 'sign up result' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/sign_up/confirmation_result" ||
+				action !== "sign up result" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in getSignUpConfirmationResult API');
+				return deferred.reject("wrong input to _handleRequest in getSignUpConfirmationResult API");
 			}
 			return deferred.resolve(testContext);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -505,14 +504,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in getSignUpConfirmationResult API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in getSignUpConfirmationResult API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -525,7 +524,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully get confirmation result", function (done) {
+		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getSignUpConfirmationResult(testContext).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
 				done();
@@ -534,7 +533,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully get confirmation result with provided iamToken", function (done) {
+		it("Should successfully get confirmation result with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -546,13 +545,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.getSignUpConfirmationResult(testContext).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -563,9 +562,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getSignUpConfirmationResult({}).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in getSignUpConfirmationResult API", err);
@@ -589,23 +588,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/forgot_password/confirmation_result' ||
-				action !== 'forgot password result' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/forgot_password/confirmation_result" ||
+				action !== "forgot password result" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in getForgotPasswordConfirmationResult API');
+				return deferred.reject("wrong input to _handleRequest in getForgotPasswordConfirmationResult API");
 			}
 			return deferred.resolve(testContext);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -613,14 +612,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in getForgotPasswordConfirmationResult API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in getForgotPasswordConfirmationResult API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -633,7 +632,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully get confirmation result", function (done) {
+		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getForgotPasswordConfirmationResult(testContext).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testContext));
 				done();
@@ -642,7 +641,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully get confirmation result with provided iamToken", function (done) {
+		it("Should successfully get confirmation result with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -654,13 +653,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.getForgotPasswordConfirmationResult(testContext).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -671,9 +670,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getForgotPasswordConfirmationResult({}).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in getForgotPasswordConfirmationResult API", err);
@@ -695,32 +694,32 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
 		let _getIAMTokenRevert, _handleRequestRevert;
-		let testIpAddress = '127.0.0.1';
+		let testIpAddress = "127.0.0.1";
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (body.changedIpAddress) {
 				if (body.changedIpAddress !== testIpAddress) {
-					return deferred.reject('wrong ip address passed in setUserNewPassword API');
+					return deferred.reject("wrong ip address passed in setUserNewPassword API");
 				} else {
 					return deferred.resolve(testUuid);
 				}
 			}
 			if (iamToken !== testIamToken ||
-				method !== 'POST' ||
-				url !== 'managementUrlTest/cloud_directory/change_password' ||
-				action !== 'change user password' ||
+				method !== "POST" ||
+				url !== "managementUrlTest/cloud_directory/change_password" ||
+				action !== "change user password" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in setUserNewPassword API');
+				return deferred.reject("wrong input to _handleRequest in setUserNewPassword API");
 			}
 			return deferred.resolve(testUuid);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -728,14 +727,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in setUserNewPassword API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in setUserNewPassword API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -748,7 +747,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully set new password", function (done) {
+		it("Should successfully set new password", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
@@ -757,7 +756,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully set new password with ipAddress", function (done) {
+		it("Should successfully set new password with ipAddress", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, testIpAddress).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
@@ -766,7 +765,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully set new password with provided iamToken", function (done) {
+		it("Should successfully set new password with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -778,13 +777,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -795,9 +794,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.setUserNewPassword({}, testNewPassword).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in setUserNewPassword API", err);
@@ -819,23 +818,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let _getIAMTokenRevert, _handleRequestRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'GET' ||
-				url !== 'managementUrlTest/cloud_directory/Users/testUuid' ||
-				action !== 'get user details' ||
+				method !== "GET" ||
+				url !== "managementUrlTest/cloud_directory/Users/testUuid" ||
+				action !== "get user details" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in getUserDetails API');
+				return deferred.reject("wrong input to _handleRequest in getUserDetails API");
 			}
 			return deferred.resolve(testUuid);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -843,14 +842,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in getUserDetails API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in getUserDetails API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -864,7 +863,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully get user details", function (done) {
+		it("Should successfully get user details", function (done) {
 			selfServiceManager.getUserDetails(testUuid).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
@@ -873,7 +872,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully get user details with provided iamToken", function (done) {
+		it("Should successfully get user details with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -885,13 +884,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.getUserDetails(testUuid).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -902,9 +901,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getUserDetails({}).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in getUserDetails API", err);
@@ -926,23 +925,23 @@ describe("/lib/self-service/self-service-manager", function () {
 		let testUserJson = {email: "testEmail"};
 		let _handleRequestRevert, _getIAMTokenRevert;
 		
-		let stub_handleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
+		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
-				method !== 'PUT' ||
-				url !== 'managementUrlTest/cloud_directory/Users/testUuid' ||
-				action !== 'update user details' ||
+				method !== "PUT" ||
+				url !== "managementUrlTest/cloud_directory/Users/testUuid" ||
+				action !== "update user details" ||
 				JSON.stringify(body) !== JSON.stringify(testUserJson) ||
 				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
 			{
-				return deferred.reject('wrong input to _handleRequest in updateUserDetails API');
+				return deferred.reject("wrong input to _handleRequest in updateUserDetails API");
 			}
 			return deferred.resolve(testUuid);
 		};
 		
-		let stub_getIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
+		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
-					return Q.reject('iamToken was not received to _getIAMToken function');
+					return Q.reject("iamToken was not received to _getIAMToken function");
 				} else {
 					return Q.resolve(testIamToken);
 				}
@@ -950,14 +949,14 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== 'testIamApiKey' || iamTokenUrl !== 'https://iam.bluemix.net/oidc/token') {
-				return Q.reject('wrong input to _getIAMToken in updateUserDetails API');
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+				return Q.reject("wrong input to _getIAMToken in updateUserDetails API");
 			}
 			return Q.resolve(testIamToken);
 		};
 		before(function (done) {
-			_handleRequestRevert = SelfServiceManager.__set__('_handleRequest', stub_handleRequest);
-			_getIAMTokenRevert = SelfServiceManager.__set__('_getIAMToken', stub_getIAMToken);
+			_handleRequestRevert = SelfServiceManager.__set__("_handleRequest", stubHandleRequest);
+			_getIAMTokenRevert = SelfServiceManager.__set__("_getIAMToken", stubGetIAMToken);
 			selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: "testIamApiKey"
@@ -971,7 +970,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			done();
 		});
 		
-		it ("Should successfully update user details", function (done) {
+		it("Should successfully update user details", function (done) {
 			selfServiceManager.updateUserDetails(testUuid, testUserJson).then(function (res) {
 				assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 				done();
@@ -980,7 +979,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should successfully update user details with provided iamToken", function (done) {
+		it("Should successfully update user details with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
@@ -992,13 +991,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _getIAMToken", function (done) {
+		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
 			selfServiceManager.updateUserDetails(testUuid, testUserJson).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try{
 					assert.equal(badIamApiKey, err.message);
@@ -1009,9 +1008,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 		
-		it ("Should reject on _handleRequest", function (done) {
+		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.updateUserDetails({}, testUserJson).then(function (user) {
-				done('should reject');
+				done("should reject");
 			}).catch(function (err) {
 				try {
 					assert.equal("wrong input to _handleRequest in updateUserDetails API", err);
@@ -1030,19 +1029,19 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badInputError = "badInputError";
 		let testApiKey = "testApiKey";
 		let testUrl = "testUrl";
-		let error = new Error('bad input to iam request');
-		let netErrorObject = new Error('network issue');
+		let error = new Error("bad input to iam request");
+		let netErrorObject = new Error("network issue");
 		let inputErrorBody = {error: "some bad input"};
 		let expectedInput = {
 			url:  testUrl,
-			method: 'POST',
+			method: "POST",
 			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'Accept': 'application/json'
+				"Content-Type": "application/x-www-form-urlencoded",
+				"Accept": "application/json"
 			},
 			form : {
-				'grant_type':'urn:ibm:params:oauth:grant-type:apikey',
-				'apikey' : testApiKey
+				"grant_type":"urn:ibm:params:oauth:grant-type:apikey",
+				"apikey" : testApiKey
 			}
 		};
 		
@@ -1060,8 +1059,8 @@ describe("/lib/self-service/self-service-manager", function () {
 			
 		};
 		before(function (done) {
-			_getIAMToken = SelfServiceManager.__get__('_getIAMToken');
-			stubRequestRevert = SelfServiceManager.__set__('request', stubRequest);
+			_getIAMToken = SelfServiceManager.__get__("_getIAMToken");
+			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
 			done();
 		});
 		after(function (done) {
@@ -1084,10 +1083,10 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("no iamToken no iamApiKey", function (done) {
 			_getIAMToken().then(function () {
-				done('should not get here');
+				done("should not get here");
 			}).catch(function (err) {
 				try{
-					assert.equal('You must pass "iamToken" to self-service-manager APIs or specify "iamApiKey" in selfServiceManager init options.', err);
+					assert.equal("You must pass 'iamToken' to self-service-manager APIs or specify 'iamApiKey' in selfServiceManager init options.", err);
 					done();
 				} catch (e) {
 					done(e);
@@ -1110,10 +1109,10 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("request failure network issue", function (done) {
 			_getIAMToken(null, testApiKey, netError).then(function () {
-				done('should not get here');
+				done("should not get here");
 			}).catch(function (err) {
 				try{
-					assert.equal('network issue', err);
+					assert.equal("network issue", err);
 					done();
 				} catch (e) {
 					done(e);
@@ -1123,7 +1122,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("request failure bad input", function (done) {
 			_getIAMToken(null, testApiKey, badInputError).then(function () {
-				done('should not get here');
+				done("should not get here");
 			}).catch(function (err) {
 				try{
 					assert.equal(inputErrorBody, err);
@@ -1145,8 +1144,8 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badInputErrorBodyWithMessage = "badInputErrorBodyWithMessage";
 		let testApiKey = "testApiKey";
 		let testUrl = "testUrl";
-		let error = new Error('bad input to iam request');
-		let netErrorObject = new Error('network issue');
+		let error = new Error("bad input to iam request");
+		let netErrorObject = new Error("network issue");
 		let inputErrorBody = {error: "some bad input"};
 		let inputErrorBodyString = "some error string";
 		let inputErrorBodyDetail = {detail:"some detail", scimType: "some scimType"};
@@ -1155,7 +1154,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let queryObject = {r:"r"};
 		let action = "action";
 		let method = "POST";
-		let successBody = {e:'e'};
+		let successBody = {e:"e"};
 		let stubRequestRevert;
 		
 		let expectedInput = {
@@ -1169,7 +1168,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		let expectedInputForGet = {
 			url: testUrl,
-			method: 'GET',
+			method: "GET",
 			qs: queryObject,
 			json: true,
 			headers: {
@@ -1178,7 +1177,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		
 		let stubRequest = function (options, callback) {
-			if (options.method === 'GET') {
+			if (options.method === "GET") {
 				if (JSON.stringify(options) !== JSON.stringify(expectedInputForGet)) {
 					return callback(error, {}, {});
 				}
@@ -1206,8 +1205,8 @@ describe("/lib/self-service/self-service-manager", function () {
 			
 		};
 		before(function (done) {
-			_handleRequest = SelfServiceManager.__get__('_handleRequest');
-			stubRequestRevert = SelfServiceManager.__set__('request', stubRequest);
+			_handleRequest = SelfServiceManager.__get__("_handleRequest");
+			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
 			done();
 		});
 		after(function(done){
@@ -1236,13 +1235,13 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("request failure network issue", function (done) {
 			let deferred = {
 				resolve: function (body) {
-					done('should reject');
+					done("should reject");
 					
 				},
 				reject: function (err) {
 					try{
-						assert.equal('general_error', err.code);
-						assert.equal('Failed to ' + action, err.message);
+						assert.equal("general_error", err.code);
+						assert.equal("Failed to " + action, err.message);
 						done();
 					}catch(e) {
 						done(e);
@@ -1255,12 +1254,12 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("request failure bad input", function (done) {
 			let deferred = {
 				resolve: function (body) {
-					done('should reject');
+					done("should reject");
 					
 				},
 				reject: function (err) {
 					try{
-						assert.equal('some bad input', err.message);
+						assert.equal("some bad input", err.message);
 						done();
 					}catch(e) {
 						done(e);
@@ -1284,14 +1283,14 @@ describe("/lib/self-service/self-service-manager", function () {
 					done(err);
 				}
 			};
-			_handleRequest(testToken, 'GET', testUrl, body, queryObject , action, deferred);
+			_handleRequest(testToken, "GET", testUrl, body, queryObject , action, deferred);
 			
 		});
 		
 		it("request failure bad input - body is not object", function (done) {
 			let deferred = {
 				resolve: function (body) {
-					done('should reject');
+					done("should reject");
 				},
 				reject: function (err) {
 					try{
@@ -1308,7 +1307,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("request failure bad input - body with detail", function (done) {
 			let deferred = {
 				resolve: function (body) {
-					done('should reject');
+					done("should reject");
 				},
 				reject: function (err) {
 					try{
@@ -1326,7 +1325,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("request failure bad input - body with message", function (done) {
 			let deferred = {
 				resolve: function (body) {
-					done('should reject');
+					done("should reject");
 				},
 				reject: function (err) {
 					try{
