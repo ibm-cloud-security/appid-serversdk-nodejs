@@ -1,0 +1,69 @@
+{
+  "language": "en",
+
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "loginLabel": "Login",
+  "forgotPasswordLink": "Forgot Password?",
+  "DontHaveLabel": "Don't have account?",
+  "signUpLink": "Sign up",
+
+  "firstNameLabel": "First Name",
+  "lastNameLabel": "Last Name",
+  "phoneLabel": "Phone Number",
+  "rePasswordLabel": "Re-enter password",
+
+  "resendNotificationButtonText": "Resend notification",
+  "signUpThanksHeader": "Thanks for signing up",
+  "signUpThanksText1": "A confirmation of your email is on",
+  "signUpThanksText2": "its way to",
+  "signUpThanksText3": "After you confirm, you can sign-in",
+  "signUpThanksText4": "to the app!",
+  "text1": "If you don't see our email, check your",
+  "text2": "spam folder. If you didn't receive our",
+  "text3": "email, click Resend and we'll send",
+  "text4": "another.",
+
+  "confirmText1": "You can now access",
+  "confirmText2": "to the app!",
+  "confirmHeader1": "Your account is now confirmed!",
+  "confirmHeader2": "Expired confirmation code",
+  "confirmHeader3": "Your account already confirmed",
+
+  "forgotPasswordLabel": "Forgot Password",
+  "ResetPasswordButton": "Reset Password",
+  "checkYourMail": "Check your mail",
+  "resetLinkWasSent": "Reset link was sent",
+
+  "resetPasswordLabel": "Reset Password",
+  "saveChangesButton": "Save Changes",
+  "newPassword": "New password",
+  "reEnterNewPassword": "Re-Enter new password",
+  "currentPassword": "Current password",
+
+  "expiredMsg": "This reset password request expired, please start new forgot password request",
+
+  "passwordChanged1": "Your password has been changed",
+  "passwordChanged2": "Your password has been changed for your account",
+  "passwordChanged3": "You can now sign-in with your new password.",
+
+  "changeDetails": "Change Details",
+  "changePassword": "Change Password",
+
+  "messages": {
+    "sent": "We sent notification again",
+    "confirmed": "Account already confirmed",
+    "tryLater": "Try later"
+  },
+  "errors": {
+    "uniqueness": "Email already exists",
+    "forbidden": "Please confirm your account first",
+    "invalid_grant": "wrong username or password",
+    "passwords_mismatch": "passwords are not the same",
+    "invalidValue":"Password must be at least 8 characters",
+    "general_error": "Something went wrong, try again",
+    "userNotFound": "We don't recognize this email",
+    "incorrect_password": "Incorrect current password"
+  }
+
+}

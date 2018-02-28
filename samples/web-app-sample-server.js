@@ -170,6 +170,7 @@ app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 });
 
 var port = process.env.PORT || 3000;
+
 app.listen(port, function(){
 	logger.info("Listening on http://localhost:" + port + "/web-app-sample.html");
 });

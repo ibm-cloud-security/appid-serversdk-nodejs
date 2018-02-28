@@ -1,0 +1,65 @@
+{
+  "language": "fr",
+  "emailLabel": "Email",
+  "passwordLabel": "Mot de passe",
+  "loginLabel": "S'identifier",
+  "forgotPasswordLink": "Mot de passe oublié?",
+  "DontHaveLabel": "Vous n'avez pas de compte?",
+  "signUpLink": "S'inscrire",
+  "firstNameLabel": "Prénom",
+  "lastNameLabel": "Nom de famille",
+  "phoneLabel": "Numéro de téléphone",
+  "rePasswordLabel": "Retaper le mot de passe",
+  "resendNotificationButtonText": "Renvoyer la notification",
+  "signUpThanksHeader": "Merci pour l'enregistrement",
+  "signUpThanksText1": "Une confirmation de votre email est sur",
+  "signUpThanksText2": "son chemin à",
+  "signUpThanksText3": "Après confirmation, vous pouvez vous connecter",
+  "signUpThanksText4": "à l'application!",
+  "text1": "Si vous ne voyez pas notre email, vérifiez votre",
+  "text2": "dossier de spam. Si vous n'avez pas reçu notre",
+  "text3": "email, cliquez sur Renvoyer et nous vous enverronsd",
+  "text4": "un autre.",
+  "confirmText1": "Vous pouvez maintenant accéder",
+  "confirmText2": "à l'application!",
+  "confirmHeader1": "Votre compte est maintenant confirmé!",
+  "confirmHeader2": "Code de confirmation expiré",
+  "confirmHeader3": "Votre compte a déjà été confirmé",
+
+  "forgotPasswordLabel": "Mot de passe oublié",
+  "ResetPasswordButton": "réinitialiser le mot de passe",
+  "checkYourMail": "Vérifier votre courrier",
+  "resetLinkWasSent": "Le lien de réinitialisation a été envoyé",
+
+  "resetPasswordLabel": "réinitialiser le mot de passe",
+  "saveChangesButton": "Sauvegarder les modifications",
+  "newPassword": "Nouveau mot de passe",
+  "reEnterNewPassword": "Ré-entrez le nouveau mot de passe",
+  "currentPassword": "Mot de passe actuel",
+
+  "expiredMsg": "Cette demande de réinitialisation du mot de passe a expiré, veuillez lancer une nouvelle demande de mot de passe oublié",
+
+  "passwordChanged1": "votre mot de passe a été changé",
+  "passwordChanged2": "Votre mot de passe a été modifié pour votre compte",
+  "passwordChanged3": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+
+
+  "changeDetails": "Modifier les détails",
+  "changePassword": "Changer le mot de passe",
+
+  "messages": {
+    "sent": "Nous avons envoyé une nouvelle notification",
+    "confirmed": "Compte déjà confirmé",
+    "tryLater": "Essayer plus tard"
+  },
+  "errors": {
+    "uniqueness": "l'email existe déjà",
+    "forbidden": "Veuillez d'abord confirmer votre compte",
+    "invalid_grant": "mauvais nom d'utilisateur ou mot de passe",
+    "passwords_mismatch": "les mots de passe ne sont pas les mêmes",
+    "invalidValue":"Mot de passe doit être d'au moins 8 caractères",
+    "general_error": "Quelque chose s'est mal passé essaie encore",
+    "userNotFound": "Nous ne reconnaissons pas cet e-mail",
+    "incorrect_password": "Mot de passe actuel incorrect"
+  }
+}

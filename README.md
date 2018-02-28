@@ -32,7 +32,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Requirements
 * npm 4.+
-* node 4.+
+* node 6.+
 
 ## Installation
 ```

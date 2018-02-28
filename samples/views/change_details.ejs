@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <title>Change details</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <style>
+        body {
+            background-image:url(/images/bg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding-top:80px;
+        }
+        .whiteText {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="col-sm-6 col-sm-offset-3">
+
+        <h1 class="whiteText"><span class="fa fa-sign-up"></span><%= changeDetails %></h1>
+
+        <form action="/change_details/submit?language=<%= language %>" method="post" data-toggle="validator">
+            <div class="form-group">
+                <label class="whiteText"><%= firstNameLabel %></label>
+                <input type="text" class="form-control" name="firstName" value="<%= firstName %>">
+            </div>
+            <div class="form-group">
+                <label class="whiteText"><%= lastNameLabel %></label>
+                <input type="text" class="form-control" name="lastName" value="<%= lastName %>">
+            </div>
+            <div class="form-group">
+                <label class="whiteText"><%= phoneLabel %></label>
+                <input type="text" class="form-control" name="phoneNumber" value="<%= phoneNumber %>">
+            </div>
+            <div class="form-group">
+                <label class="whiteText text-muted"><%= emailLabel %></label>
+                <input type="text" class="form-control" name="email" value="<%= email %>" readonly>
+            </div>
+
+            <input type="hidden" name="language" value="<%= language %>">
+            <button type="submit" class="btn btn-lg btn-primary center-block btn-login"><%= saveChangesButton %></button>
+        </form>
+
+    </div>
+
+</div>
+</body>
+</html>

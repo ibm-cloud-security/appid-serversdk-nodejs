@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>
+    <style>
+        body {
+            background-image:url(/images/bg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding-top:80px;
+        }
+        .whiteText {
+            color: white;
+        }
+
+        @media (min-width: 768px) {
+            .row-sm-offset-3 div:first-child[class*="col-"] {
+                margin-left: 25%;
+            }
+        }
+
+        .confirmMsg {
+            font-weight: 300;
+            margin-top: 0;
+            font-family: HelveticaNeue-Light, "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 22px;
+            text-align: center;
+        }
+        .boldEmail{
+            font-weight: bold;
+        }
+        .resendEmail {
+            font-weight: 300;
+            margin-top: 0;
+            font-family: HelveticaNeue-Light, "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 22px;
+            text-align: center;
+        }
+
+        .centerText {
+            text-align: center;
+            line-height: 300%;
+        }
+
+        .emailConfirmText {
+            font-family: HelveticaNeue-Light, "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 24px;
+        }
+
+        .cdWidth {
+            width: 315px;
+        }
+
+
+        .spin {
+            display: inline-block;
+            width: 100%;
+            text-align:center;
+        }
+
+        .resendDetails {
+            font-weight: 300;
+            margin-top: 0;
+            font-family: HelveticaNeue-Light, "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 22px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body background="../appidExample.png">
+<div class="container">
+    <div class="row row-sm-offset-3">
+        <div class="col-xs-12 col-sm-6">
+            <h2 class="centerText emailConfirmText whiteText"><%= signUpThanksHeader %> <%= displayName %>!</h2>
+            </br>
+            <p class="confirmMsg whiteText"><%= signUpThanksText1 %><br/><%= signUpThanksText2 %></p>
+            <p class="boldEmail confirmMsg whiteText">'<%= email %>'</p>
+            </br>
+            <p class="confirmMsg whiteText"><%= signUpThanksText3 %><br/><%= signUpThanksText4 %></p>
+            </br>
+            </br>
+            <div class="spin">
+                <button onclick="sendAgain();" id="resendEmailLink" class="btn btn-primary"><%= resendNotificationButtonText %></button>
+                <i id="spinner" class="fa fa-circle-o-notch fa-spin fa-2x" style="display:none"></i>
+            </div>
+            <div id="resendEmailStatus" style="display:none;"
+                 class="alert alert-info center-block cdWidth text-center alert-dismissable">
+                <buttton onclick="hide();" class="close" data-dismiss="alert" aria-label="close">&times;</buttton>
+                <p id="msg"></p>
+            </div>
+            </br>
+            </br>
+            <p class="resendDetails whiteText"><%= text1 %><br/>
+                <%= text2 %><br/>
+                <%= text3 %><br/>
+                <%= text4 %></p>
+        </div>
+    </div>
+
+</div>
+<script>
+	function sendAgain() {
+		document.getElementById("resendEmailLink").setAttribute('style', 'display:none');
+		document.getElementById("spinner").setAttribute('style', 'display:visible; color: #4178be;');
+		$.post("/resend/USER_VERIFICATION?language=" + "<%= language %>",
+			{
+              uuid: "<%= uuid %>"
+			},
+			function(data, status){
+				document.getElementById("msg").innerHTML = data;
+				document.getElementById("spinner").setAttribute('style', 'display:none');
+				$('#resendEmailStatus').fadeIn();
+			});
+	}
+	function hide() {
+		document.getElementById("resendEmailStatus").setAttribute('style', 'display:none');
+		document.getElementById("resendEmailLink").setAttribute('style', 'display:visible');
+	}
+</script>
+</body>
+</html>
