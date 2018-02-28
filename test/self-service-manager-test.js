@@ -117,7 +117,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				]
 			});
 			try {
-				new SelfServiceManager();
+				let test = new SelfServiceManager();
 				done();
 			} catch (e) {
 				done(e);
@@ -142,7 +142,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
 				done();
 			} catch (e) {
-				done(e)
+				done(e);
 			}
 		});
 	});
@@ -206,7 +206,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done();
 			}).catch(function (err) {
 				done(err);
-			})
+			});
 		});
 		
 		it("Should successfully create new user with provided iamToken", function (done) {
@@ -222,11 +222,11 @@ describe("/lib/self-service/self-service-manager", function () {
 		});
 		
 		it("Should reject on _getIAMToken", function (done) {
-			let selfServiceManager = new SelfServiceManager({
+			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
-			selfServiceManager.signUp(testUserJson, language).then(function (user) {
+			selfServiceManager2.signUp(testUserJson, language).then(function (user) {
 				done("should reject");
 			}).catch(function (err) {
 				try{
@@ -269,8 +269,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/forgot_password" ||
 				action !== "forgot password" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(querys) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(querys) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in forgotPassword API");
 			}
 			return deferred.resolve(testEmail);
@@ -377,8 +376,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/resend/testTemplateName" ||
 				action !== "resend notification" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in resendNotification API");
 			}
 			return deferred.resolve(testUuid);
@@ -486,8 +484,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/sign_up/confirmation_result" ||
 				action !== "sign up result" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in getSignUpConfirmationResult API");
 			}
 			return deferred.resolve(testContext);
@@ -594,8 +591,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/forgot_password/confirmation_result" ||
 				action !== "forgot password result" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in getForgotPasswordConfirmationResult API");
 			}
 			return deferred.resolve(testContext);
@@ -824,8 +820,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/Users/testUuid" ||
 				action !== "get user details" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in getUserDetails API");
 			}
 			return deferred.resolve(testUuid);
@@ -931,8 +926,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/Users/testUuid" ||
 				action !== "update user details" ||
 				JSON.stringify(body) !== JSON.stringify(testUserJson) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in updateUserDetails API");
 			}
 			return deferred.resolve(testUuid);
@@ -1055,7 +1049,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
 				return callback(error, {}, {});
 			}
-			callback(null, {statusCode: 200}, JSON.stringify({access_token: testToken}));
+			callback(null, {statusCode: 200}, JSON.stringify({"access_token": testToken}));
 			
 		};
 		before(function (done) {
@@ -1216,9 +1210,9 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("happy flow - should return success response", function (done) {
 			let deferred = {
-				resolve: function (body) {
+				resolve: function (inputBody) {
 					try{
-						assert.equal(successBody, body);
+						assert.equal(successBody, inputBody);
 						done();
 					}catch(e) {
 						done(e);
