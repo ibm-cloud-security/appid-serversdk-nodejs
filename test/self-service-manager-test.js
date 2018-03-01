@@ -255,7 +255,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			}).catch(function (err) {
 				done(err);
-			})
+			});
 		});
 		
 		it("Should reject on _getIAMToken", function (done) {
@@ -357,10 +357,10 @@ describe("/lib/self-service/self-service-manager", function () {
 		});
 		
 		it("Should successfully return user with provided iamToken", function (done) {
-			let selfServiceManager = new SelfServiceManager({
+			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
-			selfServiceManager.forgotPassword(testEmail, language, providedIamToken).then(function (user) {
+			selfServiceManager2.forgotPassword(testEmail, language, providedIamToken).then(function (user) {
 				try {
 					assert.equal(JSON.stringify(user), JSON.stringify(testEmail));
 					done();
@@ -774,8 +774,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				url !== "managementUrlTest/cloud_directory/change_password" ||
 				action !== "change user password" ||
 				JSON.stringify(body) !== JSON.stringify(expectedBody) ||
-				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery))
-			{
+				JSON.stringify(queryObject) !== JSON.stringify(expectedQuery)) {
 				return deferred.reject("wrong input to _handleRequest in setUserNewPassword API");
 			}
 			return deferred.resolve(testUuid);
@@ -1325,9 +1324,8 @@ describe("/lib/self-service/self-service-manager", function () {
 		
 		it("request failure network issue", function (done) {
 			let deferred = {
-				resolve: function (body) {
+				resolve: function (result) {
 					done("should reject");
-					
 				},
 				reject: function (err) {
 					try{

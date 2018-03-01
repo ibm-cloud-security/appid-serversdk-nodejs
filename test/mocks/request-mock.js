@@ -12,7 +12,7 @@ module.exports = function (options, callback) {
 		if (options.formData.refresh_token === "INVALID_REFRESH_TOKEN") {
 			return callback(null, {statusCode: 401}, JSON.stringify({
 				error: "invalid_grant",
-				error_description: "invalid grant"
+				"error_description": "invalid grant"
 			}));
 		}
 	}
@@ -53,14 +53,14 @@ module.exports = function (options, callback) {
 	} else if (options.formData.username === "test_username" && options.formData.password === "bad_password") {
 		return callback(null, {statusCode: 401}, JSON.stringify({
 			error: "invalid_grant",
-			error_description: "wrong credentials"
+			"error_description": "wrong credentials"
 		}));
 	} else if (options.formData.username === "request_error") {
 		return callback(new Error("REQUEST_ERROR"), {statusCode: 0}, null);
 	} else if (options.formData.username === "parse_error") {
 		return callback(null, {statusCode: 401}, JSON.stringify({
 			error: "invalid_grant",
-			error_description: "wrong credentials"
+			"error_description": "wrong credentials"
 		}) + "dddddd");
 	} else if (options.formData.username === "test_username" && options.formData.password === "good_password") {
 		if (options.formData.scope) {
