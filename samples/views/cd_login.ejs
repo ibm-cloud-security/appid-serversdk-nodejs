@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>
+    <style>
+        body {
+            background-image:url(/images/bg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding-top:80px;
+        }
+        .whiteText {
+            color: white;
+        }
+        .Bold {
+            font-weight: bold
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="col-sm-6 col-sm-offset-3">
+        <div id="imgDiv">
+            <img class="center-block" id="logo" alt="logo"
+                 style="height: 140px; width: 140px; object-fit: contain;margin-top: 40px" src="/images/logo_cloud_land.png">
+        </div>
+        <h1 class="whiteText"><span class="fa fa-sign-in"></span><%= loginLabel %></h1>
+        <!-- show any messages that come back with authentication -->
+        <% if (message.length > 0) { %>
+            <div class="alert alert-danger"><%= message %></div>
+        <% } %>
+        <!-- LOGIN FORM -->
+        <form action="/rop/login/submit?language=<%= language %>" data-toggle="validator" method="post" id="loginForm">
+            <div class="form-group">
+                <label for="email" class="whiteText"><%= emailLabel %></label>
+                <input id="email" type="text" class="form-control" name="username" value="<%= email %>" required>
+            </div>
+            <div class="form-group">
+                <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/forgot_password');" id="forgot_password_button"><%= forgotPasswordLink %></a>
+                <label for="password" class="whiteText"><%= passwordLabel %></label>
+                <input id="password" type="password" class="form-control" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-lg btn-primary center-block btn-login"><%= loginLabel %></button>
+            <div class="pull-right whiteText"> <%= DontHaveLabel %>
+                <a class="pull-right whiteText Bold" href="javascript: moveTo('/ibm/bluemix/appid/view/sign_up');" id="sign_up_button"><%= signUpLink %></a>
+            </div>
+        </form>
+
+        <select onchange="moveTo('/ibm/bluemix/appid/rop/login');" name="language" form="loginForm" id="languageCode">
+            <option value="en">English(Default)</option>
+            <option value="fr">français</option>
+        </select>
+    </div>
+</div>
+</body>
+<script>
+	document.getElementById('languageCode').value = "<%= language %>";
+    function moveTo(path) {
+        location.href = path + '?language='+ document.getElementById('languageCode')[document.getElementById('languageCode').selectedIndex].value + '&email=' + document.getElementById('email').value;
+    }
+</script>
+</html>

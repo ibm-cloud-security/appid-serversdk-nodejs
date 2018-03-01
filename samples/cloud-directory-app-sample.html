@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CloudDirectoryAppSample</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script>
+			$(document).ready(function () {
+				$(".hideOnStartup").hide();
+				$.getJSON("/protected", function (data) {
+					// Already authenticated
+					$("#WhenAuthenticated").show();
+					$("#logoutButton").show();
+					$("#name").text(data.name);
+					$("#email").text(data.email);
+				}).fail(function () {
+					// Not authenticated yet
+					$("#WhenNotAuthenticated").show();
+					$("#loginButton").show();
+				}).always(function() {
+                  var languageQuery = window.location.href.slice(window.location.href.indexOf('?'));
+                  var changeDetails = document.getElementById('changeDetails');
+                  changeDetails.href = "/ibm/cloud/appid/cloudLand/view/change/details" + languageQuery;
+                  var changePassword = document.getElementById('changePassword');
+                  changePassword.href = "/ibm/cloud/appid/cloudLand/view/change/password" + languageQuery;
+                });
+			});
+
+    </script>
+    <style>
+        body {
+            background-image: url(/images/bg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding-top: 80px;
+        }
+
+        .textStyle {
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="container textStyle col-sm-6 col-sm-offset-3">
+<h1>This is CLOUD LAND, cloud directory sample app for appid-serversdk-nodejs</h1>
+<h4>It demonstrates how to use appid-serversdk-nodejs sign-in, sign-up, forgot password and resend notification in a
+    server-side web application.</h4>
+<hr/>
+<div id="imgDiv">
+    <img class="center-block" id="logo" alt="logo"
+         style="height: 140px; width: 140px; object-fit: contain;margin-top: 40px" src="/images/logo_cloud_land.png">
+</div>
+<div id="WhenNotAuthenticated" class="hideOnStartup">
+    <h3>You're not authenticated :(</h3>
+</div>
+
+<div id="WhenAuthenticated" class="hideOnStartup">
+    <h3>You're authenticated :)</h3>
+    <h3>Hello <span id="name"></span></h3>
+    <h4>Your email is <span id="email"></span></h4>
+    <br/><br/>
+    <a class="btn btn-lg btn-primary btn-login" id="changeDetails">Change details</a>
+    <a class="btn btn-lg btn-primary btn-login" id="changePassword">Change password</a>
+</div>
+
+<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/bluemix/appid/rop/login" id="loginButton">Login</a>
+<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/bluemix/appid/logout" id="logoutButton">Logout</a>
+
+</body>
+
+</html>
