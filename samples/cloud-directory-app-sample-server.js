@@ -188,7 +188,7 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 					if (err) {
 						return next(err);
 					}
-					selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword).then(function () {
+					selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword, language).then(function () {
 						res.redirect(LANDING_PAGE_URL + languageQuery);
 					}).catch(function (err) {
 						if (err.code) {
@@ -500,7 +500,7 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 			resetPasswordCodesMap.delete(code);
 			if (uuid === codeObject.uuid && tenantId === codeObject.tenantId) {
 				//update the password and render the success page
-				selfServiceManager.setUserNewPassword(uuid, newPassword).then(function (user) {
+				selfServiceManager.setUserNewPassword(uuid, newPassword, language).then(function (user) {
 					logger.debug('successfully update user password');
 					if (platform === MOBILE_PLATFORM) {
 						res.status(200).send(user);
