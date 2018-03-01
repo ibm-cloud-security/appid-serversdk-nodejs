@@ -138,10 +138,9 @@
 	function sendAgain() {
 		document.getElementById("resendEmailLink").setAttribute("style", "display:none");
 		document.getElementById("spinner").setAttribute("style", "display:visible; color: #4178be;");
-		$.post("/resend_notification?language=" + "<%= language %>",
+		$.post("/resend/USER_VERIFICATION?language=" + "<%= language %>",
 			{
-              uuid: "<%= uuid %>",
-              templateName: "USER_VERIFICATION"
+              uuid: "<%= uuid %>"
 			},
 			function(data, status){
 				document.getElementById("msg").innerHTML = data;
