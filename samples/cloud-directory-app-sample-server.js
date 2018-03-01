@@ -91,9 +91,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 // parse application/json for mobile
 app.use(bodyParser.json());
 
+const tenantId = "TENANT_ID";
 // Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy({
-	tenantId: "TENANT_ID",
+	tenantId: tenantId,
 	clientId: "CLIENT_ID",
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
