@@ -751,10 +751,11 @@ describe("/lib/self-service/self-service-manager", function () {
 	
 	describe("#SelfServiceManager.setUserNewPassword", function () {
 		let selfServiceManager;
+		let language = "en";
 		let testUuid = "testUuid";
 		let testNewPassword = "testNewPassword";
 		let expectedBody = {uuid: testUuid, newPassword: testNewPassword};
-		let expectedQuery = {};
+		let expectedQuery = {language: language};
 		let testIamToken = "bearer axcvrd";
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
@@ -812,7 +813,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		});
 		
 		it("Should successfully set new password", function (done) {
-			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (res) {
+			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language).then(function (res) {
 				try {
 					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 					done();
@@ -825,7 +826,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		});
 		
 		it("Should successfully set new password with ipAddress", function (done) {
-			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, testIpAddress).then(function (res) {
+			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language, testIpAddress).then(function (res) {
 				try {
 					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 					done();
@@ -841,7 +842,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
 			});
-			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, null, providedIamToken).then(function (res) {
+			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language, null, providedIamToken).then(function (res) {
 				try {
 					assert.equal(JSON.stringify(res), JSON.stringify(testUuid));
 					done();
@@ -858,7 +859,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				managementUrl: "managementUrlTest",
 				iamApiKey: badIamApiKey
 			});
-			selfServiceManager.setUserNewPassword(testUuid, testNewPassword).then(function (user) {
+			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language).then(function (user) {
 				done("should reject");
 			}).catch(function (err) {
 				try{
@@ -871,7 +872,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		});
 		
 		it("Should reject on _handleRequest", function (done) {
-			selfServiceManager.setUserNewPassword({}, testNewPassword).then(function (user) {
+			selfServiceManager.setUserNewPassword({}, testNewPassword, language).then(function (user) {
 				done("should reject");
 			}).catch(function (err) {
 				try {
