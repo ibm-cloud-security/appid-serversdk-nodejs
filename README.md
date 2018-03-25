@@ -335,6 +335,143 @@ Note:
 1. This call requires that the user is authenticated with Cloud directory identity provider.
 2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in App ID dashboard.
 
+### Self Service APIs
+
+Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows. 
+The selfServiceManager can be init with the following options:
+
+* iamApiKey: If supplied, it will be used to get iamToken before every request of the selfServiceManager.
+* managementUrl: The App ID management url.
+
+```javascript
+// The managementUrl value can be obtained from Service Credentials
+// tab in the App ID Dashboard. You're not required to provide this argument if
+// your node.js application runs on IBM Cloud and is bound to the
+// App ID service instance. In this case App ID configuration will be obtained
+// using VCAP_SERVICES environment variable.
+// Note: If your Service Credentials does not contain managementUrl you can supply the tenantId, and the oauthServerUrl instead.
+const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
+let selfServiceManager = new SelfServiceManager({
+	iamApiKey: "{iam-api-key}",
+	managementUrl: "{management-url}"
+});
+```
+
+The self service manger exposed the following APIs, each API can get 'iamToken' as optional parameter, if passed it will be added to the App ID management request.
+You must supply 'iamApikey' to the selfServiceManager otherwise you must supply the 'iamToken' to each of the selfServiceManager APIs.
+
+#### Sign-up
+Sign up a new user.
+userData is a JSON object with the user SCIM profile (https://tools.ietf.org/html/rfc7643#page-35).
+language currently unused, default to 'en'.
+
+```javascript
+selfServiceManager.signUp(userData, language, iamToken).then(function (user) {
+			logger.debug('user created successfully');
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+
+#### Forgot Password
+Forgot password flow.
+email is the user email that request the forgot password request.
+language currently unused, default to 'en'.
+
+```javascript
+selfServiceManager.forgotPassword(email, language, iamToken).then(function (user) {
+			logger.debug('forgot password success');
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+
+#### Resend Notification
+Resend notification.
+uuid is the Cloud Directory user uuid.
+templateName is the template to be send.
+language currently unused, default to 'en'.
+
+```javascript
+selfServiceManager.resendNotification(uuid, templateName, language, iamToken).then(function () {
+			logger.debug('resend success');
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+#### Get Sign-up confirmation result
+Get the stored result for the sign up confirmation.
+This should be called to verify the authenticity of the sign up verification.
+context is a random string that will be supply by App ID, for authenticity purposes.
+return a JSON with a 'success' and 'uuid' properties. if 'success' is false additional 'error' property containing 'code' and 'description' properties will be added.
+
+```javascript
+selfServiceManager.getSignUpConfirmationResult(context, iamToken).then(function (result) {
+			logger.debug('returned result: ' + JSON.stringify(result));
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+#### Get Forgot password confirmation result
+Get the stored result for the forgot password confirmation.
+This should be called to verify the authenticity of the forgot password request.
+context is a random string that will be supply by App ID, for authenticity purposes.
+return a JSON with a 'success' and 'uuid' properties. if 'success' is false additional 'error' property containing 'code' and 'description' properties will be added.
+
+```javascript
+selfServiceManager.getForgotPasswordConfirmationResult(ucontext, iamToken).then(function (result) {
+            logger.debug('returned result: ' + JSON.stringify(result));
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+#### Set User new password
+Change the user passowrd.
+uuid is the Cloud Directory user uuid.
+newPassword the new password to be set.
+language currently unused, default to 'en'.
+changedIpAddress (optional) is the ip address that trigger the change password request, if supply the placeholder %{passwordChangeInfo.ipAddress} will be available with that value, for change password email template.
+
+```javascript
+selfServiceManager.setUserNewPassword(uuid, newPassword, language, changedIpAddress, iamToken).then(function (user) {
+			logger.debug('user password changed');
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+#### Get user details
+Gets the stored details of the Cloud directory user.
+uuid is the Cloud Directory user uuid.
+
+```javascript
+selfServiceManager.getUserDetails(uuid, iamToke).then(function (user) {
+			logger.debug('user details:'  + JSON.stringify(user));
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+#### Update user details
+update the user details.
+uuid is the Cloud Directory user uuid.
+userData is a JSON object with the updated user SCIM profile (https://tools.ietf.org/html/rfc7643#page-35).
+
+```javascript
+selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (user) {
+			logger.debug('user created successfully');
+		}).catch(function (err) {
+			logger.error(err);	
+		});
+	}
+```
+
+
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
