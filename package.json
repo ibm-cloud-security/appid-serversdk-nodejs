@@ -1,6 +1,6 @@
 {
   "name": "bluemix-appid",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Node.js SDK for the IBM Bluemix App ID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
