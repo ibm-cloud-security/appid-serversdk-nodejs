@@ -153,6 +153,28 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			
 		});
+		it("Should be able to init with VCAP_SERVICES (appid) - check api key in VCAP", function (done) {
+			const testApiKey = "testApiKey";
+			process.env.VCAP_SERVICES = JSON.stringify({
+				AppID: [
+					{
+						credentials: {
+							oauthServerUrl: "https://appid-oauth.com/oauth/v3",
+							tenantId: "123",
+							apikey: testApiKey
+						}
+					}
+				]
+			});
+			
+			try {
+				let selfServiceManager = new SelfServiceManager();
+				assert.equal(testApiKey, selfServiceManager.iamApiKey);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
 		
 		it("Should be able to init with VCAP_SERVICES (appid)", function (done) {
 			process.env.VCAP_SERVICES = JSON.stringify({
