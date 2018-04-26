@@ -344,11 +344,12 @@ The selfServiceManager can be init with the following options:
 * managementUrl: The App ID management url.
 
 ```javascript
-// The managementUrl value can be obtained from Service Credentials
-// tab in the App ID Dashboard. You're not required to provide this argument if
-// your node.js application runs on IBM Cloud and is bound to the
-// App ID service instance. In this case App ID configuration will be obtained
-// using VCAP_SERVICES environment variable.
+// The managementUrl value can be obtained from Service Credentials tab in the App ID Dashboard.
+// You're not required to provide the managementUrl and the iamApiKey arguments if
+// your node.js application runs on IBM Cloud and is bound to the App ID service instance. 
+// In this case App ID configuration will be obtained using VCAP_SERVICES environment variable, 
+// during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable. 
+// (if you wish to use diffrent IAM api key you can supply it to the iamApiKey).
 // Note: If your Service Credentials does not contain managementUrl you can supply the tenantId, and the oauthServerUrl instead.
 const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
 let selfServiceManager = new SelfServiceManager({
