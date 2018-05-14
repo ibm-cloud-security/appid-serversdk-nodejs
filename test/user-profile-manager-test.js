@@ -305,7 +305,8 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 			var p5 = UserProfileManager.getUserInfo("return_code_500", identityTokenSubject123);
 			var p6 = UserProfileManager.getUserInfo("userinfo_access_token", "ifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.Q");
 			var p7 = UserProfileManager.getUserInfo("userinfo_access_token", "malformed identityToken");
-			Q.allSettled([p1, p2, p3, p4, p5, p6, p7]).spread(function (r1, r2, r3, r4, r5, r6, r7) {
+			var p8 = UserProfileManager.getUserInfo("userinfo_access_token", 8);
+			Q.allSettled([p1, p2, p3, p4, p5, p6, p7, p8]).spread(function (r1, r2, r3, r4, r5, r6, r7, r8) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
 				assert.equal(r3.state, "rejected");
@@ -313,6 +314,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 				assert.equal(r5.state, "rejected");
 				assert.equal(r6.state, "rejected");
 				assert.equal(r7.state, "rejected");
+				assert.equal(r8.state, "rejected");
 				done();
 			}).catch(function (e) {
 				done(new Error(e));

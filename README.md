@@ -235,8 +235,8 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
-### User profile attributes
-Use the user UserManager to store and retrieve attribute of the user and other information about the user
+### User Profile
+Use the UserProfileManager to store and retrieve user attributes and to retrieve other information about the user
 
 ```javascript
 const userProfileManager = require("bluemix-appid").UserProfileManager;
@@ -268,7 +268,7 @@ userProfileManager.getUserInfo(accessToken).then(function (profile) {
 
         });
 
-// retrieve user info and validate response using identity token
+// (recommended approach) retrieve user info and validate against the given identity token
 userProfileManager.getUserInfo(accessToken, identityToken).then(function (profile) {
 
         });
