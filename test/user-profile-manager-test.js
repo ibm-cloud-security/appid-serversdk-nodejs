@@ -17,25 +17,25 @@ const proxyquire = require("proxyquire");
 const _ = require("underscore");
 const Q = require("q");
 
-describe("/lib/user-manager/user-user-manager", function () {
+describe("/lib/user-profile-manager/user-profile-manager", function () {
 	console.log("Loading user-manager-test.js");
 
-	var UserManager;
+	var UserProfileManager;
 
 	before(function () {
-		UserManager = proxyquire("../lib/user-manager/user-manager", {
+		UserProfileManager = proxyquire("../lib/user-profile-manager/user-profile-manager", {
 			"request": requestMock
 		});
 	});
 
-	describe("#UserManager.init", function () {
+	describe("#UserProfileManager.init", function () {
 		it("Should not be able to init without options and VCAP_SERVICS", function () {
-			UserManager.init();
+			UserProfileManager.init();
 			// TODO: add validation that errors are printed to console
 		});
 
 		it("Should be able to init with options", function () {
-			UserManager.init({
+			UserProfileManager.init({
 				profilesUrl: "dummyurl"
 			});
 		});
@@ -50,7 +50,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 					}
 				]
 			});
-			UserManager.init();
+			UserProfileManager.init();
 		});
 
 		it("Should be able to init with VCAP_SERVICES (appid)", function () {
@@ -63,15 +63,15 @@ describe("/lib/user-manager/user-user-manager", function () {
 					}
 				]
 			});
-			UserManager.init();
+			UserProfileManager.init();
 		});
 	});
-	describe("#UserManager.setAttribute", function () {
+	describe("#UserProfileManager.setAttribute", function () {
 		it("Should validate all parameters are present", function (done) {
 
-			var p1 = UserManager.setAttribute();
-			var p2 = UserManager.setAttribute("accessToken");
-			var p3 = UserManager.setAttribute("accessToken", "name");
+			var p1 = UserProfileManager.setAttribute();
+			var p2 = UserProfileManager.setAttribute("accessToken");
+			var p3 = UserProfileManager.setAttribute("accessToken", "name");
 
 			Q.allSettled([p1, p2, p3]).spread(function (r1, r2, r3) {
 				assert.equal(r1.state, "rejected");
@@ -84,11 +84,11 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserManager.setAttribute("return_error", "name", "value");
-			var p2 = UserManager.setAttribute("return_code_401", "name", "value");
-			var p3 = UserManager.setAttribute("return_code_403", "name", "value");
-			var p4 = UserManager.setAttribute("return_code_404", "name", "value");
-			var p5 = UserManager.setAttribute("return_code_500", "name", "value");
+			var p1 = UserProfileManager.setAttribute("return_error", "name", "value");
+			var p2 = UserProfileManager.setAttribute("return_code_401", "name", "value");
+			var p3 = UserProfileManager.setAttribute("return_code_403", "name", "value");
+			var p4 = UserProfileManager.setAttribute("return_code_404", "name", "value");
+			var p5 = UserProfileManager.setAttribute("return_code_500", "name", "value");
 			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -115,8 +115,8 @@ describe("/lib/user-manager/user-user-manager", function () {
 					}
 				]
 			});
-			UserManager.init();
-			UserManager.setAttribute("access_token", "name", "value").then(function (result) {
+			UserProfileManager.init();
+			UserProfileManager.setAttribute("access_token", "name", "value").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "PUT");
 				assert.equal(result.body, "value");
@@ -125,7 +125,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 			}).catch(done);
 		});
 	});
-	describe("#UserManager.getAttribute", function () {
+	describe("#UserProfileManager.getAttribute", function () {
 		process.env.VCAP_SERVICES = JSON.stringify({
 			AppID: [
 				{
@@ -141,8 +141,8 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 		it("Should validate all parameters are present", function (done) {
 
-			var p1 = UserManager.getAttribute();
-			var p2 = UserManager.getAttribute("accessToken");
+			var p1 = UserProfileManager.getAttribute();
+			var p2 = UserProfileManager.getAttribute("accessToken");
 
 			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
@@ -154,11 +154,11 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserManager.getAttribute("return_error", "name");
-			var p2 = UserManager.getAttribute("return_code_401", "name");
-			var p3 = UserManager.getAttribute("return_code_403", "name");
-			var p4 = UserManager.getAttribute("return_code_404", "name");
-			var p5 = UserManager.getAttribute("return_code_500", "name");
+			var p1 = UserProfileManager.getAttribute("return_error", "name");
+			var p2 = UserProfileManager.getAttribute("return_code_401", "name");
+			var p3 = UserProfileManager.getAttribute("return_code_403", "name");
+			var p4 = UserProfileManager.getAttribute("return_code_404", "name");
+			var p5 = UserProfileManager.getAttribute("return_code_500", "name");
 			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -172,7 +172,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should send proper access token, url and value", function (done) {
-			UserManager.getAttribute("access_token", "name").then(function (result) {
+			UserProfileManager.getAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -182,7 +182,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 	});
 
-	describe("#UserManager.deleteAttribute", function () {
+	describe("#UserProfileManager.deleteAttribute", function () {
 		process.env.VCAP_SERVICES = JSON.stringify({
 			AppID: [
 				{
@@ -198,8 +198,8 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 		it("Should validate all parameters are present", function (done) {
 
-			var p1 = UserManager.deleteAttribute();
-			var p2 = UserManager.deleteAttribute("accessToken");
+			var p1 = UserProfileManager.deleteAttribute();
+			var p2 = UserProfileManager.deleteAttribute("accessToken");
 
 			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
@@ -211,11 +211,11 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserManager.deleteAttribute("return_error", "name", "value");
-			var p2 = UserManager.deleteAttribute("return_code_401", "name", "value");
-			var p3 = UserManager.deleteAttribute("return_code_403", "name", "value");
-			var p4 = UserManager.deleteAttribute("return_code_404", "name", "value");
-			var p5 = UserManager.deleteAttribute("return_code_500", "name", "value");
+			var p1 = UserProfileManager.deleteAttribute("return_error", "name", "value");
+			var p2 = UserProfileManager.deleteAttribute("return_code_401", "name", "value");
+			var p3 = UserProfileManager.deleteAttribute("return_code_403", "name", "value");
+			var p4 = UserProfileManager.deleteAttribute("return_code_404", "name", "value");
+			var p5 = UserProfileManager.deleteAttribute("return_code_500", "name", "value");
 			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -229,7 +229,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should send proper access token, url and value", function (done) {
-			UserManager.deleteAttribute("access_token", "name").then(function (result) {
+			UserProfileManager.deleteAttribute("access_token", "name").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes/name");
 				assert.equal(result.method, "DELETE");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -238,10 +238,10 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 	});
 
-	describe("#UserManager.getAllAttributes", function () {
+	describe("#UserProfileManager.getAllAttributes", function () {
 		it("Should validate all parameters are present", function (done) {
 
-			var p1 = UserManager.getAllAttributes();
+			var p1 = UserProfileManager.getAllAttributes();
 
 			Q.allSettled([p1]).spread(function (r1) {
 				assert.equal(r1.state, "rejected");
@@ -252,11 +252,11 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserManager.getAllAttributes("return_error");
-			var p2 = UserManager.getAllAttributes("return_code_401");
-			var p3 = UserManager.getAllAttributes("return_code_403");
-			var p4 = UserManager.getAllAttributes("return_code_404");
-			var p5 = UserManager.getAllAttributes("return_code_500");
+			var p1 = UserProfileManager.getAllAttributes("return_error");
+			var p2 = UserProfileManager.getAllAttributes("return_code_401");
+			var p3 = UserProfileManager.getAllAttributes("return_code_403");
+			var p4 = UserProfileManager.getAllAttributes("return_code_404");
+			var p5 = UserProfileManager.getAllAttributes("return_code_500");
 			Q.allSettled([p1, p2, p3, p4, p5]).spread(function (r1, r2, r3, r4, r5) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -270,7 +270,7 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should send proper access token, url and value", function (done) {
-			UserManager.getAllAttributes("access_token").then(function (result) {
+			UserProfileManager.getAllAttributes("access_token").then(function (result) {
 				assert.equal(result.url, "http://abcd/api/v1/attributes");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer access_token");
@@ -279,14 +279,14 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 	});
 
-	describe("#UserManager.getUserInfo", function () {
+	describe("#UserProfileManager.getUserInfo", function () {
 
 		let identityTokenSubject123 = "Q.eyJzdWIiOiIxMjMifQ.e";
 
 		it("Should validate all parameters are present", function (done) {
 
-			var p1 = UserManager.getUserInfo();
-			var p2 = UserManager.getUserInfo("accessToken");
+			var p1 = UserProfileManager.getUserInfo();
+			var p2 = UserProfileManager.getUserInfo("accessToken");
 
 			Q.allSettled([p1, p2]).spread(function (r1, r2) {
 				assert.equal(r1.state, "rejected");
@@ -298,13 +298,13 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserManager.getUserInfo("return_error", identityTokenSubject123);
-			var p2 = UserManager.getUserInfo("return_code_401", identityTokenSubject123);
-			var p3 = UserManager.getUserInfo("return_code_403", identityTokenSubject123);
-			var p4 = UserManager.getUserInfo("return_code_404", identityTokenSubject123);
-			var p5 = UserManager.getUserInfo("return_code_500", identityTokenSubject123);
-			var p6 = UserManager.getUserInfo("userinfo_access_token", "ifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.Q");
-			var p7 = UserManager.getUserInfo("userinfo_access_token", "malfored identityToken");
+			var p1 = UserProfileManager.getUserInfo("return_error", identityTokenSubject123);
+			var p2 = UserProfileManager.getUserInfo("return_code_401", identityTokenSubject123);
+			var p3 = UserProfileManager.getUserInfo("return_code_403", identityTokenSubject123);
+			var p4 = UserProfileManager.getUserInfo("return_code_404", identityTokenSubject123);
+			var p5 = UserProfileManager.getUserInfo("return_code_500", identityTokenSubject123);
+			var p6 = UserProfileManager.getUserInfo("userinfo_access_token", "ifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.Q");
+			var p7 = UserProfileManager.getUserInfo("userinfo_access_token", "malformed identityToken");
 			Q.allSettled([p1, p2, p3, p4, p5, p6, p7]).spread(function (r1, r2, r3, r4, r5, r6, r7) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -320,8 +320,8 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("should send userinfo payload", function (done) {
-			UserManager.oauthServerUrl = "http://oauth"
-			UserManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
+			UserProfileManager.oauthServerUrl = "http://oauth"
+			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
 				assert.equal(result.url, "http://oauth/userinfo");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");
@@ -332,8 +332,8 @@ describe("/lib/user-manager/user-user-manager", function () {
 		});
 
 		it("should send uesrinfo payload - validating identity token ", function (done) {
-			UserManager.oauthServerUrl = "http://oauth"
-			UserManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
+			UserProfileManager.oauthServerUrl = "http://oauth"
+			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
 				assert.equal(result.url, "http://oauth/userinfo");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");

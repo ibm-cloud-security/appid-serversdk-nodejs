@@ -239,34 +239,39 @@ In order to use the persisted refresh_token, you need to call `webAppStrategy.re
 Use the user UserManager to store and retrieve attribute of the user and other information about the user
 
 ```javascript
-const userManager = require("bluemix-appid").UserManager;
-userManager.init();
+const userProfileManager = require("bluemix-appid").UserProfileManager;
+userProfileManager.init();
 var accessToken = req.session[WebAppStrategy.AUTH_CONTEXT].accessToken;
 
 // get all attributes
-userManager.getAllAttributes(accessToken).then(function (attributes) {
+userProfileManager.getAllAttributes(accessToken).then(function (attributes) {
 
         });
 
 // get single attribute
-userManager.getAttribute(accessToken, name).then(function (attributes) {
+userProfileManager.getAttribute(accessToken, name).then(function (attributes) {
 
         });
 
 // set attribute value
-userManager.setAttribute(accessToken, name, value).then(function (attributes) {
+userProfileManager.setAttribute(accessToken, name, value).then(function (attributes) {
 
         });
 
 // delete attribute
-userManager.deleteAttribute(accessToken, name).then(function () {
+userProfileManager.deleteAttribute(accessToken, name).then(function () {
 
         });
 
 // retrieve user info
-userManager.getUserInfo(accessToken, optionalIdentityToken).then(function (profile) {
+userProfileManager.getUserInfo(accessToken).then(function (profile) {
 
-        });		
+        });
+
+// retrieve user info and validate response using identity token
+userProfileManager.getUserInfo(accessToken, identityToken).then(function (profile) {
+
+        });
 
 ```
 ## Cloud Directory
