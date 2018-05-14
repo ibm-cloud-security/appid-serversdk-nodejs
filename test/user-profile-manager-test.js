@@ -17,6 +17,9 @@ const proxyquire = require("proxyquire");
 const _ = require("underscore");
 const Q = require("q");
 
+const identityTokenSubIsSubject123 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.QpodAz7eU9NU0gBu0oj4zaI0maa94jzbm4BEV2I_sURw9fvfpLLt3zxHi-C3ItlcHiMSyWWL6oGyrkX_25Z7GK2Taxx5ix4bsi-iYOzJQ-SP4sVaKJ5fRMLMpnRMwOQrOGmrzhf53mqVJ76XK58ZM0Sa7pxM92N1PQDxPXPSfxejhN2xISi-Zw4yotQCny-AGjj5xnfNAPiaYjVGy_xK3Y_8xTSZkGcjuJ76deK9SBf7u-wH92zWWhqtaN_mU4yAOyejG3Z1aSduWc-N6K7jhjMReJLowJChDN2hCmvJ5EISL7JkITmZWdrQW-ZSZ76JMQ0u_-ecnX6r_C4KG_fzDg";
+const identityTokenSubIs123 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UifQ.eyJzdWIiOiIxMjMifQ.enbXHtja8BJd9_hlIbCgwyMXl8o9s74yDlqH4_11h7xLVasDO8Yy4jNyhVmIIb8jpl4fQfjWjqaOJoD2TqgfhqwQ-tGRjzYYR-f0qAMb99pNDtLS9IFf1yHYM2y65UerZ8qTD4g2s-ZWPk7yvxPMQx-Nrvu-X2uUwvdBCBr02rXpsHdMbeLYA6iwUs58p5hMxOxf3yKrBcTpTJ4EE164BhruEU5HyHhqSM9DTVLvliuapFFIK4CGV3FjvrKnT38yWdxSWtd9ETC79bfBwWTsE0ykMzb7Nq3vA2O0C_pv5IUixkLtTCiT3s5m55WZaqxdFCvOe4BjAt6AWH7slwgZdg"
+
 describe("/lib/user-profile-manager/user-profile-manager", function () {
 	console.log("Loading user-manager-test.js");
 
@@ -281,8 +284,6 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 	describe("#UserProfileManager.getUserInfo", function () {
 
-		let identityTokenSubject123 = "Q.eyJzdWIiOiIxMjMifQ.e";
-
 		it("Should validate all parameters are present", function (done) {
 
 			var p1 = UserProfileManager.getUserInfo();
@@ -298,12 +299,12 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 		});
 
 		it("Should fail if there's an error", function (done) {
-			var p1 = UserProfileManager.getUserInfo("return_error", identityTokenSubject123);
-			var p2 = UserProfileManager.getUserInfo("return_code_401", identityTokenSubject123);
-			var p3 = UserProfileManager.getUserInfo("return_code_403", identityTokenSubject123);
-			var p4 = UserProfileManager.getUserInfo("return_code_404", identityTokenSubject123);
-			var p5 = UserProfileManager.getUserInfo("return_code_500", identityTokenSubject123);
-			var p6 = UserProfileManager.getUserInfo("userinfo_access_token", "ifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.Q");
+			var p1 = UserProfileManager.getUserInfo("return_error", identityTokenSubIs123);
+			var p2 = UserProfileManager.getUserInfo("return_code_401", identityTokenSubIs123);
+			var p3 = UserProfileManager.getUserInfo("return_code_403", identityTokenSubIs123);
+			var p4 = UserProfileManager.getUserInfo("return_code_404", identityTokenSubIs123);
+			var p5 = UserProfileManager.getUserInfo("return_code_500", identityTokenSubIs123);
+			var p6 = UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubIsSubject123);
 			var p7 = UserProfileManager.getUserInfo("userinfo_access_token", "malformed identityToken");
 			var p8 = UserProfileManager.getUserInfo("userinfo_access_token", 8);
 			Q.allSettled([p1, p2, p3, p4, p5, p6, p7, p8]).spread(function (r1, r2, r3, r4, r5, r6, r7, r8) {
@@ -322,8 +323,8 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 		});
 
 		it("should send userinfo payload", function (done) {
-			UserProfileManager.oauthServerUrl = "http://oauth"
-			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
+			UserProfileManager.oauthServerUrl = "http://oauth";
+			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubIs123).then(function (result) {
 				assert.equal(result.url, "http://oauth/userinfo");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");
@@ -334,8 +335,8 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 		});
 
 		it("should send uesrinfo payload - validating identity token ", function (done) {
-			UserProfileManager.oauthServerUrl = "http://oauth"
-			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubject123).then(function (result) {
+			UserProfileManager.oauthServerUrl = "http://oauth";
+			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubIs123).then(function (result) {
 				assert.equal(result.url, "http://oauth/userinfo");
 				assert.equal(result.method, "GET");
 				assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");
