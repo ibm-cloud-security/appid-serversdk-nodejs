@@ -18,10 +18,31 @@ const _ = require("underscore");
 const Q = require("q");
 
 const identityTokenSubIsSubject123 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UifQ.eyJzdWIiOiJzdWJqZWN0MTIzIn0.QpodAz7eU9NU0gBu0oj4zaI0maa94jzbm4BEV2I_sURw9fvfpLLt3zxHi-C3ItlcHiMSyWWL6oGyrkX_25Z7GK2Taxx5ix4bsi-iYOzJQ-SP4sVaKJ5fRMLMpnRMwOQrOGmrzhf53mqVJ76XK58ZM0Sa7pxM92N1PQDxPXPSfxejhN2xISi-Zw4yotQCny-AGjj5xnfNAPiaYjVGy_xK3Y_8xTSZkGcjuJ76deK9SBf7u-wH92zWWhqtaN_mU4yAOyejG3Z1aSduWc-N6K7jhjMReJLowJChDN2hCmvJ5EISL7JkITmZWdrQW-ZSZ76JMQ0u_-ecnX6r_C4KG_fzDg";
-const identityTokenSubIs123 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UifQ.eyJzdWIiOiIxMjMifQ.enbXHtja8BJd9_hlIbCgwyMXl8o9s74yDlqH4_11h7xLVasDO8Yy4jNyhVmIIb8jpl4fQfjWjqaOJoD2TqgfhqwQ-tGRjzYYR-f0qAMb99pNDtLS9IFf1yHYM2y65UerZ8qTD4g2s-ZWPk7yvxPMQx-Nrvu-X2uUwvdBCBr02rXpsHdMbeLYA6iwUs58p5hMxOxf3yKrBcTpTJ4EE164BhruEU5HyHhqSM9DTVLvliuapFFIK4CGV3FjvrKnT38yWdxSWtd9ETC79bfBwWTsE0ykMzb7Nq3vA2O0C_pv5IUixkLtTCiT3s5m55WZaqxdFCvOe4BjAt6AWH7slwgZdg"
+const identityTokenSubIs123 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UifQ.eyJzdWIiOiIxMjMifQ.enbXHtja8BJd9_hlIbCgwyMXl8o9s74yDlqH4_11h7xLVasDO8Yy4jNyhVmIIb8jpl4fQfjWjqaOJoD2TqgfhqwQ-tGRjzYYR-f0qAMb99pNDtLS9IFf1yHYM2y65UerZ8qTD4g2s-ZWPk7yvxPMQx-Nrvu-X2uUwvdBCBr02rXpsHdMbeLYA6iwUs58p5hMxOxf3yKrBcTpTJ4EE164BhruEU5HyHhqSM9DTVLvliuapFFIK4CGV3FjvrKnT38yWdxSWtd9ETC79bfBwWTsE0ykMzb7Nq3vA2O0C_pv5IUixkLtTCiT3s5m55WZaqxdFCvOe4BjAt6AWH7slwgZdg";
+
+function requestMock(options, callback) {
+	var authHeader = options.headers["Authorization"];
+
+	if (authHeader.indexOf("return_error") > 0) {
+		return callback(new Error("EXPECTED FAILURE"));
+	} else if (authHeader.indexOf("return_code") > 0) {
+		var statusCode = parseInt(authHeader.split("_")[2]);
+		return callback(null, {
+			statusCode: parseInt(statusCode)
+		});
+	} else if (authHeader.indexOf("userinfo_access_token") > 0) {
+		options.sub = "123";
+		return callback(null, {
+			statusCode: 200
+		}, JSON.stringify(options));
+	} else {
+		return callback(null, {
+			statusCode: 200
+		}, JSON.stringify(options));
+	}
+}
 
 describe("/lib/user-profile-manager/user-profile-manager", function () {
-	console.log("Loading user-manager-test.js");
 
 	var UserProfileManager;
 
@@ -113,7 +134,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 							clientId: "clientId",
 							secret: "secret",
 							oauthServerUrl: "http://abcd",
-							profilesUrl: 'http://abcd'
+							profilesUrl: "http://abcd"
 						}
 					}
 				]
@@ -137,7 +158,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 						clientId: "clientId",
 						secret: "secret",
 						oauthServerUrl: "http://abcd",
-						profilesUrl: 'http://abcd'
+						profilesUrl: "http://abcd"
 					}
 				}
 			]
@@ -194,7 +215,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 						clientId: "clientId",
 						secret: "secret",
 						oauthServerUrl: "http://abcd",
-						profilesUrl: 'http://abcd'
+						profilesUrl: "http://abcd"
 					}
 				}
 			]
@@ -347,25 +368,3 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 		});
 	});
 });
-
-function requestMock(options, callback) {
-	var authHeader = options.headers["Authorization"];
-	console.log(authHeader);
-	if (authHeader.indexOf("return_error") > 0) {
-		return callback(new Error("EXPECTED FAILURE"));
-	} else if (authHeader.indexOf("return_code") > 0) {
-		var statusCode = parseInt(authHeader.split("_")[2]);
-		return callback(null, {
-			statusCode: parseInt(statusCode)
-		});
-	} else if (authHeader.indexOf("userinfo_access_token") > 0) {
-		options.sub = "123";
-		return callback(null, {
-			statusCode: 200
-		}, JSON.stringify(options));
-	} else {
-		return callback(null, {
-			statusCode: 200
-		}, JSON.stringify(options));
-	}
-}
