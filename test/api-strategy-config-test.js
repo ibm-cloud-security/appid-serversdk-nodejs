@@ -10,28 +10,35 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
 const chai = require('chai');
 const assert = chai.assert;
+
 describe('/lib/strategies/api-strategy-config', function () {
     console.log("Loading api-strategy-config-test.js");
+
     var Config;
+
     before(function () {
         Config = require("../lib/strategies/api-strategy-config");
     });
+
     beforeEach(function () {
         delete process.env.VCAP_SERVICES;
         delete process.env.VCAP_APPLICATION;
         delete process.env.redirectUri;
     });
+
     describe("#getConfig(), #getServerUrl", function () {
         it("Should fail since there's no options argument nor VCAP_SERVICES", function () {
             var config = new Config();
             assert.isObject(config);
             assert.isObject(config.getConfig());
-            assert.isUndefined(config.getTenantId());
-            assert.isUndefined(config.getClientId());
             assert.isUndefined(config.getOAuthServerUrl());
+            assert.isUndefined(config.getClientId());
+            assert.isUndefined(config.getTenantId());
         });
+
         it("Should fail when there's no clientId and oauthServerUrl", function () {
             var config = new Config({
                 tenantId: "abcd"
@@ -42,6 +49,18 @@ describe('/lib/strategies/api-strategy-config', function () {
             assert.isUndefined(config.getClientId());
             assert.isUndefined(config.getOAuthServerUrl());
         });
+
+        it("Should fail when there's no tenantId and oauthServerUrl", function () {
+            var config = new Config({
+                clientId: "clientId"
+            });
+            assert.isObject(config);
+            assert.isObject(config.getConfig());
+            assert.isUndefined(config.getTenantId());
+            assert.equal(config.getClientId(), "clientId");
+            assert.isUndefined(config.getOAuthServerUrl());
+        });
+
         it("Should fail when there's no clientId and tenantId", function () {
             var config = new Config({
                 oauthServerUrl: "http://abcd"
@@ -52,16 +71,7 @@ describe('/lib/strategies/api-strategy-config', function () {
             assert.isUndefined(config.getClientId());
             assert.equal(config.getOAuthServerUrl(), "http://abcd");
         });
-        it("Should fail when there's no tenantId and oauthServerUrl", function () {
-            var config = new Config({
-                clientId: "clientId",
-            });
-            assert.isObject(config);
-            assert.isObject(config.getConfig());
-            assert.isUndefined(config.getTenantId());
-            assert.equal(config.getClientId(), "clientId");
-            assert.isUndefined(config.getOAuthServerUrl());
-        });
+
         it("Should succeed and get config from options argument", function () {
             var config = new Config({
                 tenantId: "abcd",
@@ -74,16 +84,9 @@ describe('/lib/strategies/api-strategy-config', function () {
             assert.equal(config.getClientId(), "clientId");
             assert.equal(config.getOAuthServerUrl(), "http://abcd");
         });
+
         it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", function () {
-            process.env.VCAP_SERVICES = JSON.stringify({
-                AdvancedMobileAccess: [{
-                    credentials: {
-                        tenantId: "abcd",
-                        clientId: "clientId",
-                        oauthServerUrl: "http://abcd"
-                    }
-                }]
-            });
+            process.env.VCAP_SERVICES = JSON.stringify({AdvancedMobileAccess: [{credentials: {tenantId: "abcd", clientId: "clientId", oauthServerUrl: "http://abcd"}}]});
             var config = new Config();
             assert.isObject(config);
             assert.isObject(config.getConfig());
@@ -91,16 +94,9 @@ describe('/lib/strategies/api-strategy-config', function () {
             assert.equal(config.getClientId(), "clientId");
             assert.equal(config.getOAuthServerUrl(), "http://abcd");
         });
+
         it("Should succeed and get config from VCAP_SERVICES with Appid as the name", function () {
-            process.env.VCAP_SERVICES = JSON.stringify({
-                AppID: [{
-                    credentials: {
-                        tenantId: "abcd",
-                        clientId: "clientId",
-                        oauthServerUrl: "http://abcd"
-                    }
-                }]
-            });
+            process.env.VCAP_SERVICES = JSON.stringify({AppID:[{credentials: {tenantId: "abcd", clientId: "clientId", oauthServerUrl: "http://abcd"}}]});
             var config = new Config();
             assert.isObject(config);
             assert.isObject(config.getConfig());
