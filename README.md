@@ -52,7 +52,7 @@ npm install --save pug
 ```
 
 #### Protecting APIs using the APIStrategy
-Below configuration can be obtained from Service Credentials tab in the App ID Dashboard. See App ID docs for additional information. The expected header structure is `Authorization=Bearer {access_token} [{id_token}]`
+APIStrategy expects request to contain an Authorization header with valid access token and optionally identity token. See App ID docs for additional information. The expected header structure is `Authorization=Bearer {access_token} [{id_token}]`
 
 In case of invalid/expired tokens the APIStrategy will return HTTP 401 with `Www-Authenticate=Bearer scope="{scope}" error="{error}"`. The `error` component is optional.
 
