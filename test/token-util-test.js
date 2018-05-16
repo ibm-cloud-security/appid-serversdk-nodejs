@@ -28,29 +28,29 @@ describe("/lib/utils/token-util", function(){
 		TokenUtil = proxyquire("../lib/utils/token-util", {
 			"./public-key-util": require("./mocks/public-key-util-mock")
 		});
-        ServiceConfig = require("../lib/strategies/api-strategy-config");
-        serviceConfig = new ServiceConfig({
-            oauthServerUrl: constants.SERVER_URL,
-            tenantId: constants.TENANTID,
-            clientId: constants.CLIENTID
-        });
+		ServiceConfig = require("../lib/strategies/api-strategy-config");
+		serviceConfig = new ServiceConfig({
+			oauthServerUrl: constants.SERVER_URL,
+			tenantId: constants.TENANTID,
+			clientId: constants.CLIENTID
+		});
 	});
 
 	describe("#decodeAndValidate()", function(){
-        
-        it("Should fail since service configuration is not defined", function(){
-        	return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN)).to.be.rejectedWith("Invalid service configuration");
-        });
+		
+		it("Should fail since service configuration is not defined", function(){
+			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN)).to.be.rejectedWith("Invalid service configuration");
+		});
 		
 		it("Should fail since token is expired", function(){
-            return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("jwt expired");
+			return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("jwt expired");
 		});
 
 		it("Should succeed since APPID_ALLOW_EXPIRED_TOKENS=true", function(){
 			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
 			TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig).then(function (decodedToken) {
-                assert.isObject(decodedToken);
-            });
+				assert.isObject(decodedToken);
+			});
 		});
 		
 		it("Should fail since token is malformed", function(){

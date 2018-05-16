@@ -23,7 +23,11 @@ const logger = log4js.getLogger("testApp");
 app.use(helmet());
 app.use(passport.initialize());
 
-passport.use(new APIStrategy());
+passport.use(new APIStrategy({
+	oauthServerUrl: "{oauth-server-url}",
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}"
+}));
 
 app.get("/api/protected",
 	passport.authenticate(APIStrategy.STRATEGY_NAME, {

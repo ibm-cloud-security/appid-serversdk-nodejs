@@ -58,7 +58,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
-zlet webAppStrategy = new WebAppStrategy({
+let webAppStrategy = new WebAppStrategy({
 	tenantId: "TENANT_ID",
 	clientId: "CLIENT_ID",
 	secret: "SECRET",
