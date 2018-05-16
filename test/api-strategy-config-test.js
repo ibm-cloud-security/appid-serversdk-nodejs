@@ -86,20 +86,21 @@ describe('/lib/strategies/api-strategy-config', function () {
 		});
 
 		it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", function () {
-            process.env.VCAP_SERVICES = JSON.stringify({AdvancedMobileAccess: [{credentials: {tenantId: "abcd", clientId: "clientId", oauthServerUrl: "http://abcd"}}]});			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
+            process.env.VCAP_SERVICES = JSON.stringify({AdvancedMobileAccess: [{credentials: {tenantId: "abcd", clientId: "clientId", oauthServerUrl: "http://abcd"}}]});
+            var config = new Config();
+            assert.isObject(config);
+            assert.isObject(config.getConfig());
+            assert.equal(config.getOAuthServerUrl(), "http://abcd");
             assert.equal(config.getTenantId(), "abcd");
             assert.equal(config.getClientId(), "clientId");
         });
 		
 		it("Should succeed and get config from VCAP_SERVICES with Appid as the name", function () {
             process.env.VCAP_SERVICES = JSON.stringify({AppID:[{credentials: {tenantId: "abcd", clientId: "clientId", oauthServerUrl: "http://abcd"}}]});
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
+            var config = new Config();
+            assert.isObject(config);
+            assert.isObject(config.getConfig());
+            assert.equal(config.getOAuthServerUrl(), "http://abcd");
             assert.equal(config.getTenantId(), "abcd");
             assert.equal(config.getClientId(), "clientId");
 		});
