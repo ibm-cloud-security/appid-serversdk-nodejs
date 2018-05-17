@@ -21,4 +21,4 @@ module.exports = {
 	SERVER_URL : "http://mobileclientaccess.stage1.ng.bluemix.net/",
 	TENANTID : "4dba9430-54e6-4cf2-a516-6f73feb702bb",
 	CLIENTID : "26cb012eb327c612d90a6819163b6bcbd4849cbb"
-}
+};

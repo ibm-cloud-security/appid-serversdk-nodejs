@@ -23,7 +23,7 @@ describe("/lib/utils/token-util", function(){
 	var TokenUtil;
 	var ServiceConfig;
 	var serviceConfig;
-	
+
 	before(function(){
 		TokenUtil = proxyquire("../lib/utils/token-util", {
 			"./public-key-util": require("./mocks/public-key-util-mock")
@@ -37,11 +37,10 @@ describe("/lib/utils/token-util", function(){
 	});
 
 	describe("#decodeAndValidate()", function(){
-		
 		it("Should fail since service configuration is not defined", function(){
 			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN)).to.be.rejectedWith("Invalid service configuration");
 		});
-		
+
 		it("Should fail since token is expired", function(){
 			return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("jwt expired");
 		});
@@ -55,7 +54,7 @@ describe("/lib/utils/token-util", function(){
 		
 		it("Should fail since token is malformed", function(){
 			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
-			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("JWT error, can not decode token");
+			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("invalid algorithm");
 		});
 		
 		it("Should fail since header is empty in token", function(){
@@ -68,7 +67,7 @@ describe("/lib/utils/token-util", function(){
 				oauthServerUrl: "http://clientaccess.stage1.ng.bluemix.net/",
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID
-			}))).to.be.rejectedWith("JWT error, invalid issuer identifier");
+			}))).to.be.rejectedWith("jwt issuer invalid. expected: clientaccess.stage1.ng.bluemix.net");
 		});
 		
 		it("Should fail since tenantId is different", function(){
@@ -85,7 +84,7 @@ describe("/lib/utils/token-util", function(){
 				oauthServerUrl: constants.SERVER_URL,
 				tenantId: constants.TENANTID,
 				clientId: "26cb012eb327c612d949cbb"
-			}))).to.be.rejectedWith("JWT error, invalid audience");
+			}))).to.be.rejectedWith("jwt audience invalid. expected: 26cb012eb327c612d949cbb");
 		});
 		
 		it("Should succeed since token is valid", function(){
