@@ -456,13 +456,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 		});
 		
 		it("Should be able to login with null identity token", function (done) {
-			webAppStrategy.success = function () {
-				try {
-					assert(options.successReturnToOrRedirect);
-					done();
-				} catch (e) {
-					done(e);
-				}
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "identity_token validation failed");
+				done();
 			};
 			
 			var req = {

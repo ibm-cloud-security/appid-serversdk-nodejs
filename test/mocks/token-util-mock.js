@@ -13,7 +13,8 @@
 
 module.exports = {
 	decodeAndValidate: decodeAndValidate,
-	decode: decode
+	decode: decode,
+	validateToken: validateToken
 }
 
 const Q = require("q");
@@ -50,4 +51,8 @@ function decodeAndValidate(accessTokenString) {
          deferred.resolve({scope: "appid_default"});
     }
     return deferred.promise;
+}
+
+function validateToken(token, serviceConfig) {
+	return true;
 }

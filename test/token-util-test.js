@@ -31,9 +31,9 @@ describe("/lib/utils/token-util", function(){
 		ServiceConfig = require("../lib/strategies/api-strategy-config");
 		serviceConfig = new ServiceConfig({
 			oauthServerUrl: constants.SERVER_URL,
-			tenantId: constants.TENANTID,
-			clientId: constants.CLIENTID
+			tenantId: constants.TENANTID
 		});
+		Config = require("../lib/strategies/webapp-strategy-config");
 	});
 
 	describe("#decodeAndValidate()", function(){
@@ -62,34 +62,59 @@ describe("/lib/utils/token-util", function(){
 			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN_WITHOUTHEADER,serviceConfig)).to.be.rejectedWith("JWT error, can not decode token");
 		});
 		
-		it("Should fail since issuer identifier is different", function(){
-			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,new ServiceConfig({
-				oauthServerUrl: "http://clientaccess.stage1.ng.bluemix.net/",
-				tenantId: constants.TENANTID,
-				clientId: constants.CLIENTID
-			}))).to.be.rejectedWith("jwt issuer invalid. expected: clientaccess.stage1.ng.bluemix.net");
-		});
-		
 		it("Should fail since tenantId is different", function(){
 			serviceConfig.tenantId = "abcdef";
 			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,new ServiceConfig({
 				oauthServerUrl: constants.SERVER_URL,
-				tenantId: "4dba9430-54e6-4cf2-a516",
-				clientId: constants.CLIENTID
+				tenantId: "4dba9430-54e6-4cf2-a516"
 			}))).to.be.rejectedWith("JWT error, invalid tenantId");
-		});
-		
-		it("Should fail since clientId is different ", function(){
-			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, new ServiceConfig({
-				oauthServerUrl: constants.SERVER_URL,
-				tenantId: constants.TENANTID,
-				clientId: "26cb012eb327c612d949cbb"
-			}))).to.be.rejectedWith("jwt audience invalid. expected: 26cb012eb327c612d949cbb");
 		});
 		
 		it("Should succeed since token is valid", function(){
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,serviceConfig).then(function (decodedToken) {
 				assert.isObject(decodedToken);
+			});
+		});
+		
+		it("Token validation success", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: constants.SERVER_URL,
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				//assert.isObject(decodedToken);
+				assert(TokenUtil.validateToken(decodedToken,config),true)
+			});
+		});
+		
+		it("Token validation failed, invalid clientid ", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: constants.SERVER_URL,
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				//assert.isObject(decodedToken);
+				assert(TokenUtil.validateToken(decodedToken,config),false)
+			});
+		});
+		
+		it("Token validation failed, invalid serverurl", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				//assert.isObject(decodedToken);
+				assert(TokenUtil.validateToken(decodedToken,config),false)
 			});
 		});
 	});
