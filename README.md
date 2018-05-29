@@ -237,42 +237,52 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
-### User profile attributes
-Use the user UserAttributeManager to store and retrieve attribute of the user.
+### Manage User Profile
+Using the AppID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
 ```javascript
-const userAttributeManager = require("bluemix-appid").UserAttributeManager;
-userAttributeManager.init();
+const userProfileManager = require("bluemix-appid").UserProfileManager;
+userProfileManager.init();
 var accessToken = req.session[WebAppStrategy.AUTH_CONTEXT].accessToken;
 
 // get all attributes
-userAttributeManager.getAllAttributes(accessToken).then(function (attributes) {
-    	
+userProfileManager.getAllAttributes(accessToken).then(function (attributes) {
+
         });
 
 // get single attribute
-userAttributeManager.getAttribute(accessToken, name).then(function (attributes) {
-    	
+userProfileManager.getAttribute(accessToken, name).then(function (attributes) {
+
         });
 
 // set attribute value
-userAttributeManager.setAttribute(accessToken, name, value).then(function (attributes) {
-    	
+userProfileManager.setAttribute(accessToken, name, value).then(function (attributes) {
+
         });
 
 // delete attribute
-userAttributeManager.deleteAttribute(accessToken, name).then(function () {
-    	
+userProfileManager.deleteAttribute(accessToken, name).then(function () {
+
+        });
+
+// retrieve user info
+userProfileManager.getUserInfo(accessToken).then(function (userInfo) {
+
+        });
+
+// (recommended approach) retrieve user info and validate against the given identity token
+userProfileManager.getUserInfo(accessToken, identityToken).then(function (userInfo) {
+
         });
 
 ```
-## Cloud Directory 
+## Cloud Directory
 Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
 ### Login using resource owner password flow
 WebAppStrategy allows users to login to your web application using username/password.
 After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
-To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
+To allow login using username/password add to your app a post route that will be called with the username and password parameters.
 ```javascript
 app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
@@ -339,7 +349,7 @@ Note:
 
 ### Self Service APIs
 
-Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows. 
+Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows.
 The selfServiceManager can be init with the following options:
 
 * iamApiKey: If supplied, it will be used to get iamToken before every request of the selfServiceManager.
@@ -348,9 +358,9 @@ The selfServiceManager can be init with the following options:
 ```javascript
 // The managementUrl value can be obtained from Service Credentials tab in the App ID Dashboard.
 // You're not required to provide the managementUrl and the iamApiKey arguments if
-// your node.js application runs on IBM Cloud and is bound to the App ID service instance. 
-// In this case App ID configuration will be obtained using VCAP_SERVICES environment variable, 
-// during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable. 
+// your node.js application runs on IBM Cloud and is bound to the App ID service instance.
+// In this case App ID configuration will be obtained using VCAP_SERVICES environment variable,
+// during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable.
 // (if you wish to use diffrent IAM api key you can supply it to the iamApiKey).
 // Note: If your Service Credentials does not contain managementUrl you can supply the tenantId, and the oauthServerUrl instead.
 const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
@@ -372,7 +382,7 @@ language currently unused, default to 'en'.
 selfServiceManager.signUp(userData, language, iamToken).then(function (user) {
 			logger.debug('user created successfully');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -386,7 +396,7 @@ language currently unused, default to 'en'.
 selfServiceManager.forgotPassword(email, language, iamToken).then(function (user) {
 			logger.debug('forgot password success');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -401,7 +411,7 @@ language currently unused, default to 'en'.
 selfServiceManager.resendNotification(uuid, templateName, language, iamToken).then(function () {
 			logger.debug('resend success');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -415,7 +425,7 @@ return a JSON with a 'success' and 'uuid' properties. if 'success' is false addi
 selfServiceManager.getSignUpConfirmationResult(context, iamToken).then(function (result) {
 			logger.debug('returned result: ' + JSON.stringify(result));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -429,7 +439,7 @@ return a JSON with a 'success' and 'uuid' properties. if 'success' is false addi
 selfServiceManager.getForgotPasswordConfirmationResult(ucontext, iamToken).then(function (result) {
             logger.debug('returned result: ' + JSON.stringify(result));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -444,7 +454,7 @@ changedIpAddress (optional) is the ip address that trigger the change password r
 selfServiceManager.setUserNewPassword(uuid, newPassword, language, changedIpAddress, iamToken).then(function (user) {
 			logger.debug('user password changed');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -456,7 +466,7 @@ uuid is the Cloud Directory user uuid.
 selfServiceManager.getUserDetails(uuid, iamToke).then(function (user) {
 			logger.debug('user details:'  + JSON.stringify(user));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -469,7 +479,7 @@ userData is a JSON object with the updated user SCIM profile (https://tools.ietf
 selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (user) {
 			logger.debug('user created successfully');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
