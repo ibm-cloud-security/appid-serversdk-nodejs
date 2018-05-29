@@ -11,12 +11,6 @@
  limitations under the License.
  */
 
-module.exports = {
-	decodeAndValidate: decodeAndValidate,
-	decode: decode,
-	validateToken: validateToken
-}
-
 const Q = require("q");
 
 function decode(accessTokenString) {
@@ -56,3 +50,5 @@ function decodeAndValidate(accessTokenString) {
 function validateToken(token, serviceConfig) {
 	return true;
 }
+
+module.exports = {decodeAndValidate, decode, validateToken}

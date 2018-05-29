@@ -23,6 +23,7 @@ describe("/lib/utils/token-util", function(){
 	var TokenUtil;
 	var ServiceConfig;
 	var serviceConfig;
+	var Config;
 
 	before(function(){
 		TokenUtil = proxyquire("../lib/utils/token-util", {
@@ -85,8 +86,7 @@ describe("/lib/utils/token-util", function(){
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
-				//assert.isObject(decodedToken);
-				assert(TokenUtil.validateToken(decodedToken,config),true)
+				assert(TokenUtil.validateToken(decodedToken,config),true);
 			});
 		});
 		
@@ -99,8 +99,7 @@ describe("/lib/utils/token-util", function(){
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
-				//assert.isObject(decodedToken);
-				assert(TokenUtil.validateToken(decodedToken,config),false)
+				assert(TokenUtil.validateToken(decodedToken,config),false);
 			});
 		});
 		
