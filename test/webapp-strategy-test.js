@@ -457,8 +457,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 		
 		it("Should not be able to login with null identity token", function (done) {
 			webAppStrategy.fail = function (err) {
-				console.log(err.message);
-				assert.equal(err.message, "Invalid access/id token");
+				assert.equal(err.message, "Authentication failed : Invalid access/id token");
 				done();
 			};
 			
