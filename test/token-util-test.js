@@ -13,42 +13,116 @@
 
 const chai = require("chai");
 const assert = chai.assert;
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 const proxyquire = require("proxyquire");
-
-const APPID_ALLOW_EXPIRED_TOKENS = "APPID_ALLOW_EXPIRED_TOKENS";
-const ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpPU0UiLCJqcGsiOnsiYWxnIjoiUlNBIiwibW9kIjoiQUtTZDA4R3ViajR3a2ZWTmN5MWcyYUREMlNQNHJTQXhxcVNwcTNCeVRRdzFBNE5SbE5fMm9ieWFVX05TQTBvMmtCV0xEWDNiTk80dHlCcWROSHpjRWhZdU1XYWFmdGV1clB4OV9MaTZOZzRIeE1na19NdWNDcVBlckRONnBmNklHeEp4V1hVVDNSOTQ5WEpHdFBOVndSQ2V5MWloZUZjVXA1TTRMR1p4SGZaZmtnX1lWSE91NUZzeDZmMGFMMlFfNlFiVUVsZTJaa3dIejlHaDhPTG9MY1ZxX3lCazliSFY0NkRZUXdOazNfcFFjZDh0Z214cFJZRUQ2WDJPN1BkakVtNk5VNlpFMTdtZXV4MEpfVEtVcHlaekNVZU1ZeW9RYnVDMktzY0hPNkticGtUSmFVZy1PeWdOSUFOX0Z3eTdobGpDWFZBczA1TGdJVmRqcEhpREJyTSIsImV4cCI6IkFRQUIifX0.eyJpc3MiOiJsb2NhbGhvc3Q6NjAxMiIsImV4cCI6MTQ4NTE4OTgzNCwiYXVkIjoiZTFkMDBjMTgtMTRiOS00MzQ1LTg0YzUtMDYzODMzNDMxYTEwIiwic3ViIjoiMWM5YWRmZmItMDY0ZC00YzY2LThlZDItYmJjMTJiZjkzZjU4IiwiaWF0IjoxNDg1MTg2MjM0LCJhdXRoQnkiOiJmYWNlYm9vayIsInNjb3BlIjoiZGVmYXVsdCJ9.RpLGYHOoEvomVoxIklAeDg7aMjVTsfGWJhGubhX8IIVGaoElMXu5ufT1E6G7AradOL3hm7yAvwguaBtE4CQkLIxA_3iCIJPKa-cHwSivQ4o96yTNOlqtAMK_f8-nh0zcVcCQNMe8HRBvFZuTtrL2Lx_KTQiYTeHyQ3QykIn9XGcEW6p8k2zx0IU574FZgLPH6-uOjFlZu4i5uDufCLX0lbEYJ5H6_EIh9uyyC436JfP0R5awHkUGTmkkj25ddhJXVCOgsUv-AUUfGKak3Wn5NhnEbUQdgUvU2yQqz41qDzGRqH81le-siFEDyPi4ls8SfXaP-c4V4qofugN0LrGmOg";
+const constants = require("./mocks/constants");
 
 describe("/lib/utils/token-util", function(){
 	console.log("Loading token-util-test.js");
 	var TokenUtil;
+	var ServiceConfig;
+	var serviceConfig;
+	var Config;
 
 	before(function(){
 		TokenUtil = proxyquire("../lib/utils/token-util", {
 			"./public-key-util": require("./mocks/public-key-util-mock")
 		});
+		ServiceConfig = require("../lib/strategies/api-strategy-config");
+		serviceConfig = new ServiceConfig({
+			oauthServerUrl: constants.SERVER_URL,
+			tenantId: constants.TENANTID
+		});
+		Config = require("../lib/strategies/webapp-strategy-config");
 	});
 
 	describe("#decodeAndValidate()", function(){
-		it("Should return undefined since token is expired", function(){
-			TokenUtil.decodeAndValidate(ACCESS_TOKEN).then(function (decodedToken) {
-                assert.isUndefined(decodedToken);
-            });
+		it("Should fail since service configuration is not defined", function(){
+			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN)).to.be.rejectedWith("Invalid service configuration");
+		});
+
+		it("Should fail since token is expired", function(){
+			return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("jwt expired");
 		});
 
 		it("Should succeed since APPID_ALLOW_EXPIRED_TOKENS=true", function(){
-			process.env[APPID_ALLOW_EXPIRED_TOKENS] = true;
-			TokenUtil.decodeAndValidate(ACCESS_TOKEN).then(function (decodedToken) {
-                assert.isObject(decodedToken);
-            });
+			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
+			TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN,serviceConfig).then(function (decodedToken) {
+				assert.isObject(decodedToken);
+			});
+		});
+
+		it("Should fail since token is malformed", function(){
+			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
+			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN,serviceConfig)).to.be.rejectedWith("invalid algorithm");
+		});
+
+		it("Should fail since header is empty in token", function(){
+			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
+			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN_WITHOUTHEADER,serviceConfig)).to.be.rejectedWith("JWT error, can not decode token");
+		});
+
+		it("Should fail since tenantId is different", function(){
+			serviceConfig.tenantId = "abcdef";
+			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,new ServiceConfig({
+				oauthServerUrl: constants.SERVER_URL,
+				tenantId: "4dba9430-54e6-4cf2-a516"
+			}))).to.be.rejectedWith("JWT error, invalid tenantId");
+		});
+
+		it("Should succeed since token is valid", function(){
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,serviceConfig).then(function (decodedToken) {
+				assert.isObject(decodedToken);
+			});
+		});
+
+		it("Token validation success", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: constants.SERVER_URL,
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),true);
+			});
+		});
+
+		it("Token validation failed, invalid clientid ", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: constants.SERVER_URL,
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),false);
+			});
+		});
+
+		it("Token validation failed, invalid serverurl", function(){
+			var config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),false);
+			});
 		});
 	});
 
 	describe("#decode()", function(){
 		it("Should return a valid decoded token", function(){
-			var decodedToken = TokenUtil.decode(ACCESS_TOKEN);
+			var decodedToken = TokenUtil.decode(constants.ACCESS_TOKEN);
 			assert.isObject(decodedToken);
 			assert.property(decodedToken, "iss");
-			assert.property(decodedToken, "sub");
+			assert.property(decodedToken, "tenant");
 			assert.property(decodedToken, "aud");
 			assert.property(decodedToken, "iat");
 		});

@@ -455,14 +455,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, options);
 		});
 		
-		it("Should be able to login with null identity token", function (done) {
-			webAppStrategy.success = function () {
-				try {
-					assert(options.successReturnToOrRedirect);
-					done();
-				} catch (e) {
-					done(e);
-				}
+		it("Should not be able to login with null identity token", function (done) {
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "Authentication failed : Invalid access/id token");
+				done();
 			};
 			
 			var req = {
