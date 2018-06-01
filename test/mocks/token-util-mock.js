@@ -30,25 +30,25 @@ function decode(accessTokenString) {
 }
 
 function decodeAndValidate(accessTokenString) {
-    var deferred = Q.defer();
-    if (accessTokenString === "invalid_token") {
-        deferred.resolve();
-    } else if (accessTokenString === "bad_scope") {
-        deferred.resolve({scope: "bad_scope"});
-    } else if (accessTokenString === "null_scope") {
-         deferred.resolve(null);
-    } else if (accessTokenString === "access_token_mock_test_scope") {
-         deferred.resolve({scope: "test_scope"});
-    } else if (accessTokenString === "id_token_mock_test_scope") {
-         deferred.resolve({scope: "test_scope"});
-    } else {
-         deferred.resolve({scope: "appid_default"});
-    }
-    return deferred.promise;
+	var deferred = Q.defer();
+	if (accessTokenString === "invalid_token") {
+		deferred.resolve();
+	} else if (accessTokenString === "bad_scope") {
+		deferred.resolve({scope: "bad_scope"});
+	} else if (accessTokenString === "null_scope") {
+		 deferred.resolve(null);
+	} else if (accessTokenString === "access_token_mock_test_scope") {
+		 deferred.resolve({scope: "test_scope"});
+	} else if (accessTokenString === "id_token_mock_test_scope") {
+		 deferred.resolve({scope: "test_scope"});
+	} else {
+		 deferred.resolve({scope: "appid_default"});
+	}
+	return deferred.promise;
 }
 
-function validateToken(token, serviceConfig) {
+function validateIssAndAud(token, serviceConfig) {
 	return true;
 }
 
-module.exports = {decodeAndValidate, decode, validateToken}
+module.exports = {decodeAndValidate, decode, validateIssAndAud}

@@ -86,7 +86,7 @@ describe("/lib/utils/token-util", function(){
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
-				assert(TokenUtil.validateToken(decodedToken,config),true);
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),true);
 			});
 		});
 		
@@ -99,7 +99,7 @@ describe("/lib/utils/token-util", function(){
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
-				assert(TokenUtil.validateToken(decodedToken,config),false);
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),false);
 			});
 		});
 		
@@ -113,7 +113,7 @@ describe("/lib/utils/token-util", function(){
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN,config).then(function (decodedToken) {
 				//assert.isObject(decodedToken);
-				assert(TokenUtil.validateToken(decodedToken,config),false)
+				assert(TokenUtil.validateIssAndAud(decodedToken,config),false)
 			});
 		});
 	});
