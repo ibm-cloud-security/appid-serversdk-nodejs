@@ -51,4 +51,4 @@ function validateIssAndAud(token, serviceConfig) {
 	return true;
 }
 
-module.exports = {decodeAndValidate, decode, validateIssAndAud}
+module.exports = {decodeAndValidate, decode, validateIssAndAud};

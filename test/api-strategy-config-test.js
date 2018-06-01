@@ -71,7 +71,7 @@ describe('/lib/strategies/api-strategy-config', function () {
 		it("Should succeed and get config from options argument", function () {
 			var config = new Config({
 				oauthServerUrl: "http://abcd",
-				tenantId: "abcd",
+				tenantId: "abcd"
 			});
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
