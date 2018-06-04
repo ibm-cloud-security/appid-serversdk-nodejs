@@ -26,17 +26,17 @@ const base64url = require('base64url');
 const crypto = require('crypto');
 
 const LANDING_PAGE_URL = "/cloud-directory-app-sample.html";
-const CALLBACK_URL = "/ibm/bluemix/appid/callback";
-const LOGOUT_URL = "/ibm/bluemix/appid/logout";
-const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const LOGOUT_URL = "/ibm/cloud/appid/logout";
+const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
 const ROP_SUBMIT = "/rop/login/submit";
 const PROTECTED_ENDPOINT = "/protected";
 const CHANGE_PASSWORD_PAGE = '/ibm/cloud/appid/cloudLand/view/change/password';
 const CHANGE_DETAILS_PAGE = '/ibm/cloud/appid/cloudLand/view/change/details';
-const SIGN_UP_PAGE = "/ibm/bluemix/appid/view/sign_up";
-const FORGOT_PASSWORD_PAGE = "/ibm/bluemix/appid/view/forgot_password";
-const ACCOUNT_CONFIRMED_PAGE = "/ibm/bluemix/appid/view/account_confirmed";
-const RESET_PASSWORD_PAGE = "/ibm/bluemix/appid/view/reset_password_form";
+const SIGN_UP_PAGE = "/ibm/cloud/appid/view/sign_up";
+const FORGOT_PASSWORD_PAGE = "/ibm/cloud/appid/view/forgot_password";
+const ACCOUNT_CONFIRMED_PAGE = "/ibm/cloud/appid/view/account_confirmed";
+const RESET_PASSWORD_PAGE = "/ibm/cloud/appid/view/reset_password_form";
 const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
@@ -168,7 +168,7 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 		let newPassword = req.body['new_password'];
 		let confirmNewPassword = req.body['confirmed_new_password'];
 		let email = req.body.email;
-		
+
 		if (!isSamePasswords(newPassword, confirmNewPassword)) {
 			logger.debug("Error: password are not the same");
 			req.flash('errorCode', 'passwords_mismatch');
@@ -283,7 +283,7 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	let errorMsg = errorCode ? (languageStrings.errors[errorCode] || languageStrings.errors[GENERAL_ERROR]): '';
 	Object.assign(languageStrings, {message: errorMsg});
 	Object.assign(languageStrings, inputs);
-	
+
 	//handling the case if running on mobile web, redirect with the custom scheme that will launch the handle activity
 	if (ejs === accountConfirmedEjs || ejs === resetPasswordFormEjs || ejs === resetPasswordExpiredEjs) {
 		let userAgent = req.get('User-Agent');
@@ -309,7 +309,7 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 			}
 		}
 	}
-	
+
 	res.render(ejs, languageStrings);
 }
 
@@ -486,7 +486,7 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 	let confirmNewPassword = req.body['confirmed_new_password'];
 	let language = req.query.language || 'en';
 	let platform = req.params.platform;
-	
+
 	if (!isSamePasswords(newPassword, confirmNewPassword)) {
 		logger.debug('rendering reset password with error: password not the same');
 		if (platform === MOBILE_PLATFORM) {

@@ -25,15 +25,15 @@ const logger = log4js.getLogger("testApp");
 
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
-const LOGIN_URL = "/ibm/bluemix/appid/login";
-const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
-const CHANGE_PASSWORD_URL = "/ibm/bluemix/appid/change_password";
-const CHANGE_DETAILS_URL = "/ibm/bluemix/appid/change_details";
-const FORGOT_PASSWORD_URL = "/ibm/bluemix/appid/forgot_password";
-const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
-const CALLBACK_URL = "/ibm/bluemix/appid/callback";
-const LOGOUT_URL = "/ibm/bluemix/appid/logout";
-const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
+const LOGIN_URL = "/ibm/cloud/appid/login";
+const SIGN_UP_URL = "/ibm/cloud/appid/sign_up";
+const CHANGE_PASSWORD_URL = "/ibm/cloud/appid/change_password";
+const CHANGE_DETAILS_URL = "/ibm/cloud/appid/change_details";
+const FORGOT_PASSWORD_URL = "/ibm/cloud/appid/forgot_password";
+const LOGIN_ANON_URL = "/ibm/cloud/appid/loginanon";
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const LOGOUT_URL = "/ibm/cloud/appid/logout";
+const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
 
 app.use(helmet());
 app.use(flash());
@@ -59,10 +59,10 @@ app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
-	tenantId: "TENANT_ID",
-	clientId: "CLIENT_ID",
-	secret: "SECRET",
-	oauthServerUrl: "OAUTH_SERVER_URL",
+	tenantId: "c2d3da94-c901-4392-8f27-d90efd28b5b7",
+	clientId: "db6f17a0-6775-4093-a39b-d5616bb666cb",
+	secret: "M2EyZTMyNTItMjExMy00MjZjLTllOGYtZjRiZTdhZTJiYjk0",
+	oauthServerUrl: "https://appid-oauth.ng.bluemix.net/oauth/v3/c2d3da94-c901-4392-8f27-d90efd28b5b7",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
 });
 passport.use(webAppStrategy);

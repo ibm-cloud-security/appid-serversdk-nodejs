@@ -117,7 +117,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 				]
 			});
 			var config = new Config();
-			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
+			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/cloud/appid/callback");
 		});
 	})
 });
