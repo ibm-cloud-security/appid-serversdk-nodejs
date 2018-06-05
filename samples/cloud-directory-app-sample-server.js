@@ -168,7 +168,7 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 		let newPassword = req.body['new_password'];
 		let confirmNewPassword = req.body['confirmed_new_password'];
 		let email = req.body.email;
-
+		
 		if (!isSamePasswords(newPassword, confirmNewPassword)) {
 			logger.debug("Error: password are not the same");
 			req.flash('errorCode', 'passwords_mismatch');
@@ -283,7 +283,7 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	let errorMsg = errorCode ? (languageStrings.errors[errorCode] || languageStrings.errors[GENERAL_ERROR]): '';
 	Object.assign(languageStrings, {message: errorMsg});
 	Object.assign(languageStrings, inputs);
-
+	
 	//handling the case if running on mobile web, redirect with the custom scheme that will launch the handle activity
 	if (ejs === accountConfirmedEjs || ejs === resetPasswordFormEjs || ejs === resetPasswordExpiredEjs) {
 		let userAgent = req.get('User-Agent');
@@ -309,7 +309,7 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 			}
 		}
 	}
-
+	
 	res.render(ejs, languageStrings);
 }
 
@@ -486,7 +486,7 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 	let confirmNewPassword = req.body['confirmed_new_password'];
 	let language = req.query.language || 'en';
 	let platform = req.params.platform;
-
+	
 	if (!isSamePasswords(newPassword, confirmNewPassword)) {
 		logger.debug('rendering reset password with error: password not the same');
 		if (platform === MOBILE_PLATFORM) {
