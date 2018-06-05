@@ -127,9 +127,9 @@ app.use(passport.initialize());
 
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
-const LOGIN_URL = "/ibm/cloud/appid/login";
-const CALLBACK_URL = "/ibm/cloud/appid/callback";
-const LOGOUT_URL = "/ibm/cloud/appid/logout";
+const LOGIN_URL = "/ibm/bluemix/appid/login";
+const CALLBACK_URL = "/ibm/bluemix/appid/callback";
+const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
@@ -159,7 +159,7 @@ app.use(passport.session());
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the App ID SDK will try to retrieve
 //    application_uri of the application running on IBM Cloud and append a
-//    default suffix "/ibm/cloud/appid/callback"
+//    default suffix "/ibm/bluemix/appid/callback"
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
 	clientId: "{client-id}",
@@ -216,7 +216,7 @@ To allow anonymous login for a particular URL use two configuration properties a
 * `allowCreateNewAnonymousUser` - By default a new anonymous user will be created every time this method is invoked unless there's an existing anonymous access_token stored in the current HTTP session. In some cases you want to explicitly control whether you want to automatically create new anonymous user or not. Set this property to `false` if you want to disable automatic creation of new anonymous users. The default value of this property is `true`.  
 
 ```JavaScript
-const LOGIN_ANON_URL = "/ibm/cloud/appid/loginanon";
+const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
 
 // Explicit anonymous login endpoint
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -488,7 +488,7 @@ selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (us
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
-[img-ibmcloud-powered]: https://img.shields.io/badge/ibmcloud-powered-blue.svg
+[img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
 [url-ibmcloud]: https://www.ibm.com/cloud/
 [url-npm]: https://www.npmjs.com/package/bluemix-appid
 [img-license]: https://img.shields.io/npm/l/bluemix-appid.svg

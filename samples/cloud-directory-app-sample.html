@@ -23,9 +23,9 @@
 				}).always(function() {
                   var languageQuery = window.location.href.slice(window.location.href.indexOf('?'));
                   var changeDetails = document.getElementById('changeDetails');
-                  changeDetails.href = "/ibm/cloud/appid/cloudLand/view/change/details" + languageQuery;
+                  changeDetails.href = "/ibm/bluemix/appid/cloudLand/view/change/details" + languageQuery;
                   var changePassword = document.getElementById('changePassword');
-                  changePassword.href = "/ibm/cloud/appid/cloudLand/view/change/password" + languageQuery;
+                  changePassword.href = "/ibm/bluemix/appid/cloudLand/view/change/password" + languageQuery;
                 });
 			});
 
@@ -67,8 +67,8 @@
     <a class="btn btn-lg btn-primary btn-login" id="changePassword">Change password</a>
 </div>
 
-<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/cloud/appid/rop/login" id="loginButton">Login</a>
-<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/cloud/appid/logout" id="logoutButton">Logout</a>
+<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/bluemix/appid/rop/login" id="loginButton">Login</a>
+<a class="btn btn-lg btn-primary btn-login hideOnStartup" href="/ibm/bluemix/appid/logout" id="logoutButton">Logout</a>
 
 </body>
 

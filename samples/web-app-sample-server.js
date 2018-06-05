@@ -25,15 +25,15 @@ const logger = log4js.getLogger("testApp");
 
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
-const LOGIN_URL = "/ibm/cloud/appid/login";
-const SIGN_UP_URL = "/ibm/cloud/appid/sign_up";
-const CHANGE_PASSWORD_URL = "/ibm/cloud/appid/change_password";
-const CHANGE_DETAILS_URL = "/ibm/cloud/appid/change_details";
-const FORGOT_PASSWORD_URL = "/ibm/cloud/appid/forgot_password";
-const LOGIN_ANON_URL = "/ibm/cloud/appid/loginanon";
-const CALLBACK_URL = "/ibm/cloud/appid/callback";
-const LOGOUT_URL = "/ibm/cloud/appid/logout";
-const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
+const LOGIN_URL = "/ibm/bluemix/appid/login";
+const SIGN_UP_URL = "/ibm/bluemix/appid/sign_up";
+const CHANGE_PASSWORD_URL = "/ibm/bluemix/appid/change_password";
+const CHANGE_DETAILS_URL = "/ibm/bluemix/appid/change_details";
+const FORGOT_PASSWORD_URL = "/ibm/bluemix/appid/forgot_password";
+const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
+const CALLBACK_URL = "/ibm/bluemix/appid/callback";
+const LOGOUT_URL = "/ibm/bluemix/appid/logout";
+const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
 
 app.use(helmet());
 app.use(flash());
