@@ -1,6 +1,6 @@
 # IBM Cloud App ID Node.js SDK
 
-[![Bluemix powered][img-bluemix-powered]][url-bluemix]
+[![IBM Cloud powered][img-ibmcloud-powered]][url-ibmcloud]
 [![Travis][img-travis-master]][url-travis-master]
 [![Coveralls][img-coveralls-master]][url-coveralls-master]
 [![Codacy][img-codacy]][url-codacy]
@@ -36,7 +36,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Installation
 ```
-npm install --save bluemix-appid
+npm install --save ibmcloud-appid
 ```
 
 ## Example Usage
@@ -62,7 +62,7 @@ In case of valid tokens the APIStrategy will pass control to the next middleware
 const express = require('express');
 const log4js = require('log4js');
 const passport = require('passport');
-const APIStrategy = require("bluemix-appid").APIStrategy;
+const APIStrategy = require("ibmcloud-appid").APIStrategy;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -118,7 +118,7 @@ const express = require('express');
 const session = require('express-session')
 const log4js = require('log4js');
 const passport = require('passport');
-const WebAppStrategy = require('bluemix-appid').WebAppStrategy;
+const WebAppStrategy = require('ibmcloud-appid').WebAppStrategy;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -241,7 +241,7 @@ In order to use the persisted refresh_token, you need to call `webAppStrategy.re
 Using the AppID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
 ```javascript
-const userProfileManager = require("bluemix-appid").UserProfileManager;
+const userProfileManager = require("ibmcloud-appid").UserProfileManager;
 userProfileManager.init();
 var accessToken = req.session[WebAppStrategy.AUTH_CONTEXT].accessToken;
 
@@ -363,7 +363,7 @@ The selfServiceManager can be init with the following options:
 // during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable.
 // (if you wish to use diffrent IAM api key you can supply it to the iamApiKey).
 // Note: If your Service Credentials does not contain managementUrl you can supply the tenantId, and the oauthServerUrl instead.
-const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
+const SelfServiceManager = require("ibmcloud-appid").SelfServiceManager;
 let selfServiceManager = new SelfServiceManager({
 	iamApiKey: "{iam-api-key}",
 	managementUrl: "{management-url}"
@@ -488,8 +488,8 @@ selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (us
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
-[img-bluemix-powered]: https://img.shields.io/badge/bluemix-powered-blue.svg
-[url-bluemix]: http://bluemix.net
+[img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
+[url-ibmcloud]: https://www.ibm.com/cloud/
 [url-npm]: https://www.npmjs.com/package/bluemix-appid
 [img-license]: https://img.shields.io/npm/l/bluemix-appid.svg
 [img-version]: https://img.shields.io/npm/v/bluemix-appid.svg
