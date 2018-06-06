@@ -27,8 +27,9 @@ describe("/lib/strategies/api-strategy", function(){
 			"./../utils/token-util": require("./mocks/token-util-mock")
 		});
 		apiStrategy = new APIStrategy({
+			oauthServerUrl: "serverUrl",
 			tenantId: "tenantId",
-			serverUrl: "serverUrl"
+			clientId: "clientId"
 		});
 	});
 

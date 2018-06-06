@@ -1,6 +1,6 @@
 # IBM Cloud App ID Node.js SDK
 
-[![Bluemix powered][img-bluemix-powered]][url-bluemix]
+[![IBM Cloud powered][img-ibmcloud-powered]][url-ibmcloud]
 [![Travis][img-travis-master]][url-travis-master]
 [![Coveralls][img-coveralls-master]][url-coveralls-master]
 [![Codacy][img-codacy]][url-codacy]
@@ -36,7 +36,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Installation
 ```
-npm install --save bluemix-appid
+npm install --save ibmcloud-appid
 ```
 
 ## Example Usage
@@ -62,7 +62,7 @@ In case of valid tokens the APIStrategy will pass control to the next middleware
 const express = require('express');
 const log4js = require('log4js');
 const passport = require('passport');
-const APIStrategy = require("bluemix-appid").APIStrategy;
+const APIStrategy = require("ibmcloud-appid").APIStrategy;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -75,7 +75,9 @@ app.use(passport.initialize());
 // App ID service instance. In this case App ID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
-	oauthServerUrl: "{oauth-server-url}"
+	oauthServerUrl: "{oauth-server-url}",
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}"
 }));
 
 // Declare the API you want to protect
@@ -116,7 +118,7 @@ const express = require('express');
 const session = require('express-session')
 const log4js = require('log4js');
 const passport = require('passport');
-const WebAppStrategy = require('bluemix-appid').WebAppStrategy;
+const WebAppStrategy = require('ibmcloud-appid').WebAppStrategy;
 
 const app = express();
 const logger = log4js.getLogger("testApp");
@@ -235,42 +237,52 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
-### User profile attributes
-Use the user UserAttributeManager to store and retrieve attribute of the user.
+### Manage User Profile
+Using the AppID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
 ```javascript
-const userAttributeManager = require("bluemix-appid").UserAttributeManager;
-userAttributeManager.init();
+const userProfileManager = require("ibmcloud-appid").UserProfileManager;
+userProfileManager.init();
 var accessToken = req.session[WebAppStrategy.AUTH_CONTEXT].accessToken;
 
 // get all attributes
-userAttributeManager.getAllAttributes(accessToken).then(function (attributes) {
-    	
+userProfileManager.getAllAttributes(accessToken).then(function (attributes) {
+
         });
 
 // get single attribute
-userAttributeManager.getAttribute(accessToken, name).then(function (attributes) {
-    	
+userProfileManager.getAttribute(accessToken, name).then(function (attributes) {
+
         });
 
 // set attribute value
-userAttributeManager.setAttribute(accessToken, name, value).then(function (attributes) {
-    	
+userProfileManager.setAttribute(accessToken, name, value).then(function (attributes) {
+
         });
 
 // delete attribute
-userAttributeManager.deleteAttribute(accessToken, name).then(function () {
-    	
+userProfileManager.deleteAttribute(accessToken, name).then(function () {
+
+        });
+
+// retrieve user info
+userProfileManager.getUserInfo(accessToken).then(function (userInfo) {
+
+        });
+
+// (recommended approach) retrieve user info and validate against the given identity token
+userProfileManager.getUserInfo(accessToken, identityToken).then(function (userInfo) {
+
         });
 
 ```
-## Cloud Directory 
+## Cloud Directory
 Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
 ### Login using resource owner password flow
 WebAppStrategy allows users to login to your web application using username/password.
 After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
-To allow login using username/password add to your app a post route that will be called with the username and password parameters. 
+To allow login using username/password add to your app a post route that will be called with the username and password parameters.
 ```javascript
 app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
@@ -337,7 +349,7 @@ Note:
 
 ### Self Service APIs
 
-Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows. 
+Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows.
 The selfServiceManager can be init with the following options:
 
 * iamApiKey: If supplied, it will be used to get iamToken before every request of the selfServiceManager.
@@ -346,12 +358,12 @@ The selfServiceManager can be init with the following options:
 ```javascript
 // The managementUrl value can be obtained from Service Credentials tab in the App ID Dashboard.
 // You're not required to provide the managementUrl and the iamApiKey arguments if
-// your node.js application runs on IBM Cloud and is bound to the App ID service instance. 
-// In this case App ID configuration will be obtained using VCAP_SERVICES environment variable, 
-// during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable. 
+// your node.js application runs on IBM Cloud and is bound to the App ID service instance.
+// In this case App ID configuration will be obtained using VCAP_SERVICES environment variable,
+// during resource-binding process an auto generated apikey is created for you and it can be found in the VCAP_SERVICES environment variable.
 // (if you wish to use diffrent IAM api key you can supply it to the iamApiKey).
 // Note: If your Service Credentials does not contain managementUrl you can supply the tenantId, and the oauthServerUrl instead.
-const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
+const SelfServiceManager = require("ibmcloud-appid").SelfServiceManager;
 let selfServiceManager = new SelfServiceManager({
 	iamApiKey: "{iam-api-key}",
 	managementUrl: "{management-url}"
@@ -370,7 +382,7 @@ language currently unused, default to 'en'.
 selfServiceManager.signUp(userData, language, iamToken).then(function (user) {
 			logger.debug('user created successfully');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -384,7 +396,7 @@ language currently unused, default to 'en'.
 selfServiceManager.forgotPassword(email, language, iamToken).then(function (user) {
 			logger.debug('forgot password success');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -399,7 +411,7 @@ language currently unused, default to 'en'.
 selfServiceManager.resendNotification(uuid, templateName, language, iamToken).then(function () {
 			logger.debug('resend success');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -413,7 +425,7 @@ return a JSON with a 'success' and 'uuid' properties. if 'success' is false addi
 selfServiceManager.getSignUpConfirmationResult(context, iamToken).then(function (result) {
 			logger.debug('returned result: ' + JSON.stringify(result));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -427,7 +439,7 @@ return a JSON with a 'success' and 'uuid' properties. if 'success' is false addi
 selfServiceManager.getForgotPasswordConfirmationResult(ucontext, iamToken).then(function (result) {
             logger.debug('returned result: ' + JSON.stringify(result));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -442,7 +454,7 @@ changedIpAddress (optional) is the ip address that trigger the change password r
 selfServiceManager.setUserNewPassword(uuid, newPassword, language, changedIpAddress, iamToken).then(function (user) {
 			logger.debug('user password changed');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -454,7 +466,7 @@ uuid is the Cloud Directory user uuid.
 selfServiceManager.getUserDetails(uuid, iamToke).then(function (user) {
 			logger.debug('user details:'  + JSON.stringify(user));
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -467,7 +479,7 @@ userData is a JSON object with the updated user SCIM profile (https://tools.ietf
 selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (user) {
 			logger.debug('user created successfully');
 		}).catch(function (err) {
-			logger.error(err);	
+			logger.error(err);
 		});
 	}
 ```
@@ -476,8 +488,8 @@ selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (us
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
-[img-bluemix-powered]: https://img.shields.io/badge/bluemix-powered-blue.svg
-[url-bluemix]: http://bluemix.net
+[img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
+[url-ibmcloud]: https://www.ibm.com/cloud/
 [url-npm]: https://www.npmjs.com/package/bluemix-appid
 [img-license]: https://img.shields.io/npm/l/bluemix-appid.svg
 [img-version]: https://img.shields.io/npm/v/bluemix-appid.svg
