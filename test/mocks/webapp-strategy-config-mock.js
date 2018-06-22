@@ -41,4 +41,4 @@ module.exports = function (options) {
 	return { getConfig, getTenantId, getClientId, getSecret, getOAuthServerUrl,
 		getRedirectUri, getPreferredLocale, generateStateParameter, getStateParameter
 	};
-}
+};
