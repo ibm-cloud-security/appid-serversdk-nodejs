@@ -27,8 +27,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 	before(function () {
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"./../utils/token-util": require("./mocks/token-util-mock"),
-			"request": require("./mocks/request-mock"),
-			"./webapp-strategy-config": require("./mocks/webapp-strategy-config-mock")
+			"request": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
 			tenantId: "tenantId",
@@ -407,6 +406,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 					state: "1234567"
 				}
 			};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req);
 		});
 
@@ -422,6 +422,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 					state: "123456789"
 				}
 			};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req);
 		});
 
@@ -462,7 +463,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var options = {
 				successRedirect: "redirectUri"
 			};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -487,7 +488,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -508,7 +509,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -527,7 +528,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -959,7 +960,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			
 			var checkCustomLocaleFromSession = function (done) {
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789&language=" + french);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french + "&state=123456789");
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
 					done();
 				}
@@ -968,7 +969,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var checkCustomLocaleFromInit = function (done) {
 				var expect = french;
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789&language=" + expect);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect + "&state=123456789");
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
 					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), expect);
 					done();
@@ -978,7 +979,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var checkCustomLocaleFromInitAndSession = function (done) {
 				var expect = "de";
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789&language=" + expect);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect + "&state=123456789");
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], expect);
 					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
 					done();

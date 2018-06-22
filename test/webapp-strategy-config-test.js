@@ -122,15 +122,5 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
 		});
 
-		it("Should succeed and get state Parameter", function () {
-			process.env.VCAP_APPLICATION = JSON.stringify({
-				"application_uris": [
-					"abcd.com"
-				]
-			});
-			var config = new Config();
-			config.generateStateParameter(true);
-			assert.notEqual(config.getStateParameter().state, "");
-		});
 	})
 });
