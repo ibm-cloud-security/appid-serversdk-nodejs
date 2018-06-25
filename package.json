@@ -29,6 +29,7 @@
     "rewire": "^3.0.2"
   },
   "dependencies": {
+    "accept-language": "^3.0.18",
     "body-parser": "^1.17.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
