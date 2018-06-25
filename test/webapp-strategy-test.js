@@ -865,6 +865,41 @@ describe("/lib/strategies/webapp-strategy", function () {
 				
 			});
 			
+			describe("auto detection of local", function () {
+				
+				it("check detection", function (done) {
+					var req = {
+						headers: {
+							"accept-language": "he,en;q=0.9,en-US;q=0.8"
+						},
+						session: {
+							APPID_AUTH_CONTEXT: {
+								identityTokenPayload: {
+									amr: ["cloud_directory"],
+									identities: [{id: "testUserId"}]
+								}
+							}
+						},
+						isAuthenticated: function () {
+							return true;
+						},
+						isUnauthenticated: function () {
+							return false;
+						}
+					};
+					
+					webAppStrategy.redirect = function (url) {
+						assert.include(url, "/cloud_directory/forgot_password?client_id=clientId&redirect_uri=https://redirectUri&language=he");
+						done();
+					};
+					
+					webAppStrategy.authenticate(req, {
+						show: WebAppStrategy.FORGOT_PASSWORD
+					});
+					
+				});
+			});
+			
 			it("Happy FORGOT_PASSWORD flow - check req.session.originalUrl = successRedirect", function (done) {
 				var req = {
 					session: {
