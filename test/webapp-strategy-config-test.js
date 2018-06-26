@@ -48,7 +48,8 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 				clientId: "clientId",
 				secret: "secret",
 				oauthServerUrl: "oauthServerUrl",
-				redirectUri: "redirectUri"
+				redirectUri: "redirectUri",
+				preferredLocale: "preferredLocale"
 			});
 			assert.isObject(config);
 			assert.isObject(config.getConfig());
@@ -57,6 +58,7 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			assert.equal(config.getSecret(), "secret");
 			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
 			assert.equal(config.getRedirectUri(), "redirectUri");
+			assert.equal(config.getPreferredLocale(), "preferredLocale");
 		});
 
 		it("Should succeed and get config from VCAP_SERVICES (AdvancedMobileAccess)", function () {
@@ -119,5 +121,6 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 			var config = new Config();
 			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
 		});
+
 	})
 });

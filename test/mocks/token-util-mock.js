@@ -51,4 +51,8 @@ function validateIssAndAud(token, serviceConfig) {
     return true;
 }
 
-module.exports = {decodeAndValidate, decode, validateIssAndAud};
+function getRandomNumber() {
+	return "123456789";
+}
+
+module.exports = {decodeAndValidate, decode, validateIssAndAud, getRandomNumber};

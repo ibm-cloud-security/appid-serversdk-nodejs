@@ -128,5 +128,4 @@ describe("/lib/utils/token-util", function(){
 		});
 	});
 
-
 });

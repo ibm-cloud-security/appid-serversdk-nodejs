@@ -490,11 +490,11 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 
 [img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
 [url-ibmcloud]: https://www.ibm.com/cloud/
-[url-npm]: https://www.npmjs.com/package/bluemix-appid
-[img-license]: https://img.shields.io/npm/l/bluemix-appid.svg
-[img-version]: https://img.shields.io/npm/v/bluemix-appid.svg
-[img-npm-downloads-monthly]: https://img.shields.io/npm/dm/bluemix-appid.svg
-[img-npm-downloads-total]: https://img.shields.io/npm/dt/bluemix-appid.svg
+[url-npm]: https://www.npmjs.com/package/ibmcloud-appid
+[img-license]: https://img.shields.io/npm/l/ibmcloud-appid.svg
+[img-version]: https://img.shields.io/npm/v/ibmcloud-appid.svg
+[img-npm-downloads-monthly]: https://img.shields.io/npm/dm/ibmcloud-appid.svg
+[img-npm-downloads-total]: https://img.shields.io/npm/dt/ibmcloud-appid.svg
 
 [img-github-watchers]: https://img.shields.io/github/watchers/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Watch
 [url-github-watchers]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/watchers
