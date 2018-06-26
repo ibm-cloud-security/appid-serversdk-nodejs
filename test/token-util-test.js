@@ -128,8 +128,4 @@ describe("/lib/utils/token-util", function(){
 		});
 	});
 
-	it("Should succeed and get random number", function () {
-		assert.notEqual(TokenUtil.getRandomNumber(), "");
-	});
-
 });
