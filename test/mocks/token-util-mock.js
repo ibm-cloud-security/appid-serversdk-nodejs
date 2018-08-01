@@ -13,33 +13,33 @@
 
 const Q = require("q");
 
-function decode(accessTokenString) {
-	if (accessTokenString === "invalid_token") {
-		return;
-	} else if (accessTokenString === "bad_scope") {
+function decode(tokenString) {
+	if (tokenString === "invalid_token") {
+		return undefined;
+	} else if (tokenString === "bad_scope") {
 		return {scope: "bad_scope"};
-	} else if (accessTokenString === "null_scope") {
+	} else if (tokenString === "null_scope") {
 		return null;
-	} else if (accessTokenString === "access_token_mock_test_scope") {
+	} else if (tokenString === "access_token_mock_test_scope") {
 		return {scope: "test_scope"};
-	} else if (accessTokenString === "id_token_mock_test_scope") {
+	} else if (tokenString === "id_token_mock_test_scope") {
 		return {scope: "test_scope"};
 	} else {
 		return {scope: "appid_default"};
 	}
 }
 
-function decodeAndValidate(accessTokenString) {
-    var deferred = Q.defer();
-    if (accessTokenString === "invalid_token") {
+function decodeAndValidate(tokenString) {
+    let deferred = Q.defer();
+    if (tokenString === "invalid_token") {
         deferred.resolve();
-    } else if (accessTokenString === "bad_scope") {
+    } else if (tokenString === "bad_scope") {
         deferred.resolve({scope: "bad_scope"});
-    } else if (accessTokenString === "null_scope") {
+    } else if (tokenString === "null_scope") {
          deferred.resolve(null);
-    } else if (accessTokenString === "access_token_mock_test_scope") {
+    } else if (tokenString === "access_token_mock_test_scope") {
          deferred.resolve({scope: "test_scope"});
-    } else if (accessTokenString === "id_token_mock_test_scope") {
+    } else if (tokenString === "id_token_mock_test_scope") {
          deferred.resolve({scope: "test_scope"});
     } else {
          deferred.resolve({scope: "appid_default"});
