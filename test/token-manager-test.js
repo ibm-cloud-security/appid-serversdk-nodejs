@@ -72,10 +72,6 @@ function mockRequest(options, callback) {
 
 function mockRetrieveTokenFailure(tokenManager, expectedErrMessage, done) {
 	tokenManager.getCustomIdentityTokens(mockJwsToken)
-		.then((res) => {
-			console.log(res);
-			done();
-		})
 		.catch((error) => {
 			assert.equal(error.message, expectedErrMessage);
 			done();
@@ -92,7 +88,7 @@ describe('/lib/token-manager/token-manager', () => {
 		});
 	});
 
-	describe('#tokenManager.getCustomIdentityTokens', () => {
+	describe('#TokenManager.getCustomIdentityTokens', () => {
 		it('Should fail access token validation', function (done) {
 			const tokenManager = new TokenManager(mockConfig(INVALID_ACCESS_TOKEN));
 			mockRetrieveTokenFailure(tokenManager, 'Invalid access token', done);
