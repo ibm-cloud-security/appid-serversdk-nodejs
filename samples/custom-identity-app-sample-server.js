@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-const passport = require('passport');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const log4js = require('log4js');
@@ -22,20 +21,15 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-const LANDING_PAGE_URL = '/';
 const LOGIN_URL = '/login';
 const PROTECTED_URL = '/protected';
 const APPID_AUTH_CONTEXT = 'AppID_Auth_context';
 
 const tokenManager = new AppID.TokenManager({
-	tenantId: 'd4fe200a-70b0-4d3b-9396-e7ab614b4c7b',
-	clientId: 'e1af2a92-8f65-4780-bf55-63b08270191c',
-	secret: 'ZGUxY2UzNmMtNjdjZS00OTA2LTllZTQtOTZlNmVmNGYyZTgx',
-	oauthServerUrl: 'https://appid-oauth.stage1.eu-gb.bluemix.net/oauth/v3/d4fe200a-70b0-4d3b-9396-e7ab614b4c7b',
-});
-
-app.get(LANDING_PAGE_URL, (req, res) => {
-	res.send('Hello, there');
+	tenantId: '{tenant-id}',
+	clientId: '{client-id}',
+	secret: '{secret}',
+	oauthServerUrl: '{oauth-server-url}',
 });
 
 app.get(LOGIN_URL, (req, res) => {
@@ -69,9 +63,15 @@ app.post(LOGIN_URL, (req, res) => {
 		jwsTokenString = generateSignedJWT(privateKey);
 
 		tokenManager.getCustomIdentityTokens(jwsTokenString).then((authContext) => {
+			// authContext.accessToken: Access token string
+			// authContext.identityToken: Identity token string
+			// authContext.tokenType: Type of tokens
+			// authContext.expiresIn: Expiry of tokens
+
 			req.session[APPID_AUTH_CONTEXT] = {...authContext};
 			req.session[APPID_AUTH_CONTEXT].identityTokenPayload = jwt.decode(authContext.identityToken);
 			req.session[APPID_AUTH_CONTEXT].accessTokenPayload = jwt.decode(authContext.accessToken);
+
 			res.redirect(PROTECTED_URL);
 		}).catch((error) => {
 			res.render('custom_identity_login', { message: error });

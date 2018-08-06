@@ -237,6 +237,13 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
+
+### Custom Identity
+App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
+
+To utilize the custom identity flow, the user must first register a Public Key in PEM form using the AppID Dashboard. The user must generate a signed JWT using any open library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
+
+
 ### Manage User Profile
 Using the AppID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
