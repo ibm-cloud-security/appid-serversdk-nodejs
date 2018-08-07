@@ -1,3 +1,16 @@
+/*
+ Copyright 2017 IBM Corp.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 const chai = require("chai");
 const assert = chai.assert;
 
@@ -22,17 +35,13 @@ describe('/lib/token-manager/token-manager-config', () => {
 	});
 
 	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
-		try {
-			new ServiceConfig();
-		} catch (error) {
-			assert.equal(error.message, 'Failed to initialize token manager');
-			done();
-		}
+		assert.throws(ServiceConfig, Error, 'Failed to initialize TokenManager. Ensure proper credentials are provided.');
+		done();
 	});
 
 	it("Should get config from options argument", (done) => {
 		config = new ServiceConfig(mockCredentials.credentials);
-		assert.deepEqual(config.getConfig(), mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
 		done();
 	});
 
@@ -41,7 +50,7 @@ describe('/lib/token-manager/token-manager-config', () => {
 			AdvancedMobileAccess: [mockCredentials]
 		});
 		config = new ServiceConfig();
-		assert.deepEqual(config.getConfig(), mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
 		done();
 	});
 
@@ -50,7 +59,7 @@ describe('/lib/token-manager/token-manager-config', () => {
 			AppID: [mockCredentials]
 		});
 		config = new ServiceConfig();
-		assert.deepEqual(config.getConfig(), mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
 		done();
 	});
 });

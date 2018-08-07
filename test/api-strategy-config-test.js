@@ -14,87 +14,87 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-describe('/lib/strategies/api-strategy-config', function () {
-	console.log("Loading api-strategy-config-test.js");
+const mockCredentials = {
+	credentials: {
+		tenantId: 'test-tenant-id',
+		oauthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id'
+	}
+};
 
-	var Config;
+describe('/lib/strategies/api-strategy-config', () => {
+	let ServiceConfig;
 
 	before(function () {
-		Config = require("../lib/strategies/api-strategy-config");
+		ServiceConfig = require("../lib/strategies/api-strategy-config");
 	});
 
 	beforeEach(function () {
 		delete process.env.VCAP_SERVICES;
-		delete process.env.VCAP_APPLICATION;
-		delete process.env.redirectUri;
 	});
 
-	describe("#getConfig(), #getServerUrl", function () {
-		it("Should fail since there's no options argument nor VCAP_SERVICES", function () {
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.isUndefined(config.getOAuthServerUrl());
-			assert.isUndefined(config.getTenantId());
-		});
 
-		it("Should fail when there's no oauthServerUrl", function () {
-			var config = new Config({
+	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
+		assert.throws(ServiceConfig, Error, 'Failed to initialize APIStrategy. Ensure proper credentials are provided.');
+		done();
+	});
+
+	it("Should fail if there is no oauthServerUrl", (done) => {
+		assert.throws(() => {
+			ServiceConfig({
 				tenantId: "abcd"
 			});
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
-			assert.isUndefined(config.getOAuthServerUrl());
-		});
+		}, Error, 'Failed to initialize APIStrategy. Ensure proper credentials are provided.');
+		done();
+	});
 
-		it("Should fail when there's no tenantId and oauthServerUrl", function () {
-			var config = new Config({
-				clientId: "clientId"
+	it("Should fail if there is no tenantId", (done) => {
+		assert.throws(() => {
+			ServiceConfig({
+				oauthServerUrl: "https://abcd.com"
 			});
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.isUndefined(config.getTenantId());
-			assert.isUndefined(config.getOAuthServerUrl());
-		});
+		}, Error, 'Failed to initialize APIStrategy. Ensure proper credentials are provided.');
+		done();
+	});
 
-		it("Should fail when there's no tenantId", function () {
-			var config = new Config({
-				oauthServerUrl: "http://abcd"
-			});
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.isUndefined(config.getTenantId());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-		});
+	it("Should get config from options argument", (done) => {
+		config = new ServiceConfig(mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
+		done();
+	});
 
-		it("Should succeed and get config from options argument", function () {
-			var config = new Config({
-				oauthServerUrl: "http://abcd",
-				tenantId: "abcd"
-			});
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-			assert.equal(config.getTenantId(), "abcd");
+	it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
+		const { tenantId, oauthServerUrl} = mockCredentials.credentials;
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AdvancedMobileAccess: [{
+				credentials: {
+					tenantId,
+					oauthServerUrl
+				}
+			}]
 		});
+		const config = new ServiceConfig();
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+		assert.equal(config.getTenantId(), tenantId);
+		done();
+	});
 
-		it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", function () {
-			process.env.VCAP_SERVICES = JSON.stringify({AdvancedMobileAccess: [{credentials: {tenantId: "abcd", oauthServerUrl: "http://abcd"}}]});
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-			assert.equal(config.getTenantId(), "abcd");
+	it("Should succeed and get config from VCAP_SERVICES with Appid as the name", (done) => {
+		const { tenantId, oauthServerUrl} = mockCredentials.credentials;
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AppID: [{
+				credentials: {
+					tenantId,
+					oauthServerUrl
+				}
+			}]
 		});
-		
-		it("Should succeed and get config from VCAP_SERVICES with Appid as the name", function () {
-			process.env.VCAP_SERVICES = JSON.stringify({AppID:[{credentials: {tenantId: "abcd", oauthServerUrl: "http://abcd"}}]});
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-			assert.equal(config.getTenantId(), "abcd");
-		});
+		const config = new ServiceConfig();
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+		assert.equal(config.getTenantId(), tenantId);
+		done();
 	});
 });

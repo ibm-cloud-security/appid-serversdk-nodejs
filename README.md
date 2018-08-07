@@ -76,8 +76,7 @@ app.use(passport.initialize());
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
 	oauthServerUrl: "{oauth-server-url}",
-	tenantId: "{tenant-id}",
-	clientId: "{client-id}"
+	tenantId: "{tenant-id}"
 }));
 
 // Declare the API you want to protect

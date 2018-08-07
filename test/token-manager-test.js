@@ -1,3 +1,16 @@
+/*
+ Copyright 2017 IBM Corp.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 const chai = require("chai");
 const assert = chai.assert;
 const proxyquire = require("proxyquire");
@@ -51,22 +64,22 @@ function mockRequest(options, callback) {
 		mockInvalidTokenResponse['access_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, mockInvalidTokenResponse);
+		}, JSON.stringify(mockInvalidTokenResponse));
 	} else if (secret.includes(INVALID_IDENTITY_TOKEN)) {
 		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['id_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, mockInvalidTokenResponse);
+		}, JSON.stringify(mockInvalidTokenResponse));
 	} else if (secret.includes(SUCCESS)) {
 		return callback(null, {
 			statusCode: 200
-		}, mockTokenResponse)
+		}, JSON.stringify(mockTokenResponse))
 	} else if (secret.includes('return_code')) {
 		const statusCode = parseInt(secret.split(':')[1]);
 		return callback(null, {
 			statusCode
-		}, getErrorResponse(statusCode));
+		}, JSON.stringify(getErrorResponse(statusCode)));
 	}
 }
 

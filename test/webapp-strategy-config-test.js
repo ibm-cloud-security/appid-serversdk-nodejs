@@ -14,13 +14,22 @@
 const chai = require("chai");
 const assert = chai.assert;
 
-describe("/lib/strategies/webapp-strategy-config", function () {
-	console.log("Loading webapp-strategy-config-test.js");
+const mockCredentials = {
+	credentials: {
+		tenantId: 'test-tenant-id',
+		clientId: 'test-client-id',
+		secret: 'secret',
+		oauthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id',
+		redirectUri: "https://test-redirect-uri",
+		preferredLocale: "test-preferred-locale"
+	}
+};
 
-	var Config;
+describe("/lib/strategies/webapp-strategy-config", () => {
+	let ServiceConfig;
 
-	before(function () {
-		Config = require("../lib/strategies/webapp-strategy-config");
+	before(() => {
+		ServiceConfig = require("../lib/strategies/webapp-strategy-config");
 	});
 
 	beforeEach(function () {
@@ -29,98 +38,87 @@ describe("/lib/strategies/webapp-strategy-config", function () {
 		delete process.env.redirectUri;
 	});
 
-	describe("#getConfig(), #getTenantId(), #getClientId(), #getSecret(), #getAuthorizationEndpoint(), #getTokenEndpoint(), #getRedirectUri()", function () {
-		it("Should fail since there's no options argument nor VCAP_SERVICES", function () {
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.isUndefined(config.getTenantId());
-			assert.isUndefined(config.getClientId());
-			assert.isUndefined(config.getSecret());
-			assert.isUndefined(config.getOAuthServerUrl());
-			assert.isUndefined(config.getRedirectUri());
+	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
+		assert.throws(ServiceConfig, Error, 'Failed to initialize WebAppStrategy. Ensure proper credentials are provided.');
+		done();
+	});
 
-		});
+	it("Should get config from options argument", (done) => {
+		const config = new ServiceConfig(mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
+		done();
+	});
 
-		it("Should succeed and get config from options argument", function () {
-			var config = new Config({
-				tenantId: "abcd",
-				clientId: "clientId",
-				secret: "secret",
-				oauthServerUrl: "oauthServerUrl",
-				redirectUri: "redirectUri",
-				preferredLocale: "preferredLocale"
-			});
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
-			assert.equal(config.getClientId(), "clientId");
-			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getOAuthServerUrl(), "oauthServerUrl");
-			assert.equal(config.getRedirectUri(), "redirectUri");
-			assert.equal(config.getPreferredLocale(), "preferredLocale");
-		});
-
-		it("Should succeed and get config from VCAP_SERVICES (AdvancedMobileAccess)", function () {
-			process.env.VCAP_SERVICES = JSON.stringify({
-				AdvancedMobileAccess: [
-					{
-						credentials: {
-							tenantId: "abcd",
-							clientId: "clientId",
-							secret: "secret",
-							oauthServerUrl: "http://abcd"
-						}
+	it("Should get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
+		const { tenantId, clientId, secret, oauthServerUrl, redirectUri } = mockCredentials.credentials;
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AdvancedMobileAccess: [
+				{
+					credentials: {
+						tenantId,
+						clientId,
+						secret,
+						oauthServerUrl
 					}
-				]
-			});
-
-			process.env.redirectUri = "redirectUri";
-
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
-			assert.equal(config.getClientId(), "clientId");
-			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-			assert.equal(config.getRedirectUri(), "redirectUri");
+				}
+			]
 		});
-		it("Should succeed and get config from VCAP_SERVICES (Appid)", function () {
-			process.env.VCAP_SERVICES = JSON.stringify({
-				AppID: [
-					{
-						credentials: {
-							tenantId: "abcd",
-							clientId: "clientId",
-							secret: "secret",
-							oauthServerUrl: "http://abcd"
-						}
+
+		process.env.redirectUri = redirectUri;
+
+		const config = new ServiceConfig();
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getTenantId(), tenantId);
+		assert.equal(config.getClientId(), clientId);
+		assert.equal(config.getSecret(), secret);
+		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+		assert.equal(config.getRedirectUri(), redirectUri);
+		done();
+	});
+
+	it("Should get config from VCAP_SERVICES with Appid as the name", (done) => {
+		const { tenantId, clientId, secret, oauthServerUrl, redirectUri } = mockCredentials.credentials;
+		process.env.VCAP_SERVICES = JSON.stringify({
+			AppID: [
+				{
+					credentials: {
+						tenantId,
+						clientId,
+						secret,
+						oauthServerUrl
 					}
-				]
-			});
-
-			process.env.redirectUri = "redirectUri";
-
-			var config = new Config();
-			assert.isObject(config);
-			assert.isObject(config.getConfig());
-			assert.equal(config.getTenantId(), "abcd");
-			assert.equal(config.getClientId(), "clientId");
-			assert.equal(config.getSecret(), "secret");
-			assert.equal(config.getOAuthServerUrl(), "http://abcd");
-			assert.equal(config.getRedirectUri(), "redirectUri");
+				}
+			]
 		});
 
-		it("Should succeed and get redirectUri from VCAP_APPLICATION", function () {
-			process.env.VCAP_APPLICATION = JSON.stringify({
-				"application_uris": [
-					"abcd.com"
-				]
-			});
-			var config = new Config();
-			assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
-		});
+		process.env.redirectUri = redirectUri;
 
-	})
+		const config = new ServiceConfig();
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getTenantId(), tenantId);
+		assert.equal(config.getClientId(), clientId);
+		assert.equal(config.getSecret(), secret);
+		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+		assert.equal(config.getRedirectUri(), redirectUri);
+		done();
+	});
+
+	it("Should get redirectUri from VCAP_APPLICATION", (done) => {
+		const { tenantId, clientId, secret, oauthServerUrl} = mockCredentials.credentials;
+		process.env.VCAP_APPLICATION = JSON.stringify({
+			"application_uris": [
+				"abcd.com"
+			]
+		});
+		const config = new ServiceConfig({
+			tenantId,
+			clientId,
+			secret,
+			oauthServerUrl
+		});
+		assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
+		done();
+	});
 });
