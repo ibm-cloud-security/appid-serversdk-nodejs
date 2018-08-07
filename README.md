@@ -241,7 +241,7 @@ In order to use the persisted refresh_token, you need to call `webAppStrategy.re
 ### Custom Identity
 App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
 
-To utilize the custom identity flow, the user must first register a Public Key in PEM form using the AppID Dashboard. The user must generate a signed JWT using any open library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
+To utilize the custom identity flow, the user must first register a public key in PEM form using the AppID Dashboard. The user must generate a signed JWT using any open source library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
 
 
 ### Manage User Profile

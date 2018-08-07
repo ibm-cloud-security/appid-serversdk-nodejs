@@ -68,7 +68,7 @@ app.post(LOGIN_URL, (req, res) => {
 			// authContext.tokenType: Type of tokens
 			// authContext.expiresIn: Expiry of tokens
 
-			req.session[APPID_AUTH_CONTEXT] = {...authContext};
+			req.session[APPID_AUTH_CONTEXT] = authContext;
 			req.session[APPID_AUTH_CONTEXT].identityTokenPayload = jwt.decode(authContext.identityToken);
 			req.session[APPID_AUTH_CONTEXT].accessTokenPayload = jwt.decode(authContext.accessToken);
 

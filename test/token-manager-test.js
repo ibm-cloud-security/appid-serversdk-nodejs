@@ -47,13 +47,13 @@ function getErrorResponse(statusCode) {
 function mockRequest(options, callback) {
 	const secret = options.auth.password;
 	if (secret.includes(INVALID_ACCESS_TOKEN)) {
-		const mockInvalidTokenResponse = { ...mockTokenResponse };
+		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['access_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
 		}, mockInvalidTokenResponse);
 	} else if (secret.includes(INVALID_IDENTITY_TOKEN)) {
-		const mockInvalidTokenResponse = { ...mockTokenResponse };
+		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['id_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
