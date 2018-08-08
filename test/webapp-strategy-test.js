@@ -26,7 +26,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 	var webAppStrategy;
 	before(function () {
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
-			"./../utils/token-util": require("./mocks/token-util-mock"),
+			"../utils/token-util": require("./mocks/token-util-mock"),
 			"request": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
