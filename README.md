@@ -242,7 +242,7 @@ App ID's custom identity flow enables developers to utilize their own authorizat
 
 To utilize the custom identity flow, the user must first register a public key in PEM form using the App ID Dashboard. The user must generate a signed JWT using any open source library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
 
-Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on  how to implement App ID's custom identity flow in your application.
+Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
