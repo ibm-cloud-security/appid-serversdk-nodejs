@@ -18,7 +18,6 @@ chai.use(require("chai-as-promised"));
 const proxyquire = require("proxyquire");
 const constants = require("./mocks/constants");
 
-
 describe("/lib/utils/token-util", function(){
 	console.log("Loading token-util-test.js");
 	var TokenUtil;
@@ -30,27 +29,12 @@ describe("/lib/utils/token-util", function(){
 		TokenUtil = proxyquire("../lib/utils/token-util", {
 			"./public-key-util": require("./mocks/public-key-util-mock")
 		});
-		const { CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI } = require('../lib/utils/constants');
-		const ServiceUtil = require('../lib/utils/service-util');
-		ServiceConfig = function (options) {
-			return ServiceUtil.loadConfig('APIStrategy', [
-				TENANT_ID,
-				OAUTH_SERVER_URL
-			], options);
-		};
+		ServiceConfig = require("../lib/strategies/api-strategy-config");
 		serviceConfig = new ServiceConfig({
 			oauthServerUrl: constants.SERVER_URL,
 			tenantId: constants.TENANTID
 		});
-		Config = function (options) {
-			return ServiceUtil.loadConfig('WebAppStrategy', [
-				TENANT_ID,
-				CLIENT_ID,
-				SECRET,
-				OAUTH_SERVER_URL,
-				REDIRECT_URI
-			], options);
-		};
+		Config = require("../lib/strategies/webapp-strategy-config");
 	});
 
 	describe("#decodeAndValidate()", function(){
@@ -143,4 +127,5 @@ describe("/lib/utils/token-util", function(){
 			assert.property(decodedToken, "iat");
 		});
 	});
+
 });
