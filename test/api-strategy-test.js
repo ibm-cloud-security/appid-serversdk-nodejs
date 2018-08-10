@@ -23,8 +23,8 @@ describe("/lib/strategies/api-strategy", function(){
 
 	before(function(){
 		APIStrategy = proxyquire("../lib/strategies/api-strategy", {
-			"../utils/public-key-util": require("./mocks/public-key-util-mock"),
-			"../utils/token-util": require("./mocks/token-util-mock")
+			"./../utils/public-key-util": require("./mocks/public-key-util-mock"),
+			"./../utils/token-util": require("./mocks/token-util-mock")
 		});
 		apiStrategy = new APIStrategy({
 			oauthServerUrl: "serverUrl",
