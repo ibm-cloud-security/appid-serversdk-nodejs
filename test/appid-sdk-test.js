@@ -17,16 +17,26 @@ const assert = chai.assert;
 describe('/lib/appid-sdk', function(){
 	console.log("Loading appid-sdk-test.js");
 
-	var AppIdSDK;
+	let AppIdSDK;
 
 	before(function(){
 		AppIdSDK = require("../lib/appid-sdk");
 	});
 
 	describe("#AppIdSDK", function(){
-		it("Should return APIStrategy and WebAppStrategy", function(){
+		it("Should return WebAppStrategy", (done) => {
 			assert.isFunction(AppIdSDK.WebAppStrategy);
+			done();
+		});
+
+		it('Should return APIStrategy', (done) => {
 			assert.isFunction(AppIdSDK.APIStrategy);
+			done();
+		});
+
+		it('Should return token manger', (done) => {
+			assert.isFunction(AppIdSDK.TokenManager);
+			done();
 		});
 	});
 });
