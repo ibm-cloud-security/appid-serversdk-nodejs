@@ -54,51 +54,30 @@ describe("/lib/utils/token-util", function () {
 	});
 
 	describe("#decodeAndValidate()", function () {
-		it("Should fail since service configuration is not defined", function () {
-			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN)).to.be.rejectedWith("Invalid service configuration");
-		});
 
 		it("Should fail since token is expired", function () {
-			return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN, serviceConfig)).to.be.rejectedWith("jwt expired");
+			return expect(TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN)).to.be.rejectedWith("jwt expired");
 		});
 
 		it("Should succeed since APPID_ALLOW_EXPIRED_TOKENS=true", function () {
 			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
-			TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN, serviceConfig).then(function (decodedToken) {
+			TokenUtil.decodeAndValidate(constants.EXPIRED_ACCESS_TOKEN).then(function (decodedToken) {
 				assert.isObject(decodedToken);
 			});
 		});
 
 		it("Should fail since token is malformed", function () {
 			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
-			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN, serviceConfig)).to.be.rejectedWith("invalid algorithm");
+			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN)).to.be.rejectedWith("invalid algorithm");
 		});
 
 		it("Should fail since header is empty in token", function () {
 			process.env[constants.APPID_ALLOW_EXPIRED_TOKENS] = true;
-			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN_WITHOUTHEADER, serviceConfig)).to.be.rejectedWith("JWT error, can not decode token");
-		});
-
-		it("Should fail since tenantId is different", function () {
-			serviceConfig.tenantId = "abcdef";
-			return expect(TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, new ServiceConfig({
-				oauthServerUrl: constants.SERVER_URL,
-				tenantId: "4dba9430-54e6-4cf2-a516"
-			}))).to.be.rejectedWith("JWT error, invalid tenantId");
-		});
-
-		it("Should succeed if there is no tenantId validation", function () {
-			serviceConfig.tenantId = "abcdef";
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, new ServiceConfig({
-				oauthServerUrl: constants.SERVER_URL,
-				tenantId: "4dba9430-54e6-4cf2-a516"
-			}), false).then(function (decodedToken) {
-				assert.isObject(decodedToken);
-			});
+			return expect(TokenUtil.decodeAndValidate(constants.MALFORMED_ACCESS_TOKEN_WITHOUTHEADER)).to.be.rejectedWith("JWT error, can not decode token");
 		});
 
 		it("Should succeed since token is valid", function () {
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, serviceConfig).then(function (decodedToken) {
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				assert.isObject(decodedToken);
 			});
 		});
@@ -111,7 +90,7 @@ describe("/lib/utils/token-util", function () {
 				oauthServerUrl: constants.SERVER_URL,
 				redirectUri: "redirectUri"
 			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, config).then(function (decodedToken) {
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				assert(TokenUtil.validateIssAndAud(decodedToken, config), true);
 			});
 		});
@@ -124,7 +103,7 @@ describe("/lib/utils/token-util", function () {
 				oauthServerUrl: constants.SERVER_URL,
 				redirectUri: "redirectUri"
 			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, config).then(function (decodedToken) {
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				assert(TokenUtil.validateIssAndAud(decodedToken, config), false);
 			});
 		});
@@ -137,7 +116,7 @@ describe("/lib/utils/token-util", function () {
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
 			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN, config).then(function (decodedToken) {
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				assert(TokenUtil.validateIssAndAud(decodedToken, config), false);
 			});
 		});
