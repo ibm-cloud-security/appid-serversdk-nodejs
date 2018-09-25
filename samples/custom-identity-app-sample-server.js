@@ -39,7 +39,6 @@ const PROTECTED_URL = '/protected';
 const APPID_AUTH_CONTEXT = 'AppID_Auth_context';
 
 const tokenManager = new AppID.TokenManager({
-	tenantId: '{tenant-id}',
 	clientId: '{client-id}',
 	secret: '{secret}',
 	oauthServerUrl: '{oauth-server-url}',
