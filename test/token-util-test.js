@@ -19,7 +19,7 @@ const proxyquire = require("proxyquire");
 const constants = require("./mocks/constants");
 
 
-describe("/lib/utils/token-util", function () {
+describe("/lib/utils/token-util", function() {
 	console.log("Loading token-util-test.js");
 	var TokenUtil;
 	var ServiceConfig;
