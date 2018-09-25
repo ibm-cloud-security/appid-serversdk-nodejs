@@ -382,7 +382,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 		
 		it("Should handle callback if request contains grant code. Fail due to missing state", function (done) {
 			webAppStrategy.fail = function (err) {
-				assert.equal(err.message, "Missing state parameter");
+				assert.equal(err.message, "Invalid session state");
 				done();
 			};
 			var req = {
