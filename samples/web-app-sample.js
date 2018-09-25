@@ -3,6 +3,7 @@ $(document).ready(function(){
 
 	$.getJSON("/protected", function(data){
 		// Already authenticated
+		console.log(data);
 		$("#WhenAuthenticated").show();
 		$("#sub").text(data.sub);
 		$("#name").text(data.name || "Anonymous");

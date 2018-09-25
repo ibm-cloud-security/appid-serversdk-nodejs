@@ -12,6 +12,7 @@
  */
 
 const express = require("express");
+const path = require("path");
 const session = require("express-session");
 const log4js = require("log4js");
 const passport = require("passport");
@@ -52,6 +53,7 @@ app.use(session({
 
 // Use static resources from /samples directory
 app.use(express.static(__dirname ));
+app.set('views', path.join(__dirname, '/views'));
 
 // Configure express application to use passportjs
 app.use(passport.initialize());
@@ -127,6 +129,9 @@ app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 // Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
 	WebAppStrategy.logout(req);
+	WebAppStrategy.logout(req);
+	// If you chose to store your refresh-token, don't forgot to clear it also in logout:
+	res.clearCookie("refreshToken");
 	res.redirect(LANDING_PAGE_URL);
 });
 
@@ -166,7 +171,7 @@ app.post("/rop/login/submit", bodyParser.urlencoded({extended: false}), passport
 
 app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
 	// render the page and pass in any flash data if it exists
-	res.render("login.ejs", { message: req.flash('error') });
+	res.render("login", { message: req.flash('error') });
 });
 
 var port = process.env.PORT || 3000;
