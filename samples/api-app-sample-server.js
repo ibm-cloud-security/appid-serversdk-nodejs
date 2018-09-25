@@ -24,8 +24,7 @@ app.use(helmet());
 app.use(passport.initialize());
 
 passport.use(new APIStrategy({
-	oauthServerUrl: "{oauth-server-url}",
-	tenantId: "{tenant-id}"
+	oauthServerUrl: "{oauth-server-url}"
 }));
 
 app.get("/api/protected",
