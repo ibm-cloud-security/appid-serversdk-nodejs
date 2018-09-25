@@ -129,7 +129,6 @@ app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 // Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
 	WebAppStrategy.logout(req);
-	WebAppStrategy.logout(req);
 	// If you chose to store your refresh-token, don't forgot to clear it also in logout:
 	res.clearCookie("refreshToken");
 	res.redirect(LANDING_PAGE_URL);
