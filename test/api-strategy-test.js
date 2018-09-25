@@ -28,8 +28,7 @@ describe("/lib/strategies/api-strategy", function(){
 		});
 		apiStrategy = new APIStrategy({
 			oauthServerUrl: "serverUrl",
-			tenantId: "tenantId",
-			clientId: "clientId"
+			tenantId: "tenantId"
 		});
 	});
 
