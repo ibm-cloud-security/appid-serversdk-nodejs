@@ -243,6 +243,45 @@ To utilize the custom identity flow, the user must first register a public key i
 
 Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
+
+### Application Identity
+
+In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID app to app flow to authenticate and authorize your non user interactive applications.  
+
+App ID app to app flow implements the OAuth2.0 Client Credentials grant.
+
+Before you can obtain access tokens for the app to app flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID app to app documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+
+Since the application needs to store the `client ID` and the `secret`, the app to app flow must never be used with untrusted clients such as mobile clients and browser based applications.
+
+Also, note that this flow only returns an access token and no identity or refresh tokens are issued in this flow.
+
+The code snippet below describes how to obtain the access tokens for the app to app flow.
+
+```javascript
+const config = {
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}",
+	secret: "{secret}",
+	oauthServerUrl: "{oauth-server-url}"
+};
+
+const TokenManager = require('ibmcloud-appid').TokenManager;
+
+async function getAppIdentityToken() {
+	try {
+			const tokenResponse = await tokenManager.getApplicationIdentityToken();
+			console.log('Token response : ' + JSON.stringify(tokenResponse));
+
+			//the token response contains the access_token, expires_in, token_type
+	} catch (err) {
+			console.log('err obtained : ' + err);
+			res.status(500).send(err.toString());
+	}
+}
+```
+For more detailed information on using app to app flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
@@ -469,7 +508,7 @@ Gets the stored details of the Cloud directory user.
 uuid is the Cloud Directory user uuid.
 
 ```javascript
-selfServiceManager.getUserDetails(uuid, iamToke).then(function (user) {
+selfServiceManager.getUserDetails(uuid, iamToken).then(function (user) {
 			logger.debug('user details:'  + JSON.stringify(user));
 		}).catch(function (err) {
 			logger.error(err);
