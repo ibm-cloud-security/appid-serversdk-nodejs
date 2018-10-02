@@ -75,8 +75,7 @@ app.use(passport.initialize());
 // App ID service instance. In this case App ID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
-	oauthServerUrl: "{oauth-server-url}",
-	tenantId: "{tenant-id}"
+	oauthServerUrl: "{oauth-server-url}"
 }));
 
 // Declare the API you want to protect
