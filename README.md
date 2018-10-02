@@ -248,11 +248,13 @@ Refer to the [documentation on custom identity](https://console.bluemix.net/docs
 
 In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID app to app flow to authenticate and authorize your non user interactive applications.  
 
-App ID app to app flow implements the the OAuth2.0 Client Credentials grant.
+App ID app to app flow implements the OAuth2.0 Client Credentials grant.
 
 Before you can obtain access tokens for the app to app flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID app to app documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
 
-Since the application needs to store the `client ID` and the `secret`, the app to app flow must never be used with untrusted clients such as mobile clients and desktop native applications.
+Since the application needs to store the `client ID` and the `secret`, the app to app flow must never be used with untrusted clients such as mobile clients and browser based applications.
+
+Also, note that this flow only returns an access token and no identity or refresh tokens are issued in this flow.
 
 The code snippet below describes how to obtain the access tokens for the app to app flow.
 
