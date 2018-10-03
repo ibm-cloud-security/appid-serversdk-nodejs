@@ -247,17 +247,17 @@ Refer to the [documentation on custom identity](https://console.bluemix.net/docs
 
 ### Application Identity and Authorization
 
-In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID application identity and authorization flow to secure your applications.   
+In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.   
 
-App ID application identity and authorization implements the OAuth2.0 Client Credentials grant.
+App ID application authorization implements the OAuth2.0 Client Credentials grant.
 
-Before you can obtain access tokens the application identity and authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
 
 Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
 
-Also, note that this flow only returns an access token and no identity or refresh tokens are issued in this flow.
+Also, note that this flow only returns an access token and no identity or refresh tokens are issued.
 
-The code snippet below describes how to obtain the access tokens for this flow.
+The code snippet below describes how to obtain the access token for this flow.
 
 ```javascript
 const config = {
