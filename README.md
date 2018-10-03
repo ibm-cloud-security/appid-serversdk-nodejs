@@ -244,19 +244,19 @@ To utilize the custom identity flow, the user must first register a public key i
 Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 
-### Application Identity
+### Application Identity and Authorization
 
-In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID app to app flow to authenticate and authorize your non user interactive applications.  
+In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID application identity and authorization flow to secure your applications.   
 
-App ID app to app flow implements the OAuth2.0 Client Credentials grant.
+App ID application identity and authorization implements the OAuth2.0 Client Credentials grant.
 
-Before you can obtain access tokens for the app to app flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID app to app documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+Before you can obtain access tokens the application identity and authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
 
-Since the application needs to store the `client ID` and the `secret`, the app to app flow must never be used with untrusted clients such as mobile clients and browser based applications.
+Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
 
 Also, note that this flow only returns an access token and no identity or refresh tokens are issued in this flow.
 
-The code snippet below describes how to obtain the access tokens for the app to app flow.
+The code snippet below describes how to obtain the access tokens for this flow.
 
 ```javascript
 const config = {
@@ -280,7 +280,7 @@ async function getAppIdentityToken() {
 	}
 }
 ```
-For more detailed information on using app to app flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
 
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
