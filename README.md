@@ -244,7 +244,6 @@ To utilize the custom identity flow, the user must first register a public key i
 Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 
-
 ### Application Identity and Authorization
 
 In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.   
@@ -282,7 +281,6 @@ async function getAppIdentityToken() {
 }
 ```
 For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
-
 
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
