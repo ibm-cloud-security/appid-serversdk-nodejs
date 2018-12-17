@@ -40,7 +40,8 @@ describe("/lib/utils/token-util", function() {
 		};
 		serviceConfig = new ServiceConfig({
 			oauthServerUrl: constants.SERVER_URL,
-			tenantId: constants.TENANTID
+			tenantId: constants.TENANTID,
+			issuer: constants.SERVER_URL
 		});
 		Config = function (options) {
 			return ServiceUtil.loadConfig('WebAppStrategy', [
@@ -82,42 +83,62 @@ describe("/lib/utils/token-util", function() {
 			});
 		});
 
-		it("Token validation success", function () {
+		it("Token validation success", function (done) {
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: constants.SERVER_URL,
-				redirectUri: "redirectUri"
+				redirectUri: "redirectUri",
+				issuer: constants.ISSUER
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				assert(TokenUtil.validateIssAndAud(decodedToken, config), true);
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+					assert(res, true);
+					done();
+				}).catch(err => {
+					throw Error(err);
+					done();
+				});
 			});
 		});
 
-		it("Token validation failed, invalid clientid ", function () {
+		it("Token validation failed, invalid clientid ", function (done) {
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: "clientId",
 				secret: "secret",
 				oauthServerUrl: constants.SERVER_URL,
-				redirectUri: "redirectUri"
+				redirectUri: "redirectUri",
+				issuer: constants.ISSUER
 			});
+
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				assert(TokenUtil.validateIssAndAud(decodedToken, config), false);
-			});
+					TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+						throw Error("This test should fail.");
+						done();
+					}).catch(err => {
+						done();
+					});
+				});
 		});
 
-		it("Token validation failed, invalid serverurl", function () {
+		it("Token validation failed, invalid serverurl", function (done) {
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
-				redirectUri: "redirectUri"
+				redirectUri: "redirectUri",
+				issuer: constants.ISSUER
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				assert(TokenUtil.validateIssAndAud(decodedToken, config), false);
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+					throw Error("This test should fail.");
+					done();
+				}).catch(err => {
+					done();
+				});
 			});
 		});
 	});

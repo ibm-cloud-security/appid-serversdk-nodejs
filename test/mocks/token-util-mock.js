@@ -48,7 +48,10 @@ function decodeAndValidate(tokenString) {
 }
 
 function validateIssAndAud(token, serviceConfig) {
-    return true;
+		return new Promise(function (resolve, reject) {
+			resolve(true);
+		});
+    //return true;
 }
 
 function getRandomNumber() {
