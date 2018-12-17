@@ -20,5 +20,6 @@ module.exports = {
 	DEV_PUBLIC_KEYS : [{"kty":"RSA","n":"s8SVzmkIslnxYmr0fa_i88fTS_a6wH3tNzRjE1M2SUHjz0E7IJ2-2Jjqwsefu0QcYDnH_oiwnLGn_m-etw1toAIC30UeeKiskM1pqRi6Z8LTRZIS3WYHRFGqa3IfVEBf_sjlxjNqfG8y9c4fJ_pRYGxpzCbjeXsDefs0zfSXmlQcWL1MwIIDHN0ZnAcmpjSsOzo0wPQGb_n8MIfT-rUr90bxch9-51wOEVXROE5nQpjkW9n6aCECeySDIK0nvILsgXMWUNW3oAIF35tK9yaUkGxXVNju-RGJLipnIIDU5apJY8lmKTVmzBMglY2fgXpNKbgQmMBlUJ4L1X05qUzw5w","e":"AQAB","kid":"appId-1504675475000"}],
 	SERVER_URL : "http://mobileclientaccess.stage1.ng.bluemix.net/",
 	TENANTID : "4dba9430-54e6-4cf2-a516-6f73feb702bb",
-	CLIENTID : "26cb012eb327c612d90a6819163b6bcbd4849cbb"
+	CLIENTID : "26cb012eb327c612d90a6819163b6bcbd4849cbb",
+	ISSUER: "mobileclientaccess.stage1.ng.bluemix.net"
 };
