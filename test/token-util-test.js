@@ -24,12 +24,18 @@ describe("/lib/utils/token-util", function() {
 	var TokenUtil;
 	var ServiceConfig;
 	var serviceConfig;
+	//let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
+	let endpoint="endpoint";
+
+	let utilsStub={
+		"./public-key-util": require("./mocks/public-key-util-mock"),
+		"request":(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint})
+	};
 	var Config;
 
 	before(function () {
-		TokenUtil = proxyquire("../lib/utils/token-util", {
-			"./public-key-util": require("./mocks/public-key-util-mock")
-		});
+		TokenUtil = proxyquire("../lib/utils/token-util",utilsStub );
+
 		const { CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI } = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
 		ServiceConfig = function (options) {
@@ -136,6 +142,70 @@ describe("/lib/utils/token-util", function() {
 				});
 			});
 		});
+		it("get issuer from well known", function (done) {
+			endpoint="endpoint";
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss="endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+
+					done();
+				}).catch(err => {
+					done(err);
+				});
+			});
+		});
+		it("get issuer from well known different endpoint", function (done) {
+			endpoint="endpoint2";
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss="endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+					done("suppose to fail");
+				}).catch(err => {
+					done();
+
+				});
+			});
+		});
+
+		it("don't go to issuer endpoint when issuer exists", function (done) {
+			endpoint="endpoint2";
+			
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri",
+				issuer:"endpoint"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss="endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
+					done();
+				}).catch(err => {
+					done(err);
+
+				});
+			});
+		});
 	});
 
 	describe("#decode()", function () {
@@ -148,4 +218,5 @@ describe("/lib/utils/token-util", function() {
 			assert.property(decodedToken, "iat");
 		});
 	});
+
 });
