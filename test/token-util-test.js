@@ -97,8 +97,7 @@ describe("/lib/utils/token-util", function() {
 					assert(res, true);
 					done();
 				}).catch(err => {
-					throw Error(err);
-					done();
+					done(err);
 				});
 			});
 		});
@@ -109,14 +108,12 @@ describe("/lib/utils/token-util", function() {
 				clientId: "clientId",
 				secret: "secret",
 				oauthServerUrl: constants.SERVER_URL,
-				redirectUri: "redirectUri",
-				issuer: constants.ISSUER
+				redirectUri: "redirectUri"
 			});
 
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 					TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-						throw Error("This test should fail.");
-						done();
+						done("This test should fail.");
 					}).catch(err => {
 						done();
 					});
@@ -129,13 +126,11 @@ describe("/lib/utils/token-util", function() {
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
-				redirectUri: "redirectUri",
-				issuer: constants.ISSUER
+				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					throw Error("This test should fail.");
-					done();
+					done("This test should fail.");
 				}).catch(err => {
 					done();
 				});
