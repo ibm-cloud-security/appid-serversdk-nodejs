@@ -91,7 +91,7 @@ describe("/lib/utils/token-util", function () {
 			});
 		});
 
-		it("Token validation success", function (done) {
+		it("Token validation success", function () {
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
@@ -100,12 +100,10 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri",
 				issuer: constants.ISSUER
 			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					assert(res, true);
-					done();
-				}).catch(err => {
-					done(err);
+
 				});
 			});
 		});
