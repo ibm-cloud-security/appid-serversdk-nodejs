@@ -19,24 +19,26 @@ const proxyquire = require("proxyquire");
 const constants = require("./mocks/constants");
 
 
-describe("/lib/utils/token-util", function() {
+describe("/lib/utils/token-util", function () {
 	console.log("Loading token-util-test.js");
 	var TokenUtil;
 	var ServiceConfig;
 	var serviceConfig;
 	//let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
-	let endpoint="endpoint";
+	let reqEndpoint = "endpoint";
+	let reqError;
+	let reqresponse = {statusCode: 200};
 
-	let utilsStub={
+	let utilsStub = {
 		"./public-key-util": require("./mocks/public-key-util-mock"),
-		"request":(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint})
+		"request": (_, cb) => cb(reqError, reqresponse, {issuer: reqEndpoint})
 	};
 	var Config;
 
 	before(function () {
-		TokenUtil = proxyquire("../lib/utils/token-util",utilsStub );
+		TokenUtil = proxyquire("../lib/utils/token-util", utilsStub);
 
-		const { CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI } = require('../lib/utils/constants');
+		const {CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI} = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
 		ServiceConfig = function (options) {
 			return ServiceUtil.loadConfig('APIStrategy', [
@@ -118,12 +120,12 @@ describe("/lib/utils/token-util", function() {
 			});
 
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-					TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-						done("This test should fail.");
-					}).catch(err => {
-						done();
-					});
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+					done("This test should fail.");
+				}).catch(err => {
+					done();
 				});
+			});
 		});
 
 		it("Token validation failed, invalid serverurl", function (done) {
@@ -143,7 +145,7 @@ describe("/lib/utils/token-util", function() {
 			});
 		});
 		it("get issuer from well known", function (done) {
-			endpoint="endpoint";
+			reqEndpoint = "endpoint";
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
@@ -152,7 +154,7 @@ describe("/lib/utils/token-util", function() {
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss="endpoint";
+				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 
@@ -163,7 +165,7 @@ describe("/lib/utils/token-util", function() {
 			});
 		});
 		it("get issuer from well known different endpoint", function (done) {
-			endpoint="endpoint2";
+			reqEndpoint = "endpoint2";
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
@@ -172,7 +174,7 @@ describe("/lib/utils/token-util", function() {
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss="endpoint";
+				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					done("suppose to fail");
@@ -182,20 +184,92 @@ describe("/lib/utils/token-util", function() {
 				});
 			});
 		});
+		it("get issuer from well known returned error", function (done) {
+			reqEndpoint = "endpoint";
+			reqError = new Error(":(");
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss = "endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+
+					done("suppose to fail");
+					reqError = undefined;
+				}).catch(err => {
+					done();
+					reqError = undefined;
+				});
+			});
+		});
+		it("get issuer from well known returned status code!= 200", function (done) {
+			reqEndpoint = "endpoint";
+			reqError = undefined;
+			reqresponse = {statusCode: 404};
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss = "endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+
+					done("suppose to fail");
+					reqError = undefined;
+				}).catch(err => {
+					done();
+					reqError = undefined;
+				});
+			});
+		});
+		it("get issuer from well known missing issuer", function (done) {
+			reqEndpoint = undefined;
+			reqError = undefined;
+			reqresponse = {statusCode: 200};
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss = "endpoint";
+
+				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+
+					done("suppose to fail");
+					reqError = undefined;
+				}).catch(err => {
+					done();
+					reqError = undefined;
+				});
+			});
+		});
 
 		it("don't go to issuer endpoint when issuer exists", function (done) {
-			endpoint="endpoint2";
-			
+			reqEndpoint = "endpoint2";
+			reqresponse = {statusCode: 200};
+			reqError = undefined;
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri",
-				issuer:"endpoint"
+				issuer: "endpoint"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss="endpoint";
+				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
@@ -206,6 +280,8 @@ describe("/lib/utils/token-util", function() {
 				});
 			});
 		});
+
+
 	});
 
 	describe("#decode()", function () {
