@@ -64,36 +64,35 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 			});
 		});
 
-		it("Should fail if there is a service endpoint and no version", (done) => {
+		it("Should fail if there is a service endpoint and no version", () => {
 			delete process.env.VCAP_SERVICES;
 			assert.throws(() => {
 				UserProfileManager.init({
 					tenantId: "abcd",
-					throwIfFail:true,
-					appidServiceEndpoint:"zyxw"
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw"
 				});
 			}, Error, 'Failed to initialize APIStrategy. Missing version parameter');
-			done();
+
 		});
-		it("Should fail if there is a service endpoint and no tenant", (done) => {
+		it("Should fail if there is a service endpoint and no tenant", () => {
 			delete process.env.VCAP_SERVICES;
 			assert.throws(() => {
 				UserProfileManager.init({
-					version:"p",
-					throwIfFail:true,
-					appidServiceEndpoint:"zyxw"
+					version: "p",
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw"
 				});
 			}, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter');
-			done();
 		});
 		it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
 			delete process.env.VCAP_SERVICES;
-			const tenantId="abcd";
-			const config = UserProfileManager.init({
+			const tenantId = "abcd";
+			UserProfileManager.init({
 				tenantId,
-				version:"p",
-				throwIfFail:true,
-				appidServiceEndpoint:"zyxw/"
+				version: "p",
+				throwIfFail: true,
+				appidServiceEndpoint: "zyxw/"
 			});
 		});
 
