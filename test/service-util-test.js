@@ -182,6 +182,48 @@ describe('/lib/strategies/api-strategy-config', () => {
 		done();
 	});
 
+	it("Should fail if there is a service endpoint and no version", (done) => {
+		assert.throws(() => {
+			ServiceConfig({
+				tenantId: "abcd",
+				appidServiceEndpoint:"zyxw"
+			});
+		}, Error, 'Failed to initialize APIStrategy. Missing version parameter');
+		done();
+	});
+	it("Should fail if there is a service endpoint and no tenant", (done) => {
+		assert.throws(() => {
+			ServiceConfig({
+				version:"p",
+				appidServiceEndpoint:"zyxw"
+			});
+		}, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter');
+		done();
+	});
+	it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
+		const tenantId="abcd";
+		const config = new ServiceConfig({
+			tenantId,
+			version:"p",
+			appidServiceEndpoint:"zyxw/"
+		});
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/p/abcd');
+		assert.equal(config.getTenantId(), 'abcd');
+	});
+	it("Should success if there is a service endpoint tenant and version - endpoint without trailing slash", () => {
+		const tenantId="abcd";
+		const config = new ServiceConfig({
+			tenantId,
+			version:"p",
+			appidServiceEndpoint:"zyxw"
+		});
+		assert.isObject(config);
+		assert.isObject(config.getConfig());
+		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/p/abcd');
+		assert.equal(config.getTenantId(), 'abcd');
+	});
 	it("Should get config from options argument", (done) => {
 		const config = new ServiceConfig(mockCredentials.credentials);
 		assert.include(config.getConfig(), mockCredentials.credentials);
