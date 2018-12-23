@@ -1,0 +1,148 @@
+{
+  "root": true,
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": false,
+    "node": true,
+    "es6": true
+  },
+
+  "plugins": [
+    "node"
+  ],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:node/recommended"
+  ],
+  "rules": {
+    "max-len": [
+      2,
+      130,
+      4
+    ],
+    "curly": [
+      2,
+      "all"
+    ],
+    "operator-linebreak": [
+      2,
+      "after"
+    ],
+    "indent": [
+      0,
+      "tab",
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "quotes": [
+      0,
+      "single"
+    ],
+    "no-mixed-spaces-and-tabs": 0,
+    "space-unary-ops": [
+      2,
+      {
+        "nonwords": false,
+        "overrides": {}
+      }
+    ],
+    "keyword-spacing": [
+      2,
+      {}
+    ],
+    "space-infix-ops": 0,
+    "space-before-blocks": [
+      2,
+      "always"
+    ],
+    "array-bracket-spacing": [
+      0,
+      "never",
+      {
+        "singleValue": true
+      }
+    ],
+    "space-in-parens": [
+      2,
+      "never"
+    ],
+    "no-multiple-empty-lines": 2,
+    "wrap-iife": 2,
+    "valid-jsdoc": 2,
+    "no-param-reassign": [
+      2,
+      {
+        "props": false
+      }
+    ],
+    "no-plusplus": 0,
+    "no-underscore-dangle": 0,
+    "prefer-rest-params": 0,
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "semi": 2,
+    "no-console": 2,
+    "no-irregular-whitespace": 1,
+    "no-sparse-arrays": 1,
+    "object-curly-spacing": "off",
+    "no-tabs": 0,
+    "no-unreachable": 1,
+    "valid-typeof": 1,
+    "no-shadow": 1,
+
+    "no-path-concat": 1,
+    "eqeqeq": [
+      2,
+      "smart"
+    ],
+    "no-use-before-define": 1,
+    "no-new-require": 1,
+    //   "no-undef": 2,
+
+
+    "no-mixed-requires": 0,
+    "no-multi-spaces": 0,
+    //   "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "dot-notation": 0,
+    "new-cap": 0,
+    "one-var": 0,
+    "handle-callback-err": [
+      2,
+      "^.*(e|E)rr"
+    ],
+    "node/no-unsupported-features/es-syntax": [1, {//warn
+      "version": ">=8.11.0",
+      "ignores": []
+    }]
+  },
+  "globals": {
+    "__dirname": true,
+    "after": true,
+    "afterEach": true,
+    "assert": true,
+    "before": true,
+    "browser": true,
+    "Buffer": true,
+    "by": true,
+    "console": true,
+    "describe": true,
+    "element": true,
+    "emit": true,
+    "it": true,
+    "module": true,
+    "process": true,
+    "require": true,
+    "setTimeout": true,
+    "transclude": true,
+    "templateUrl": true,
+    "cwd": true,
+    "__base": true
+  }
+}
