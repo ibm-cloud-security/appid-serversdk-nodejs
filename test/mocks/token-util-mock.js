@@ -30,32 +30,53 @@ function decode(tokenString) {
 }
 
 function decodeAndValidate(tokenString) {
-    let deferred = Q.defer();
-    if (tokenString === "invalid_token") {
-        deferred.resolve();
-    } else if (tokenString === "bad_scope") {
-        deferred.resolve({scope: "bad_scope"});
-    } else if (tokenString === "null_scope") {
-         deferred.resolve(null);
-    } else if (tokenString === "access_token_mock_test_scope") {
-         deferred.resolve({scope: "test_scope"});
-    } else if (tokenString === "id_token_mock_test_scope") {
-         deferred.resolve({scope: "test_scope"});
-    } else {
-         deferred.resolve({scope: "appid_default"});
-    }
-    return deferred.promise;
+	let deferred = Q.defer();
+	if (tokenString === "invalid_token") {
+		deferred.resolve();
+	} else if (tokenString === "bad_scope") {
+		deferred.resolve({scope: "bad_scope"});
+	} else if (tokenString === "null_scope") {
+		deferred.resolve(null);
+	} else if (tokenString === "access_token_mock_test_scope") {
+		deferred.resolve({scope: "test_scope"});
+	} else if (tokenString === "id_token_mock_test_scope") {
+		deferred.resolve({scope: "test_scope"});
+	} else {
+		deferred.resolve({scope: "appid_default"});
+	}
+	return deferred.promise;
 }
 
+let isIssuerAndAudValid = true;
+let shouldSwitchIssuerState = false;
+const switchIssuerState = () => shouldSwitchIssuerState = true;
+const setValidateIssAndAudResponse = (isValid) => isIssuerAndAudValid = isValid;
+const checkSwitch = () => {
+	if (shouldSwitchIssuerState) {
+		isIssuerAndAudValid = !isIssuerAndAudValid;
+		shouldSwitchIssuerState = false;
+	}
+};
+
 function validateIssAndAud(token, serviceConfig) {
-		return new Promise(function (resolve, reject) {
-			resolve(true);
-		});
-    //return true;
+	if (isIssuerAndAudValid) {
+		checkSwitch();
+		return Promise.resolve(true);
+	} else {
+		checkSwitch();
+		return Promise.reject(new Error("no"));
+	}
 }
 
 function getRandomNumber() {
 	return "123456789";
 }
 
-module.exports = {decodeAndValidate, decode, validateIssAndAud, getRandomNumber};
+module.exports = {
+	decodeAndValidate,
+	decode,
+	validateIssAndAud,
+	getRandomNumber,
+	setValidateIssAndAudResponse,
+	switchIssuerState
+};
