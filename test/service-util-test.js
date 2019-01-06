@@ -160,7 +160,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 
 
 	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
-		assert.throws(ServiceConfig, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter.');
+		assert.throws(ServiceConfig, Error, /Failed to initialize APIStrategy\. Missing/);
 		done();
 	});
 
@@ -169,7 +169,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 			ServiceConfig({
 				tenantId: "abcd"
 			});
-		}, Error, 'Failed to initialize APIStrategy. Missing oauthServerUrl parameter');
+		}, Error, /Failed to initialize APIStrategy\. Missing/);
 		done();
 	});
 
@@ -178,7 +178,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 			ServiceConfig({
 				oauthServerUrl: "https://abcd.com"
 			});
-		}, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter.');
+		}, Error, /Failed to initialize APIStrategy\. Missing/);
 		done();
 	});
 
@@ -188,7 +188,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 				tenantId: "abcd",
 				appidServiceEndpoint:"zyxw"
 			});
-		}, Error, 'Failed to initialize APIStrategy. Missing version parameter');
+		}, Error, /Failed to initialize APIStrategy\. Missing/);
 		done();
 	});
 	it("Should fail if there is a service endpoint and no tenant", (done) => {
@@ -197,7 +197,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 				version:"p",
 				appidServiceEndpoint:"zyxw"
 			});
-		}, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter');
+		}, Error, /Failed to initialize APIStrategy\. Missing/);
 		done();
 	});
 	it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
