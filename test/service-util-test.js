@@ -204,24 +204,24 @@ describe('/lib/strategies/api-strategy-config', () => {
 		const tenantId="abcd";
 		const config = new ServiceConfig({
 			tenantId,
-			version:"p",
+			version:"3",
 			appidServiceEndpoint:"zyxw/"
 		});
 		assert.isObject(config);
 		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/p/abcd');
+		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
 		assert.equal(config.getTenantId(), 'abcd');
 	});
 	it("Should success if there is a service endpoint tenant and version - endpoint without trailing slash", () => {
 		const tenantId="abcd";
 		const config = new ServiceConfig({
 			tenantId,
-			version:"p",
+			version:"3",
 			appidServiceEndpoint:"zyxw"
 		});
 		assert.isObject(config);
 		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/p/abcd');
+		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
 		assert.equal(config.getTenantId(), 'abcd');
 	});
 	it("Should get config from options argument", (done) => {
