@@ -72,25 +72,36 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 					throwIfFail: true,
 					appidServiceEndpoint: "zyxw"
 				});
-			}, Error, 'Failed to initialize APIStrategy. Missing version parameter');
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
+		});
+		it("Should fail if there is a service endpoint and no version", () => {
+			delete process.env.VCAP_SERVICES;
+			assert.throws(() => {
+				UserProfileManager.init({
+					tenantId: "abcd",
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw",
+					version: "string_instead_number"
+				});
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
 
 		});
 		it("Should fail if there is a service endpoint and no tenant", () => {
 			delete process.env.VCAP_SERVICES;
 			assert.throws(() => {
 				UserProfileManager.init({
-					version: "p",
+					version: "3",
 					throwIfFail: true,
 					appidServiceEndpoint: "zyxw"
 				});
-			}, Error, 'Failed to initialize APIStrategy. Missing tenantId parameter');
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
 		});
 		it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
 			delete process.env.VCAP_SERVICES;
 			const tenantId = "abcd";
 			UserProfileManager.init({
 				tenantId,
-				version: "p",
+				version: "3",
 				throwIfFail: true,
 				appidServiceEndpoint: "zyxw/"
 			});
