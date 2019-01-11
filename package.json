@@ -1,6 +1,6 @@
 {
-  "name": "ibmcloud-appid",
-  "version": "5.0.0",
+  "name": "ibmcloud-appid-multi",
+  "version": "1.0.0",
   "description": "Node.js SDK for the IBM Cloud App ID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
@@ -39,10 +39,10 @@
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.6",
     "helmet": "^3.11.0",
-    "jsonwebtoken": "^7.2.1",
-    "log4js": "^1.1.0",
+    "jsonwebtoken": "^8.4.0",
+    "log4js": "^3.0.6",
     "q": "^1.4.1",
-    "request": "2.81.0",
+    "request": "^2.88.0",
     "rsa-pem-from-mod-exp": "^0.8.4",
     "underscore": "^1.8.3"
   }
