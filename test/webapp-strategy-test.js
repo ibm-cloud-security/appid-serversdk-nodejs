@@ -37,6 +37,34 @@ describe("/lib/strategies/webapp-strategy", function () {
 			redirectUri: "https://redirectUri"
 		});
 	});
+
+	describe("#SSO ", () => {
+		let resultRedirect='';
+		const redirectURL =  "http://localhost:3000/somethingElse";
+
+		beforeEach( () => {
+			resultRedirect='';
+		});
+
+		it("good callback" , () => {
+			let req = {
+				session: { returnTo : 'stam'},
+				logout : function(req) {}
+			};
+			let options = { successRedirect: redirectURL};
+			let res = {
+				redirect : function (url) {
+					resultRedirect = url;
+				}
+			};
+			webAppStrategy.logoutSSO(req,res, options);
+			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?client_id=clientId&callback=${redirectURL}`
+			assert.equal(resultRedirect, excpected);
+			assert.equal(req.session.returnTo , undefined); // expect session to be cleaned.
+		});
+
+	});
+
 	
 	describe("#setPreferredLocale", function () {
 		it("Should fail if request doesn't have session", function (done) {
