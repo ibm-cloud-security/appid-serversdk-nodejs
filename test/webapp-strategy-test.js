@@ -48,7 +48,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 		it("good callback" , () => {
 			let req = {
-				session: { returnTo : 'stam'},
+				session: { returnTo : 'ssss'},
 				logout : function(req) {}
 			};
 			let options = { successRedirect: redirectURL};
