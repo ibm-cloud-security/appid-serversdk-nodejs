@@ -51,14 +51,16 @@ describe("/lib/strategies/webapp-strategy", function () {
 				session: { returnTo : 'ssss'},
 				logout : function(req) {}
 			};
-			let options = { successRedirect: redirectURL};
 			let res = {
 				redirect : function (url) {
 					resultRedirect = url;
 				}
 			};
+
+			let options = { callback: redirectURL};
 			webAppStrategy.logoutSSO(req,res, options);
-			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?client_id=clientId&callback=${redirectURL}`
+			const uriEncodedCallBack = encodeURIComponent(redirectURL);
+			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?callback=${uriEncodedCallBack}&client_id=clientId`;
 			assert.equal(resultRedirect, excpected);
 			assert.equal(req.session.returnTo , undefined); // expect session to be cleaned.
 		});
