@@ -18,16 +18,15 @@ const proxyquire = require("proxyquire");
 const defaultLocale = "en";
 const previousAccessToken = "test.previousAccessToken.test";
 chai.use(require("chai-as-promised"));
-
+const tokenUtilsMock=require("./mocks/token-util-mock");
 describe("/lib/strategies/webapp-strategy", function () {
 	console.log("Loading webapp-strategy-test.js");
 	
 	var WebAppStrategy;
 	var webAppStrategy;
-	
 	before(function () {
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
-			"./../utils/token-util": require("./mocks/token-util-mock"),
+			"../utils/token-util": tokenUtilsMock,
 			"request": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
@@ -94,17 +93,18 @@ describe("/lib/strategies/webapp-strategy", function () {
 	});
 	
 	describe("#authenticate()", function () {
-		
+		beforeEach(()=>tokenUtilsMock.setValidateIssAndAudResponse(true));
 		describe("refresh-token", function () {
-			
+
 			var req;
-			
+
 			beforeEach(function () {
+				tokenUtilsMock.setValidateIssAndAudResponse(true);
 				req = {
 					session: {}
 				}
 			});
-			
+
 			function validateContext(done) {
 				var context = req.session[WebAppStrategy.AUTH_CONTEXT];
 				try {
@@ -116,21 +116,21 @@ describe("/lib/strategies/webapp-strategy", function () {
 				}
 				done();
 			}
-			
+
 			it("Should succeed if it has a valid refresh token", function (done) {
 				webAppStrategy.refreshTokens(req, "WORKING_REFRESH_TOKEN").then(function () {
 					validateContext(done);
 				}).catch(done);
 			});
-			
+
 			it("Should fail if it has no refresh token", function () {
 				return expect(webAppStrategy.refreshTokens(req, null)).to.be.rejectedWith("no refresh");
 			});
-			
+
 			it("Should fail for invalid refresh token", function () {
 				return expect(webAppStrategy.refreshTokens(req, "INVALID_REFRESH_TOKEN")).to.be.rejectedWith("invalid grant");
 			});
-			
+
 			it("Should keep the context empty for invalid refresh token", function (done) {
 				webAppStrategy.refreshTokens(req, "INVALID_REFRESH_TOKEN").then(function () {
 					done(new Error("should fail"));
@@ -144,8 +144,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 				});
 			});
 		});
-		
-		
+
 		it("Should fail if request doesn't have session", function (done) {
 			webAppStrategy.error = function (err) {
 				assert.equal(err.message, "Can't find req.session");
@@ -162,7 +161,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 			
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789");
 				assert.equal(req.session.returnTo, "originalUrl");
 				done();
 			};
@@ -199,7 +198,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 				}
 			});
 		});
-		
+
+
+
 		describe("handle RoP flow", function () {
 			it("Should handle RoP flow successfully", function (done) {
 				webAppStrategy.fail = function (err) {
@@ -381,9 +382,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 			});
 		});
 		
-		it("Should handle callback if request contains grant code. Fail due to tokenEndpoint error", function (done) {
+		it("Should handle callback if request contains grant code. Fail due to missing state", function (done) {
 			webAppStrategy.fail = function (err) {
-				assert.equal(err.message, "STUBBED_ERROR");
+				assert.equal(err.message, "Invalid session state");
 				done();
 			};
 			var req = {
@@ -395,7 +396,43 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req);
 		});
 		
+		it("Should handle callback if request contains grant code and state. Invalid state parameter ", function (done) {
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "Invalid state parameter");
+				done();
+			};
+			var req = {
+				session: {},
+				query: {
+					code: "FAILING_CODE",
+					state: "1234567"
+				}
+			};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			webAppStrategy.authenticate(req);
+		});
+
+		it("Should handle callback if request contains grant code and state. Fail due to tokenEndpoint error", function (done) {
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "STUBBED_ERROR");
+				done();
+			};
+			var req = {
+				session: {},
+				query: {
+					code: "FAILING_CODE",
+					state: "123456789"
+				}
+			};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			webAppStrategy.authenticate(req);
+		});
+
 		it("Should handle callback if request contains grant code. Success with options.successRedirect", function (done) {
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "Invalid state parameter");
+				done();
+			};
 			webAppStrategy.success = function (user) {
 				
 				assert.equal(options.successRedirect, "redirectUri");
@@ -420,14 +457,15 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var req = {
 				session: {},
 				query: {
-					code: "WORKING_CODE"
+					code: "WORKING_CODE",
+					state: ""
 				}
 			};
 			
 			var options = {
 				successRedirect: "redirectUri"
 			};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -446,12 +484,63 @@ describe("/lib/strategies/webapp-strategy", function () {
 					returnTo: "originalUri"
 				},
 				query: {
-					code: "WORKING_CODE"
+					code: "WORKING_CODE",
+					state: "123456789"
 				}
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			webAppStrategy.authenticate(req, options);
+		});
+
+		it("Should fail if issuer validation is failing -Access Token", function (done) {
+			tokenUtilsMock.setValidateIssAndAudResponse(false);
+			webAppStrategy.success = function () {
+				done('suppose to fail');
+			};
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "Authentication failed : token validation failed");
+				done();
+
+			};
+			var req = {
+				session: {
+					returnTo: "originalUri"
+				},
+				query: {
+					code: "WORKING_CODE",
+					state: "123456789"
+				}
+			};
+
+			var options = {};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			webAppStrategy.authenticate(req, options);
+		});
+		it("Should fail if issuer validation is failing -id Token", function (done) {
+			tokenUtilsMock.setValidateIssAndAudResponse(true);
+			tokenUtilsMock.switchIssuerState();
+			webAppStrategy.success = function () {
+				done('suppose to fail');
+			};
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "Authentication failed : token validation failed");
+				done();
+
+			};
+			var req = {
+				session: {
+					returnTo: "originalUri"
+				},
+				query: {
+					code: "WORKING_CODE",
+					state: "123456789"
+				}
+			};
+
+			var options = {};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -466,12 +555,13 @@ describe("/lib/strategies/webapp-strategy", function () {
 					returnTo: "originalUri"
 				},
 				query: {
-					code: "NULL_ID_TOKEN"
+					code: "NULL_ID_TOKEN",
+					state : "123456789"
 				}
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
@@ -484,18 +574,19 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var req = {
 				session: {},
 				query: {
-					code: "WORKING_CODE"
+					code: "WORKING_CODE",
+					state : "123456789"
 				}
 			};
 			
 			var options = {};
-			
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
 		
 		it("Should handle callback if request contains grant code. Success with redirect to successRedirect", function (done) {
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+				assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789");
 				assert.equal(req.session.returnTo, "success-callback");
 				done();
 			};
@@ -514,7 +605,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 		
 		it("Should handle authorization redirect to App ID /authorization endpoint with default scope", function (done) {
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default"));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789"));
 				done();
 			}
 			webAppStrategy.authenticate({
@@ -527,7 +618,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 		
 		it("Should handle authorization redirect to App ID /authorization endpoint with custom scope", function (done) {
 			webAppStrategy.redirect = function (url) {
-				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope"));
+				assert.equal(url, encodeURI("https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default customScope&state=123456789"));
 				done();
 			};
 			webAppStrategy.authenticate({
@@ -938,6 +1029,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var req;
 			
 			beforeEach(function () {
+
 				req = {
 					isAuthenticated: function () {
 						return false;
@@ -948,7 +1040,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			
 			var checkDefaultLocale = function (done) {
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default");
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&state=123456789");
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
 					done();
 				}
@@ -956,7 +1048,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			
 			var checkCustomLocaleFromSession = function (done) {
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + french + "&state=123456789");
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], french);
 					done();
 				}
@@ -965,7 +1057,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var checkCustomLocaleFromInit = function (done) {
 				var expect = french;
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect + "&state=123456789");
 					assert.isUndefined(req.session[WebAppStrategy.LANGUAGE]);
 					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), expect);
 					done();
@@ -975,7 +1067,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var checkCustomLocaleFromInitAndSession = function (done) {
 				var expect = "de";
 				return function (url) {
-					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect);
+					assert.equal(url, "https://oauthServerUrlMock/authorization?client_id=clientId&response_type=code&redirect_uri=https://redirectUri&scope=appid_default&language=" + expect + "&state=123456789");
 					assert.equal(req.session[WebAppStrategy.LANGUAGE], expect);
 					assert.equal(webAppStrategy.serviceConfig.getPreferredLocale(), french);
 					done();

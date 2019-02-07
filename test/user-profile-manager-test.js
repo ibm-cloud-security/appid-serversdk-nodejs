@@ -64,6 +64,49 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 			});
 		});
 
+		it("Should fail if there is a service endpoint and no version", () => {
+			delete process.env.VCAP_SERVICES;
+			assert.throws(() => {
+				UserProfileManager.init({
+					tenantId: "abcd",
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw"
+				});
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
+		});
+		it("Should fail if there is a service endpoint and no version", () => {
+			delete process.env.VCAP_SERVICES;
+			assert.throws(() => {
+				UserProfileManager.init({
+					tenantId: "abcd",
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw",
+					version: "string_instead_number"
+				});
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
+
+		});
+		it("Should fail if there is a service endpoint and no tenant", () => {
+			delete process.env.VCAP_SERVICES;
+			assert.throws(() => {
+				UserProfileManager.init({
+					version: "3",
+					throwIfFail: true,
+					appidServiceEndpoint: "zyxw"
+				});
+			}, Error, /Failed to initialize APIStrategy\. Missing/);
+		});
+		it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
+			delete process.env.VCAP_SERVICES;
+			const tenantId = "abcd";
+			UserProfileManager.init({
+				tenantId,
+				version: "3",
+				throwIfFail: true,
+				appidServiceEndpoint: "zyxw/"
+			});
+		});
+
 		it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [

@@ -75,9 +75,7 @@ app.use(passport.initialize());
 // App ID service instance. In this case App ID configuration will be obtained
 // using VCAP_SERVICES environment variable.
 passport.use(new APIStrategy({
-	oauthServerUrl: "{oauth-server-url}",
-	tenantId: "{tenant-id}",
-	clientId: "{client-id}"
+	oauthServerUrl: "{oauth-server-url}"
 }));
 
 // Declare the API you want to protect
@@ -229,7 +227,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 As mentioned previously the anonymous access_token, identity_token and refresh_token (optional) will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
 
 ### Refresh Token
-Refresh Token may be used to acquire new access and identity tokens without the need to re-authenticate. Refresh Token is usually configured to have longer expiration than access token. Refresh Token is optional and can be configured in your AppID Dashboard.
+Refresh Token may be used to acquire new access and identity tokens without the need to re-authenticate. Refresh Token is usually configured to have longer expiration than access token. Refresh Token is optional and can be configured in your App ID Dashboard.
 
 After a successful login, in addition to access_token and identity_token, a refresh_token will be persisted in the HTTP session as well.
 
@@ -237,8 +235,55 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
+
+### Custom Identity
+App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
+
+To utilize the custom identity flow, the user must first register a public key in PEM form using the App ID Dashboard. The user must generate a signed JWT using any open source library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
+
+Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
+
+
+### Application Identity and Authorization
+
+In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.   
+
+App ID application authorization implements the OAuth2.0 Client Credentials grant.
+
+Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+
+Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
+
+Also, note that this flow only returns an access token and no identity or refresh tokens are issued.
+
+The code snippet below describes how to obtain the access token for this flow.
+
+```javascript
+const config = {
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}",
+	secret: "{secret}",
+	oauthServerUrl: "{oauth-server-url}"
+};
+
+const TokenManager = require('ibmcloud-appid').TokenManager;
+
+async function getAppIdentityToken() {
+	try {
+			const tokenResponse = await tokenManager.getApplicationIdentityToken();
+			console.log('Token response : ' + JSON.stringify(tokenResponse));
+
+			//the token response contains the access_token, expires_in, token_type
+	} catch (err) {
+			console.log('err obtained : ' + err);
+			res.status(500).send(err.toString());
+	}
+}
+```
+For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+
 ### Manage User Profile
-Using the AppID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
+Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
 ```javascript
 const userProfileManager = require("ibmcloud-appid").UserProfileManager;
@@ -463,7 +508,7 @@ Gets the stored details of the Cloud directory user.
 uuid is the Cloud Directory user uuid.
 
 ```javascript
-selfServiceManager.getUserDetails(uuid, iamToke).then(function (user) {
+selfServiceManager.getUserDetails(uuid, iamToken).then(function (user) {
 			logger.debug('user details:'  + JSON.stringify(user));
 		}).catch(function (err) {
 			logger.error(err);
@@ -490,11 +535,11 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 
 [img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
 [url-ibmcloud]: https://www.ibm.com/cloud/
-[url-npm]: https://www.npmjs.com/package/bluemix-appid
-[img-license]: https://img.shields.io/npm/l/bluemix-appid.svg
-[img-version]: https://img.shields.io/npm/v/bluemix-appid.svg
-[img-npm-downloads-monthly]: https://img.shields.io/npm/dm/bluemix-appid.svg
-[img-npm-downloads-total]: https://img.shields.io/npm/dt/bluemix-appid.svg
+[url-npm]: https://www.npmjs.com/package/ibmcloud-appid
+[img-license]: https://img.shields.io/npm/l/ibmcloud-appid.svg
+[img-version]: https://img.shields.io/npm/v/ibmcloud-appid.svg
+[img-npm-downloads-monthly]: https://img.shields.io/npm/dm/ibmcloud-appid.svg
+[img-npm-downloads-total]: https://img.shields.io/npm/dt/ibmcloud-appid.svg
 
 [img-github-watchers]: https://img.shields.io/github/watchers/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Watch
 [url-github-watchers]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/watchers
