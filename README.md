@@ -28,6 +28,8 @@ If you use the API protection strategy the unauthenticated client will get HTTP 
 
 If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
+In addition, the SDK provides helper utilities centered around tokens and user profiles. The token manager supports token retrieval for additional flows such as Application Identity and Custom Identity, as well as token specific functions. The user profile manager supports helper functions that retrieve identity provider and custom profile information about the user.
+
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
@@ -235,6 +237,28 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
+### Token Manager
+
+The `tokenManager` object provides token helper functions as well as retrieves tokens generated as a result of the Custom Identity and Application Identity flows. The `tokenManager` object can be initialized in two ways.
+
+In the first case, the application has already configured the SDK with the App ID service configuration using other managers, and so `TokenManager` can simply inherit the configurations:
+
+```javascript
+const TokenManager = require('ibmcloud-appid').TokenManager;
+```
+
+In the second case, the application can directly configured the SDK with the App ID service configuration using the `TokenManager` object:
+
+```javascript
+const config = {
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}",
+	secret: "{secret}",
+	oauthServerUrl: "{oauth-server-url}"
+};
+
+const TokenManager = require('ibmcloud-appid').TokenManager(config);
+```
 
 ### Custom Identity
 App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
@@ -244,19 +268,19 @@ To utilize the custom identity flow, the user must first register a public key i
 Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 
-### Application Identity
+### Application Identity and Authorization
 
-In case you want to invoke protected/secure APIs from applications or clients that are non user interactive, you can use the App ID app to app flow to authenticate and authorize your non user interactive applications.  
+In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.   
 
-App ID app to app flow implements the OAuth2.0 Client Credentials grant.
+App ID application authorization implements the OAuth2.0 Client Credentials grant.
 
-Before you can obtain access tokens for the app to app flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID app to app documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
 
-Since the application needs to store the `client ID` and the `secret`, the app to app flow must never be used with untrusted clients such as mobile clients and browser based applications.
+Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
 
-Also, note that this flow only returns an access token and no identity or refresh tokens are issued in this flow.
+Also, note that this flow only returns an access token and no identity or refresh tokens are issued.
 
-The code snippet below describes how to obtain the access tokens for the app to app flow.
+The code snippet below describes how to obtain the access token for this flow.
 
 ```javascript
 const config = {
@@ -280,7 +304,7 @@ async function getAppIdentityToken() {
 	}
 }
 ```
-For more detailed information on using app to app flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
 
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
