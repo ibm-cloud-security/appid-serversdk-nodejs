@@ -59,11 +59,11 @@ app.use(passport.session());
 
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
-	tenantId: "TENANT_ID",
-	clientId: "CLIENT_ID",
-	secret: "SECRET",
-	oauthServerUrl: "OAUTH_SERVER_URL",
-	redirectUri: "http://localhost:3000" + CALLBACK_URL
+    clientId: "3c18ab35-4436-408e-b741-ed7605d49603",
+    secret: "YzVlYzQxNDktNWZkZS00MWJlLWI4NmEtYzNlZTBiNmYwZTMy",
+    tenantId: "cb6c6333-c1e2-43ee-936d-72db04c8eaed",
+    discoveryEndpoint: `https://us-south.appid.test.cloud.ibm.com/oauth/v3/cb6c6333-c1e2-43ee-936d-72db04c8eaed/.well-known/openid-configuration`,
+    redirectUri: "http://localhost:3000/ibm/bluemix/appid/callback"
 });
 passport.use(webAppStrategy);
 
