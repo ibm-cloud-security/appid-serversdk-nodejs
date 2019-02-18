@@ -22,8 +22,6 @@ const constants = require("./mocks/constants");
 describe("/lib/utils/token-util", function () {
 	console.log("Loading token-util-test.js");
 	var TokenUtil;
-	var ServiceConfig;
-	var serviceConfig;
 	//let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
 	let reqEndpoint = "endpoint";
 	let reqError;
