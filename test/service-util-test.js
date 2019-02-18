@@ -49,14 +49,22 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 	});
 
 	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
-		assert.throws(ServiceConfig, Error, 'Failed to initialize WebAppStrategy. Missing tenantId parameter.');
-		done();
+        ServiceConfig()
+            .then(config => {
+                assert.fail('Test should say: Failed to initialize WebAppStrategy. Missing tenantId parameter.');
+                done();
+            }).catch(err => {
+            	assert.equal(err, 'Failed to initialize WebAppStrategy. Missing tenantId parameter.');
+            	done();
+			});
 	});
 
 	it("Should get config from options argument", (done) => {
-		const config = new ServiceConfig(mockCredentials.credentials);
-		assert.include(config.getConfig(), mockCredentials.credentials);
-		done();
+		ServiceConfig(mockCredentials.credentials)
+            .then(config => {
+                assert.include(config.getConfig(), mockCredentials.credentials);
+                done();
+            });
 	});
 
 	it("Should get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
@@ -76,15 +84,17 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 
 		process.env.redirectUri = redirectUri;
 
-		const config = new ServiceConfig();
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getTenantId(), tenantId);
-		assert.equal(config.getClientId(), clientId);
-		assert.equal(config.getSecret(), secret);
-		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
-		assert.equal(config.getRedirectUri(), redirectUri);
-		done();
+		ServiceConfig()
+            .then(config => {
+                assert.isObject(config);
+                assert.isObject(config.getConfig());
+                assert.equal(config.getTenantId(), tenantId);
+                assert.equal(config.getClientId(), clientId);
+                assert.equal(config.getSecret(), secret);
+                assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+                assert.equal(config.getRedirectUri(), redirectUri);
+                done();
+            });
 	});
 
 	it("Should get config from VCAP_SERVICES with Appid as the name", (done) => {
@@ -104,15 +114,17 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 
 		process.env.redirectUri = redirectUri;
 
-		const config = new ServiceConfig();
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getTenantId(), tenantId);
-		assert.equal(config.getClientId(), clientId);
-		assert.equal(config.getSecret(), secret);
-		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
-		assert.equal(config.getRedirectUri(), redirectUri);
-		done();
+		ServiceConfig()
+            .then(config => {
+                assert.isObject(config);
+                assert.isObject(config.getConfig());
+                assert.equal(config.getTenantId(), tenantId);
+                assert.equal(config.getClientId(), clientId);
+                assert.equal(config.getSecret(), secret);
+                assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+                assert.equal(config.getRedirectUri(), redirectUri);
+                done();
+            });
 	});
 
 	it("Should get redirectUri from VCAP_APPLICATION", (done) => {
@@ -122,14 +134,15 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 				"abcd.com"
 			]
 		});
-		const config = new ServiceConfig({
+		ServiceConfig({
 			tenantId,
 			clientId,
 			secret,
 			oauthServerUrl
-		});
-		assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
-		done();
+		}).then(config => {
+            assert.equal(config.getRedirectUri(), "https://abcd.com/ibm/bluemix/appid/callback");
+            done();
+        });
 	});
 });
 
@@ -146,12 +159,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 	before(() => {
 		const { TENANT_ID, OAUTH_SERVER_URL } = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
-		ServiceConfig = function (options) {
-			return ServiceUtil.loadConfig('APIStrategy', [
-				TENANT_ID,
-				OAUTH_SERVER_URL,
-			], options);
-		};
+        ServiceConfig = function (options) {
+            return ServiceUtil.loadConfig('APIStrategy', [
+                TENANT_ID,
+                OAUTH_SERVER_URL
+            ], options);
+        };
 	});
 
 	beforeEach(function () {
@@ -160,74 +173,98 @@ describe('/lib/strategies/api-strategy-config', () => {
 
 
 	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
-		assert.throws(ServiceConfig, Error, /Failed to initialize APIStrategy\. Missing/);
-		done();
+        ServiceConfig()
+            .then(config => {
+                assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
+                done();
+            }).catch(err => {
+				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				done();
+			});
 	});
 
 	it("Should fail if there is no oauthServerUrl", (done) => {
-		assert.throws(() => {
-			ServiceConfig({
-				tenantId: "abcd"
+        ServiceConfig({tenantId: "abcd"})
+            .then(config => {
+                assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
+                done();
+            }).catch(err => {
+				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				done();
 			});
-		}, Error, /Failed to initialize APIStrategy\. Missing/);
-		done();
 	});
 
 	it("Should fail if there is no tenantId", (done) => {
-		assert.throws(() => {
-			ServiceConfig({
-				oauthServerUrl: "https://abcd.com"
+        ServiceConfig({oauthServerUrl: "https://abcd.com"})
+            .then(config => {
+                assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
+                done();
+            }).catch(err => {
+				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				done();
 			});
-		}, Error, /Failed to initialize APIStrategy\. Missing/);
-		done();
 	});
 
 	it("Should fail if there is a service endpoint and no version", (done) => {
-		assert.throws(() => {
-			ServiceConfig({
-				tenantId: "abcd",
-				appidServiceEndpoint:"zyxw"
-			});
-		}, Error, /Failed to initialize APIStrategy\. Missing/);
-		done();
+        ServiceConfig({
+            tenantId: "abcd",
+            appidServiceEndpoint:"zyxw"
+        }).then(config => {
+			assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
+			done();
+		}).catch(err => {
+			assert.include(err, 'Failed to initialize APIStrategy. Missing');
+			done();
+		});
 	});
+
 	it("Should fail if there is a service endpoint and no tenant", (done) => {
-		assert.throws(() => {
-			ServiceConfig({
-				version:"p",
-				appidServiceEndpoint:"zyxw"
-			});
-		}, Error, /Failed to initialize APIStrategy\. Missing/);
-		done();
+        ServiceConfig({
+            version:"p",
+            appidServiceEndpoint:"zyxw"
+        }).then(config => {
+            assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
+            done();
+        }).catch(err => {
+            assert.include(err, 'Failed to initialize APIStrategy. Missing');
+            done();
+        });
 	});
+
 	it("Should success if there is a service endpoint tenant and version - endpoint with trailing slash", () => {
 		const tenantId="abcd";
-		const config = new ServiceConfig({
+		ServiceConfig({
 			tenantId,
 			version:"3",
 			appidServiceEndpoint:"zyxw/"
-		});
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
-		assert.equal(config.getTenantId(), 'abcd');
+		}).then(config => {
+            assert.isObject(config);
+            assert.isObject(config.getConfig());
+            assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
+            assert.equal(config.getTenantId(), 'abcd');
+        });
 	});
+
 	it("Should success if there is a service endpoint tenant and version - endpoint without trailing slash", () => {
 		const tenantId="abcd";
-		const config = new ServiceConfig({
+		ServiceConfig({
 			tenantId,
 			version:"3",
 			appidServiceEndpoint:"zyxw"
-		});
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
-		assert.equal(config.getTenantId(), 'abcd');
+		}).then(config => {
+            assert.isObject(config);
+            assert.isObject(config.getConfig());
+            assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
+            assert.equal(config.getTenantId(), 'abcd');
+        });
 	});
+
 	it("Should get config from options argument", (done) => {
-		const config = new ServiceConfig(mockCredentials.credentials);
-		assert.include(config.getConfig(), mockCredentials.credentials);
-		done();
+		ServiceConfig(mockCredentials.credentials)
+            .then(config => {
+                assert.include(config.getConfig(), mockCredentials.credentials);
+                done();
+            });
 	});
 
 	it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
@@ -240,12 +277,14 @@ describe('/lib/strategies/api-strategy-config', () => {
 				}
 			}]
 		});
-		const config = new ServiceConfig();
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
-		assert.equal(config.getTenantId(), tenantId);
-		done();
+		ServiceConfig()
+			.then(config => {
+				assert.isObject(config);
+				assert.isObject(config.getConfig());
+				assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+				assert.equal(config.getTenantId(), tenantId);
+				done();
+			});
 	});
 
 	it("Should succeed and get config from VCAP_SERVICES with Appid as the name", (done) => {
@@ -258,12 +297,14 @@ describe('/lib/strategies/api-strategy-config', () => {
 				}
 			}]
 		});
-		const config = new ServiceConfig();
-		assert.isObject(config);
-		assert.isObject(config.getConfig());
-		assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
-		assert.equal(config.getTenantId(), tenantId);
-		done();
+		ServiceConfig()
+			.then(config => {
+				assert.isObject(config);
+				assert.isObject(config.getConfig());
+				assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
+				assert.equal(config.getTenantId(), tenantId);
+				done();
+			});
 	});
 });
 
@@ -282,14 +323,14 @@ describe('/lib/token-manager/token-manager-config', () => {
 	before(() => {
 		const { CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL } = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
-		ServiceConfig = function (options) {
-			return ServiceUtil.loadConfig('TokenManager', [
-				TENANT_ID,
-				CLIENT_ID,
-				SECRET,
-				OAUTH_SERVER_URL
-			], options);
-		};
+        ServiceConfig = function (options) {
+            return ServiceUtil.loadConfig('TokenManager', [
+                TENANT_ID,
+                CLIENT_ID,
+                SECRET,
+                OAUTH_SERVER_URL
+            ], options);
+        };
 	});
 
 	beforeEach(() => {
@@ -297,31 +338,43 @@ describe('/lib/token-manager/token-manager-config', () => {
 	});
 
 	it("Should fail if there is no options argument or VCAP_SERVICES", (done) => {
-		assert.throws(ServiceConfig, Error, 'Failed to initialize TokenManager. Missing tenantId parameter.');
-		done();
+        ServiceConfig()
+            .then(config => {
+            	assert.fail('Test should say: Failed to initialize TokenManager. Missing tenantId parameter.');
+                done();
+            }).catch(err => {
+            	assert.equal(err, 'Failed to initialize TokenManager. Missing tenantId parameter.');
+            	done();
+        	});
 	});
 
 	it("Should get config from options argument", (done) => {
-		const config = new ServiceConfig(mockCredentials.credentials);
-		assert.include(config.getConfig(), mockCredentials.credentials);
-		done();
+		ServiceConfig(mockCredentials.credentials)
+			.then(config => {
+                assert.include(config.getConfig(), mockCredentials.credentials);
+                done();
+            });
 	});
 
 	it("Should get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
 		process.env.VCAP_SERVICES = JSON.stringify({
 			AdvancedMobileAccess: [mockCredentials]
 		});
-		const config = new ServiceConfig();
-		assert.include(config.getConfig(), mockCredentials.credentials);
-		done();
+		ServiceConfig()
+			.then(config => {
+				assert.include(config.getConfig(), mockCredentials.credentials);
+				done();
+			});
 	});
 
 	it("Should get config from VCAP_SERVICES with Appid as the name", (done) => {
 		process.env.VCAP_SERVICES = JSON.stringify({
 			AppID: [mockCredentials]
 		});
-		const config = new ServiceConfig();
-		assert.include(config.getConfig(), mockCredentials.credentials);
-		done();
+		ServiceConfig()
+			.then(config => {
+				assert.include(config.getConfig(), mockCredentials.credentials);
+				done();
+			});
 	});
 });

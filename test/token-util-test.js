@@ -40,25 +40,15 @@ describe("/lib/utils/token-util", function () {
 
 		const {CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI} = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
-		ServiceConfig = function (options) {
-			return ServiceUtil.loadConfig('APIStrategy', [
-				TENANT_ID,
-				OAUTH_SERVER_URL
-			], options);
-		};
-		serviceConfig = new ServiceConfig({
-			oauthServerUrl: constants.SERVER_URL,
-			tenantId: constants.TENANTID,
-			issuer: constants.SERVER_URL
-		});
+
 		Config = function (options) {
-			return ServiceUtil.loadConfig('WebAppStrategy', [
-				TENANT_ID,
-				CLIENT_ID,
-				SECRET,
-				OAUTH_SERVER_URL,
-				REDIRECT_URI
-			], options);
+            return ServiceUtil.loadConfig('WebAppStrategy', [
+                TENANT_ID,
+                CLIENT_ID,
+                SECRET,
+                OAUTH_SERVER_URL,
+                REDIRECT_URI
+            ], options);
 		};
 	});
 
@@ -92,194 +82,197 @@ describe("/lib/utils/token-util", function () {
 		});
 
 		it("Token validation success", function () {
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: constants.SERVER_URL,
 				redirectUri: "redirectUri",
 				issuer: constants.ISSUER
-			});
-			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					assert(res, true);
-
-				});
+			}).then(config => {
+                return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        assert(res, true);
+                    });
+                });
 			});
 		});
 
 		it("Token validation failed, invalid clientid ", function (done) {
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: "clientId",
 				secret: "secret",
 				oauthServerUrl: constants.SERVER_URL,
 				redirectUri: "redirectUri"
-			});
-
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					done("This test should fail.");
-				}).catch(err => {
-					done();
-				});
-			});
+			}).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        done("This test should fail.");
+                    }).catch(err => {
+                        done();
+                    });
+                });
+            });
 		});
 
 		it("Token validation failed, invalid serverurl", function (done) {
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					done("This test should fail.");
-				}).catch(err => {
-					done();
-				});
-			});
+			}).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        done("This test should fail.");
+                    }).catch(err => {
+                        done();
+                    });
+                });
+            });
 		});
 		it("get issuer from well known", function (done) {
 			reqEndpoint = "endpoint";
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-
-					done();
-				}).catch(err => {
-					done(err);
-				});
-			});
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        done();
+                    }).catch(err => {
+                        done(err);
+                    });
+                });
+            });
 		});
 		it("get issuer from well known different endpoint", function (done) {
 			reqEndpoint = "endpoint2";
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					done("suppose to fail");
-				}).catch(err => {
-					done();
-
-				});
-			});
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        done("suppose to fail");
+                    }).catch(err => {
+                        done();
+                    });
+                });
+            });
 		});
 		it("get issuer from well known returned error", function (done) {
 			reqEndpoint = "endpoint";
 			reqError = new Error(":(");
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 
-					done("suppose to fail");
-					reqError = undefined;
-				}).catch(err => {
-					done();
-					reqError = undefined;
-				});
-			});
+                        done("suppose to fail");
+                        reqError = undefined;
+                    }).catch(err => {
+                        done();
+                        reqError = undefined;
+                    });
+                });
+            });
 		});
 		it("get issuer from well known returned status code!= 200", function (done) {
 			reqEndpoint = "endpoint";
 			reqError = undefined;
 			reqresponse = {statusCode: 404};
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 
-					done("suppose to fail");
-					reqError = undefined;
-				}).catch(err => {
-					done();
-					reqError = undefined;
-				});
-			});
+                        done("suppose to fail");
+                        reqError = undefined;
+                    }).catch(err => {
+                        done();
+                        reqError = undefined;
+                    });
+                });
+            });
 		});
 		it("get issuer from well known missing issuer", function (done) {
 			reqEndpoint = undefined;
 			reqError = undefined;
 			reqresponse = {statusCode: 200};
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 
-					done("suppose to fail");
-					reqError = undefined;
-				}).catch(err => {
-					done();
-					reqError = undefined;
-				});
-			});
+                        done("suppose to fail");
+                        reqError = undefined;
+                    }).catch(err => {
+                        done();
+                        reqError = undefined;
+                    });
+                });
+            });
 		});
 
 		it("don't go to issuer endpoint when issuer exists", function (done) {
 			reqEndpoint = "endpoint2";
 			reqresponse = {statusCode: 200};
 			reqError = undefined;
-			const config = new Config({
+			Config({
 				tenantId: constants.TENANTID,
 				clientId: constants.CLIENTID,
 				secret: "secret",
 				oauthServerUrl: "http://mobileclientaccess/",
 				redirectUri: "redirectUri",
 				issuer: "endpoint"
-			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.iss = "endpoint";
+            }).then(config => {
+                TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                    decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
-					done();
-				}).catch(err => {
-					done(err);
+                    TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+                        //it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
+                        done();
+                    }).catch(err => {
+                        done(err);
 
-				});
-			});
+                    });
+                });
+            });
 		});
-
-
 	});
 
 	describe("#decode()", function () {
