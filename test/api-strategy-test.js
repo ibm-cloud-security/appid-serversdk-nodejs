@@ -27,7 +27,8 @@ describe("/lib/strategies/api-strategy", function () {
 			"../utils/token-util": require("./mocks/token-util-mock")
 		});
 		apiStrategy = new APIStrategy({
-			oauthServerUrl: "serverUrl"
+			oauthServerUrl: "serverUrl",
+			issuer: "issuer"
 		});
 	});
 
@@ -142,7 +143,7 @@ describe("/lib/strategies/api-strategy", function () {
 				assert.isUndefined(req.appIdAuthorizationContext.identityToken);
 				assert.isUndefined(req.appIdAuthorizationContext.identityTokenPayload);
 
-				done()
+				done();
 			};
 
 			apiStrategy.authenticate(req);

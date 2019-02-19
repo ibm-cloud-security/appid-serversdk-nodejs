@@ -42,7 +42,7 @@ function decodeAndValidate(tokenString) {
 	} else if (tokenString === "id_token_mock_test_scope") {
 		deferred.resolve({scope: "test_scope"});
 	} else {
-		deferred.resolve({scope: "appid_default"});
+		deferred.resolve({scope: "appid_default", iss: "issuer"});
 	}
 	return deferred.promise;
 }
