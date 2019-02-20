@@ -53,7 +53,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 	});
 
 	describe("#UserProfileManager.init", function () {
-		it("Should not be able to init without options and VCAP_SERVICS", function () {
+		it("Should not be able to init without options and VCAP_SERVICES", function () {
 			UserProfileManager.init();
 			// TODO: add validation that errors are printed to console
 		});
@@ -140,11 +140,9 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 	});
 	describe("#UserProfileManager.setAttribute", function () {
 		it("Should validate all parameters are present", function (done) {
-
 			var p1 = UserProfileManager.setAttribute();
 			var p2 = UserProfileManager.setAttribute("accessToken");
 			var p3 = UserProfileManager.setAttribute("accessToken", "name");
-
 			Q.allSettled([p1, p2, p3]).spread(function (r1, r2, r3) {
 				assert.equal(r1.state, "rejected");
 				assert.equal(r2.state, "rejected");
@@ -403,7 +401,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 		});
 
-		it("should send uesrinfo payload - validating identity token ", function (done) {
+		it("should send userinfo payload - validating identity token ", function (done) {
 			UserProfileManager.oauthServerUrl = "http://oauth";
 			UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubIs123).then(function (result) {
 				assert.equal(result.url, "http://oauth/userinfo");
