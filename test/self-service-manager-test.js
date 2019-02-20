@@ -29,7 +29,7 @@ describe("/lib/self-service/self-service-manager", function () {
 	});
 	
 	describe("#SelfserviceManager constructor", function () {
-		it("Should not be able to init without options and VCAP_SERVICS", function (done) {
+		it("Should not be able to init without options and VCAP_SERVICES", function (done) {
 			try {
 				let test = new SelfServiceManager();
 				done("This should throw");
@@ -76,7 +76,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 		});
 		
-		it("Should not be able to init with options with server with not /oauth/v3", function (done) {
+		it("Should not be able to init with options with server with not /oauth/v4", function (done) {
 			try {
 				let test = new SelfServiceManager({
 					tenantId: "dummy_tenant",
@@ -108,7 +108,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("Should be able to init with options with only tenantId and oauthServerUrl", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
-					oauthServerUrl: "https://appid-oauth.com/oauth/v3",
+					oauthServerUrl: "https://appid-oauth.com/oauth/v4",
 					tenantId: "123"
 				});
 				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
@@ -121,7 +121,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		it("Should be able to init with options check iamTokenUrl and iamApiKey", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
-					oauthServerUrl: "https://appid-oauth.com/oauth/v3",
+					oauthServerUrl: "https://appid-oauth.com/oauth/v4",
 					tenantId: "123",
 					iamTokenUrl:"xxx",
 					iamApiKey:"yyy"
@@ -159,7 +159,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				AppID: [
 					{
 						credentials: {
-							oauthServerUrl: "https://appid-oauth.com/oauth/v3",
+							oauthServerUrl: "https://appid-oauth.com/oauth/v4",
 							tenantId: "123",
 							apikey: testApiKey
 						}
@@ -181,7 +181,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				AppID: [
 					{
 						credentials: {
-							oauthServerUrl: "https://appid-oauth.com/oauth/v3",
+							oauthServerUrl: "https://appid-oauth.com/oauth/v4",
 							tenantId: "123"
 						}
 					}
@@ -1450,10 +1450,5 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, badInputErrorBodyWithMessage, body, queryObject , action, deferred);
 		});
-		
 	});
-	
 });
-
-
-

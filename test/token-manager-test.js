@@ -105,15 +105,13 @@ function mockRetrieveTokenFailure(tokenManager, grantType, expectedErrMessage, d
 		default: {
 			throw Error('Invalid function to test');
 		}
-
 	}
 
 	funcToTest.apply(tokenManager, params)
-		.catch((error) => {
+		.catch(error => {
 			assert.equal(error.message, expectedErrMessage);
 			done();
 		});
-
 }
 
 

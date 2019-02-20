@@ -124,12 +124,8 @@ describe("/lib/utils/token-util", function () {
 			}).then(config => {
                 TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
                     TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-                    	console.log("RES");
-                    	console.log(res);
                         done("This test should fail.");
                     }).catch(err => {
-                    	console.log("ERR");
-                    	console.log(err);
                         done();
                     });
                 });

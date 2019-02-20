@@ -54,7 +54,7 @@ describe("/lib/strategies/webapp-strategy-config", () => {
                 assert.fail('Test should say: Failed to initialize WebAppStrategy. Missing tenantId parameter.');
                 done();
             }).catch(err => {
-            	assert.equal(err, 'Failed to initialize WebAppStrategy. Missing tenantId parameter.');
+            	assert.include(err.message, 'Failed to initialize WebAppStrategy. Missing tenantId parameter.');
             	done();
 			});
 	});
@@ -91,9 +91,12 @@ describe("/lib/strategies/webapp-strategy-config", () => {
                 assert.equal(config.getTenantId(), tenantId);
                 assert.equal(config.getClientId(), clientId);
                 assert.equal(config.getSecret(), secret);
-                assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
                 assert.equal(config.getRedirectUri(), redirectUri);
-                done();
+                config.getOAuthServerUrl()
+					.then(url => {
+                        assert.equal(url, oauthServerUrl);
+                        done();
+					});
             });
 	});
 
@@ -121,9 +124,12 @@ describe("/lib/strategies/webapp-strategy-config", () => {
                 assert.equal(config.getTenantId(), tenantId);
                 assert.equal(config.getClientId(), clientId);
                 assert.equal(config.getSecret(), secret);
-                assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
                 assert.equal(config.getRedirectUri(), redirectUri);
-                done();
+                config.getOAuthServerUrl()
+                    .then(url => {
+                        assert.equal(url, oauthServerUrl);
+                        done();
+                    });
             });
 	});
 
@@ -178,7 +184,7 @@ describe('/lib/strategies/api-strategy-config', () => {
                 assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
                 done();
             }).catch(err => {
-				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				assert.include(err.message, 'Failed to initialize APIStrategy. Missing');
 				done();
 			});
 	});
@@ -189,7 +195,7 @@ describe('/lib/strategies/api-strategy-config', () => {
                 assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
                 done();
             }).catch(err => {
-				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				assert.include(err.message, 'Failed to initialize APIStrategy. Missing');
 				done();
 			});
 	});
@@ -200,7 +206,7 @@ describe('/lib/strategies/api-strategy-config', () => {
                 assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
                 done();
             }).catch(err => {
-				assert.include(err, 'Failed to initialize APIStrategy. Missing');
+				assert.include(err.message, 'Failed to initialize APIStrategy. Missing');
 				done();
 			});
 	});
@@ -213,7 +219,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 			assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
 			done();
 		}).catch(err => {
-			assert.include(err, 'Failed to initialize APIStrategy. Missing');
+			assert.include(err.message, 'Failed to initialize APIStrategy. Missing');
 			done();
 		});
 	});
@@ -226,7 +232,7 @@ describe('/lib/strategies/api-strategy-config', () => {
             assert.fail('Test should say something with: Failed to initialize APIStrategy. Missing...');
             done();
         }).catch(err => {
-            assert.include(err, 'Failed to initialize APIStrategy. Missing');
+            assert.include(err.message, 'Failed to initialize APIStrategy. Missing');
             done();
         });
 	});
@@ -240,8 +246,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 		}).then(config => {
             assert.isObject(config);
             assert.isObject(config.getConfig());
-            assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
             assert.equal(config.getTenantId(), 'abcd');
+            config.getOAuthServerUrl()
+                .then(url => {
+                    assert.equal(url, 'zyxw/oauth/v3/abcd');
+                    done();
+                });
         });
 	});
 
@@ -254,8 +264,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 		}).then(config => {
             assert.isObject(config);
             assert.isObject(config.getConfig());
-            assert.equal(config.getOAuthServerUrl(), 'zyxw/oauth/v3/abcd');
             assert.equal(config.getTenantId(), 'abcd');
+            config.getOAuthServerUrl()
+                .then(url => {
+                    assert.equal(url, 'zyxw/oauth/v3/abcd');
+                    done();
+                });
         });
 	});
 
@@ -281,9 +295,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 			.then(config => {
 				assert.isObject(config);
 				assert.isObject(config.getConfig());
-				assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
 				assert.equal(config.getTenantId(), tenantId);
-				done();
+                config.getOAuthServerUrl()
+                    .then(url => {
+                        assert.equal(url, oauthServerUrl);
+                        done();
+                    });
 			});
 	});
 
@@ -301,9 +318,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 			.then(config => {
 				assert.isObject(config);
 				assert.isObject(config.getConfig());
-				assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
 				assert.equal(config.getTenantId(), tenantId);
-				done();
+                config.getOAuthServerUrl()
+                    .then(url => {
+                        assert.equal(url, oauthServerUrl);
+                        done();
+                    });
 			});
 	});
 });
@@ -343,7 +363,7 @@ describe('/lib/token-manager/token-manager-config', () => {
             	assert.fail('Test should say: Failed to initialize TokenManager. Missing tenantId parameter.');
                 done();
             }).catch(err => {
-            	assert.equal(err, 'Failed to initialize TokenManager. Missing tenantId parameter.');
+            	assert.include(err.message, 'Failed to initialize TokenManager. Missing tenantId parameter.');
             	done();
         	});
 	});

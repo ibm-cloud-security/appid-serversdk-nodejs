@@ -778,6 +778,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 				};
 				
 				webAppStrategy.redirect = function (url) {
+					console.log(url);
 					assert.include(url, "/cloud_directory/change_password?client_id=clientId&redirect_uri=https://redirectUri&user_id=testUserId");
 					done();
 				};
