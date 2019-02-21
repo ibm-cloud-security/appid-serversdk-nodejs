@@ -50,51 +50,55 @@ app.get(LOGIN_URL, (req, res) => {
 
 app.post(LOGIN_URL, (req, res) => {
 	if (req.body.username === req.body.password) {
+        tokenManager.serviceConfig.getOAuthServerUrl()
+			.then(oAuthServerUrl => {
 
-		const sampleToken = {
-			header: {
-				alg: 'RS256',
-				kid: 'sample-rsa-private-key'
-			},
-			payload: {
-				iss: 'sample-appid-custom-identity',
-				sub: 'sample-unique-user-id',
-				aud: tokenManager.serviceConfig.getOAuthServerUrl().split('/')[2],
-				exp: 9999999999,
-				name: req.body.username,
-				scope: 'customScope'
-			}
-		};
+                const sampleToken = {
+                    header: {
+                        alg: 'RS256',
+                        kid: 'sample-rsa-private-key'
+                    },
+                    payload: {
+                        iss: 'sample-appid-custom-identity',
+                        sub: 'sample-unique-user-id',
+                        aud: oAuthServerUrl.split('/')[2],
+                        exp: 9999999999,
+                        name: req.body.username,
+                        scope: 'customScope'
+                    }
+                };
 
-		const generateSignedJWT = (privateKey) => {
-			const { header, payload } = sampleToken;
-			return jwt.sign(payload, privateKey, { header });
-		};
+                const generateSignedJWT = (privateKey) => {
+                    const { header, payload } = sampleToken;
+                    return jwt.sign(payload, privateKey, { header });
+                };
 
-		const privateKey = fs.readFileSync('./resources/private.pem');
-		jwsTokenString = generateSignedJWT(privateKey);
+                const privateKey = fs.readFileSync('./resources/private.pem');
+                jwsTokenString = generateSignedJWT(privateKey);
 
-		logger.info(`Generated JWS: ${jwsTokenString}`);
-		logger.debug('Calling tokenManager.getCustomIdentityTokens()');
+                logger.info(`Generated JWS: ${jwsTokenString}`);
+                logger.debug('Calling tokenManager.getCustomIdentityTokens()');
 
-		tokenManager.getCustomIdentityTokens(jwsTokenString).then((authContext) => {
-			// authContext.accessToken: Access token string
-			// authContext.identityToken: Identity token string
-			// authContext.tokenType: Type of tokens
-			// authContext.expiresIn: Expiry of tokens
+                tokenManager.getCustomIdentityTokens(jwsTokenString).then((authContext) => {
+                    // authContext.accessToken: Access token string
+                    // authContext.identityToken: Identity token string
+                    // authContext.tokenType: Type of tokens
+                    // authContext.expiresIn: Expiry of tokens
 
-			logger.info(`Access token string: ${authContext.accessToken}`);
-			logger.info(`Identity token string: ${authContext.identityToken}`);
+                    logger.info(`Access token string: ${authContext.accessToken}`);
+                    logger.info(`Identity token string: ${authContext.identityToken}`);
 
-			req.session[APPID_AUTH_CONTEXT] = authContext;
-			req.session[APPID_AUTH_CONTEXT].identityTokenPayload = jwt.decode(authContext.identityToken);
-			req.session[APPID_AUTH_CONTEXT].accessTokenPayload = jwt.decode(authContext.accessToken);
+                    req.session[APPID_AUTH_CONTEXT] = authContext;
+                    req.session[APPID_AUTH_CONTEXT].identityTokenPayload = jwt.decode(authContext.identityToken);
+                    req.session[APPID_AUTH_CONTEXT].accessTokenPayload = jwt.decode(authContext.accessToken);
 
-			res.redirect(PROTECTED_URL);
-		}).catch((error) => {
-			res.render('custom_identity_login', { message: error });
-		});
-
+                    res.redirect(PROTECTED_URL);
+                }).catch((error) => {
+                    res.render('custom_identity_login', { message: error });
+                });
+			}).catch(error => {
+            	res.render('custom_identity_login', { message: error });
+			});
 	} else {
 		res.render('custom_identity_login', { message: 'Login Failed' });
 	}
