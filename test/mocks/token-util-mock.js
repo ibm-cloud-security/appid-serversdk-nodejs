@@ -58,7 +58,7 @@ const checkSwitch = () => {
 	}
 };
 
-function validateIssAndAud(token, serviceConfig) {
+function validateIssAzpAud(token, serviceConfig) {
 	if (isIssuerAndAudValid) {
 		checkSwitch();
 		return Promise.resolve(true);
@@ -75,7 +75,7 @@ function getRandomNumber() {
 module.exports = {
 	decodeAndValidate,
 	decode,
-	validateIssAndAud,
+	validateIssAzpAud,
 	getRandomNumber,
 	setValidateIssAndAudResponse,
 	switchIssuerState

@@ -91,24 +91,169 @@ describe("/lib/utils/token-util", function () {
 			});
 		});
 
-		it("Token validation success", function () {
-			const config = new Config({
-				tenantId: constants.TENANTID,
-				clientId: constants.CLIENTID,
-				secret: "secret",
-				oauthServerUrl: constants.SERVER_URL,
-				redirectUri: "redirectUri",
-				issuer: constants.ISSUER
-			});
-			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
-					assert(res, true);
+		it("Token validation success pre-v4", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.ISSUER
+            });
+            return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                return TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    assert(res, true);
+                });
+            });
+        });
 
+        it("Token validation success post-v4", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER
+            });
+            return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = [constants.CLIENTID];
+                decodedToken.iss = constants.TOKEN_ISSUER;
+                decodedToken.azp = constants.CLIENTID;
+                return TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    assert(res, true);
+                });
+            });
+        });
+
+        it("Token validation success post-v4 + convert bluemix.net to cloud.ibm.com", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER_BLUEMIX
+            });
+            return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = [constants.CLIENTID];
+                decodedToken.iss = constants.TOKEN_ISSUER;
+                decodedToken.azp = constants.CLIENTID;
+                return TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    assert(res, true);
+                });
+            });
+        });
+
+        it("Token validation failed, iss doesn't match", function (done) {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: "nonMatchingIssuer"
+            });
+            TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    done("This test should fail.");
+                }).catch(err => {
+                    done();
+                });
+            });
+        });
+
+        it("Token validation failed post-v4, iss needs https", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER_NO_HTTPS
+            });
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = [constants.CLIENTID];
+                decodedToken.iss = constants.TOKEN_ISSUER_NO_HTTPS;
+                decodedToken.azp = constants.CLIENTID;
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+					done("This test should fail.");
+				}).catch(err => {
+					done();
 				});
 			});
-		});
+        });
 
-		it("Token validation failed, invalid clientid ", function (done) {
+        it("Token validation failed post-v4, invalid aud -- must be an array", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER
+            });
+            TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = constants.CLIENTID;
+                decodedToken.iss = constants.TOKEN_ISSUER;
+                decodedToken.azp = constants.CLIENTID;
+                TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    done("This test should fail.");
+                }).catch(err => {
+                    done();
+                });
+            });
+        });
+
+        it("Token validation failed post-v4, invalid aud -- array doesn't have client ID", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER
+            });
+            TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = [constants.BAD_CLIENTID];
+                decodedToken.iss = constants.TOKEN_ISSUER;
+                decodedToken.azp = constants.CLIENTID;
+                TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    done("This test should fail.");
+                }).catch(err => {
+                    done();
+                });
+            });
+        });
+
+        it("Token validation failed post-v4, invalid azp -- must match clientId", function () {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.CONFIG_ISSUER
+            });
+            TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 4;
+                decodedToken.aud = [constants.CLIENTID];
+                decodedToken.iss = constants.TOKEN_ISSUER;
+                decodedToken.azp = constants.BAD_CLIENTID;
+                TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    done("This test should fail.");
+                }).catch(err => {
+                    done();
+                });
+            });
+        });
+
+		it("Token validation failed, invalid clientid", function (done) {
 			const config = new Config({
 				tenantId: constants.TENANTID,
 				clientId: "clientId",
@@ -118,7 +263,7 @@ describe("/lib/utils/token-util", function () {
 			});
 
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 					done("This test should fail.");
 				}).catch(err => {
 					done();
@@ -135,13 +280,34 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 					done("This test should fail.");
 				}).catch(err => {
 					done();
 				});
 			});
 		});
+
+        it("Token validation failed, invalid version", function (done) {
+            const config = new Config({
+                tenantId: constants.TENANTID,
+                clientId: constants.CLIENTID,
+                secret: "secret",
+                oauthServerUrl: constants.SERVER_URL,
+                redirectUri: "redirectUri",
+                issuer: constants.ISSUER
+            });
+            TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = "badVersion";
+
+                TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+                    done("This test should fail.");
+                }).catch(err => {
+                    done();
+                });
+            });
+        });
+
 		it("get issuer from well known", function (done) {
 			reqEndpoint = "endpoint";
 			const config = new Config({
@@ -154,7 +320,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 
 					done();
 				}).catch(err => {
@@ -162,6 +328,7 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+
 		it("get issuer from well known different endpoint", function (done) {
 			reqEndpoint = "endpoint2";
 			const config = new Config({
@@ -174,7 +341,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 					done("suppose to fail");
 				}).catch(err => {
 					done();
@@ -182,6 +349,7 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+
 		it("get issuer from well known returned error", function (done) {
 			reqEndpoint = "endpoint";
 			reqError = new Error(":(");
@@ -195,7 +363,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 
 					done("suppose to fail");
 					reqError = undefined;
@@ -205,6 +373,7 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+
 		it("get issuer from well known returned status code!= 200", function (done) {
 			reqEndpoint = "endpoint";
 			reqError = undefined;
@@ -219,7 +388,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 
 					done("suppose to fail");
 					reqError = undefined;
@@ -229,6 +398,7 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+
 		it("get issuer from well known missing issuer", function (done) {
 			reqEndpoint = undefined;
 			reqError = undefined;
@@ -243,7 +413,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 
 					done("suppose to fail");
 					reqError = undefined;
@@ -269,12 +439,11 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
 					done();
 				}).catch(err => {
 					done(err);
-
 				});
 			});
 		});
@@ -292,5 +461,4 @@ describe("/lib/utils/token-util", function () {
 			assert.property(decodedToken, "iat");
 		});
 	});
-
 });
