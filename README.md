@@ -28,6 +28,8 @@ If you use the API protection strategy the unauthenticated client will get HTTP 
 
 If you use the Web application protection strategy the unauthenticated client will get HTTP 302 redirect to the login page hosted by App ID service (or, depending on configuration, directly to identity provider login page). WebAppStrategy, as name suggests, best fit for building web applications.
 
+In addition, the SDK provides helper utilities centered around tokens and user profiles. The token manager supports token retrieval for additional flows such as Application Identity and Custom Identity, as well as token specific functions. The user profile manager supports helper functions that retrieve identity provider and custom profile information about the user.
+
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
@@ -235,6 +237,28 @@ You may persist the refresh_token in any method you'd like. By doing so, you can
 
 In order to use the persisted refresh_token, you need to call `webAppStrategy.refreshTokens(request, refreshToken)`. `refreshTokens()` returns a Promise. After the Promise has resolved, the user will be authenticated and new tokens will be generated and persistent in the HTTP session like in a classic login. If the Promise is rejected, the user won't be authenticated.
 
+### Token Manager
+
+The `tokenManager` object provides token helper functions as well as retrieves tokens generated as a result of the Custom Identity and Application Identity flows. The `tokenManager` object can be initialized in two ways.
+
+In the first case, the application has already configured the SDK with the App ID service configuration using other managers, and so `TokenManager` can simply inherit the configurations:
+
+```javascript
+const TokenManager = require('ibmcloud-appid').TokenManager;
+```
+
+In the second case, the application can directly configured the SDK with the App ID service configuration using the `TokenManager` object:
+
+```javascript
+const config = {
+	tenantId: "{tenant-id}",
+	clientId: "{client-id}",
+	secret: "{secret}",
+	oauthServerUrl: "{oauth-server-url}"
+};
+
+const TokenManager = require('ibmcloud-appid').TokenManager(config);
+```
 
 ### Custom Identity
 App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
