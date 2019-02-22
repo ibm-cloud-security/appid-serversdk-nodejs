@@ -21,11 +21,11 @@ module.exports = {
 	SERVER_URL : "http://mobileclientaccess.stage1.ng.bluemix.net/",
 	TENANTID : "4dba9430-54e6-4cf2-a516-6f73feb702bb",
 	CLIENTID : "26cb012eb327c612d90a6819163b6bcbd4849cbb",
-    BAD_CLIENTID : "1111111111111111111111111111111111111111",
+	BAD_CLIENTID : "1111111111111111111111111111111111111111",
 	ISSUER: "mobileclientaccess.stage1.ng.bluemix.net",
-    CONFIG_ISSUER: "https://us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb",
-    CONFIG_ISSUER_BLUEMIX: "https://appid-oauth.stage1.ng.bluemix.net",
-    TOKEN_ISSUER: "https://us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb",
-    CONFIG_ISSUER_NO_HTTPS: "appid-oauth.stage1.ng.bluemix.net",
-    TOKEN_ISSUER_NO_HTTPS: "us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb"
+	CONFIG_ISSUER: "https://us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb",
+	CONFIG_ISSUER_BLUEMIX: "https://appid-oauth.stage1.ng.bluemix.net",
+	TOKEN_ISSUER: "https://us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb",
+	CONFIG_ISSUER_NO_HTTPS: "appid-oauth.stage1.ng.bluemix.net",
+	TOKEN_ISSUER_NO_HTTPS: "us-south.appid.test.cloud.ibm.com/oauth/v4/4dba9430-54e6-4cf2-a516-6f73feb702bb"
 };

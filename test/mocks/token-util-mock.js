@@ -75,7 +75,7 @@ function getRandomNumber() {
 module.exports = {
 	decodeAndValidate,
 	decode,
-    validateIssAzpAud,
+	validateIssAzpAud,
 	getRandomNumber,
 	setValidateIssAndAudResponse,
 	switchIssuerState
