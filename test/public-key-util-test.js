@@ -47,7 +47,7 @@ describe("/lib/utils/public-key-util", function () {
 		
 		it("request to public keys endpoint failure", function (done) {
 			var kid = "not_found_kid";
-			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "FAIL-PUBLIC-KEYs").then(function (publicKey) {
+			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "FAIL-PUBLIC-KEYs").then(function () {
 				done("should get reject");
 			}).catch(function (err) {
 				try {
