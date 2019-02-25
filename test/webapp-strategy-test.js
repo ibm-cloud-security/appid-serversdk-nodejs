@@ -57,10 +57,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 				}
 			};
 
-			let options = { callback: redirectURL};
+			let options = { redirect_uri: redirectURL};
 			webAppStrategy.logoutSSO(req,res, options);
 			const uriEncodedCallBack = encodeURIComponent(redirectURL);
-			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?callback=${uriEncodedCallBack}&client_id=clientId`;
+			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?redirect_uri=${uriEncodedCallBack}&client_id=clientId`;
 			assert.equal(resultRedirect, excpected);
 			assert.equal(req.session.returnTo , undefined); // expect session to be cleaned.
 		});
