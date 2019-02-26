@@ -21,9 +21,7 @@ const constants = require("./mocks/constants");
 
 describe("/lib/utils/token-util", function () {
 	console.log("Loading token-util-test.js");
-	var TokenUtil;
-	var ServiceConfig;
-	var serviceConfig;
+	let TokenUtil;
 	//let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
 	let reqEndpoint = "endpoint";
 	let reqError;
@@ -33,24 +31,13 @@ describe("/lib/utils/token-util", function () {
 		"./public-key-util": require("./mocks/public-key-util-mock"),
 		"request": (_, cb) => cb(reqError, reqresponse, {issuer: reqEndpoint})
 	};
-	var Config;
+	let Config;
 
 	before(function () {
 		TokenUtil = proxyquire("../lib/utils/token-util", utilsStub);
 
 		const {CLIENT_ID, TENANT_ID, SECRET, OAUTH_SERVER_URL, REDIRECT_URI} = require('../lib/utils/constants');
 		const ServiceUtil = require('../lib/utils/service-util');
-		ServiceConfig = function (options) {
-			return ServiceUtil.loadConfig('APIStrategy', [
-				TENANT_ID,
-				OAUTH_SERVER_URL
-			], options);
-		};
-		serviceConfig = new ServiceConfig({
-			oauthServerUrl: constants.SERVER_URL,
-			tenantId: constants.TENANTID,
-			issuer: constants.SERVER_URL
-		});
 		Config = function (options) {
 			return ServiceUtil.loadConfig('WebAppStrategy', [
 				TENANT_ID,
@@ -301,7 +288,6 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
-
 					done();
 				}).catch(err => {
 					done(err);
@@ -325,7 +311,6 @@ describe("/lib/utils/token-util", function () {
 					done("suppose to fail");
 				}).catch(err => {
 					done();
-
 				});
 			});
 		});
@@ -344,7 +329,6 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
-
 					done("suppose to fail");
 					reqError = undefined;
 				}).catch(err => {
@@ -369,7 +353,6 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
-
 					done("suppose to fail");
 					reqError = undefined;
 				}).catch(err => {
@@ -394,7 +377,6 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.iss = "endpoint";
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
-
 					done("suppose to fail");
 					reqError = undefined;
 				}).catch(err => {
@@ -424,7 +406,6 @@ describe("/lib/utils/token-util", function () {
 					done();
 				}).catch(err => {
 					done(err);
-
 				});
 			});
 		});
