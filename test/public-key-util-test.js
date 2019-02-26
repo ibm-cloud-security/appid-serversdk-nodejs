@@ -31,18 +31,7 @@ describe("/lib/utils/public-key-util", function () {
 	});
 	
 	this.timeout(5000);
-	
-	describe("setPublicKeysEndpoint", function () {
-		it("Should set server public key endpoint", function (done) {
-			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl);
-			try {
-				assert.equal(testServerUrl + "/publickeys", PublicKeyUtil.getPublicKeysEndpoint());
-				done();
-			} catch (e) {
-				done(e);
-			}
-		});
-	});
+
 	
 	describe("getPublicKeyPemByKid", function () {
 		
@@ -57,9 +46,8 @@ describe("/lib/utils/public-key-util", function () {
 		});
 		
 		it("request to public keys endpoint failure", function (done) {
-			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "FAIL-PUBLIC-KEYs");
 			var kid = "not_found_kid";
-			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
+			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "FAIL-PUBLIC-KEYs").then(function () {
 				done("should get reject");
 			}).catch(function (err) {
 				try {
@@ -72,16 +60,14 @@ describe("/lib/utils/public-key-util", function () {
 		});
 		
 		it("request to public keys endpoint update failure", function (done) {
-			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "SUCCESS-PUBLIC-KEYs");
 			var kid = "123";
-			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function () {
-				PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "FAIL-PUBLIC-KEYs");
+			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function () {
 				kid = "not_found_kid";
-				PublicKeyUtil.getPublicKeyPemByKid(kid).then(function () {
+				PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "FAIL-PUBLIC-KEYs").then(function () {
 					done("should get reject");
 				}).catch(function (err) {
 					try {
-						assert.equal(err, "updatePublicKeys error: Failed to update public keys.");
+						assert.equal(err, "updatePublicKeys error: Failed to retrieve public keys.  All requests to protected endpoints will be rejected.");
 						done();
 					} catch(e) {
 						done(e);
@@ -96,10 +82,9 @@ describe("/lib/utils/public-key-util", function () {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
 				"request": requestMock
 			});
-			PublicKeyUtilNew.setPublicKeysEndpoint(testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs");
 			var kid = "123";
-			PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function () {
-				PublicKeyUtilNew.getPublicKeyPemByKid(kid).then(function () {
+			PublicKeyUtilNew.getPublicKeyPemByKid(kid, testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs").then(function () {
+				PublicKeyUtilNew.getPublicKeyPemByKid(kid, testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs").then(function () {
 					assert.equal(1, seqRequestCounter, "more then one request triggered");
 					done();
 				}).catch(function (err) {
@@ -111,9 +96,8 @@ describe("/lib/utils/public-key-util", function () {
 		});
 		
 		it("Should successfully retrieve public key from OAuth server", function (done) {
-			PublicKeyUtil.setPublicKeysEndpoint(testServerUrl + "SUCCESS-PUBLIC-KEYs");
 			var kid = "123";
-			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
+			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function (publicKey) {
 				try {
 					assert.isNotNull(publicKey);
 					assert.isString(publicKey);
@@ -133,10 +117,9 @@ describe("/lib/utils/public-key-util", function () {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
 				"request": requestMock
 			});
-			PublicKeyUtilNew.setPublicKeysEndpoint(testServerUrl + "SETTIMEOUT-PUBLIC-KEYs");
 			var requestArray = [];
 			for (var i = 0; i < 5; i++) {
-				requestArray.push(PublicKeyUtilNew.getPublicKeyPemByKid("123"));
+				requestArray.push(PublicKeyUtilNew.getPublicKeyPemByKid("123", testServerUrl + "SETTIMEOUT-PUBLIC-KEYs"));
 			}
 			Q.all(requestArray).then(function (publicKeysArray) {
 				try {
