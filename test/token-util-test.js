@@ -144,9 +144,9 @@ describe("/lib/utils/token-util", function () {
 				issuer: "nonMatchingIssuer"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -166,9 +166,9 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.aud = [constants.CLIENTID];
 				decodedToken.iss = constants.TOKEN_ISSUER_NO_HTTPS;
 				decodedToken.azp = constants.CLIENTID;
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -188,9 +188,9 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.aud = constants.CLIENTID;
 				decodedToken.iss = constants.TOKEN_ISSUER;
 				decodedToken.azp = constants.CLIENTID;
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -210,9 +210,9 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.aud = [constants.BAD_CLIENTID];
 				decodedToken.iss = constants.TOKEN_ISSUER;
 				decodedToken.azp = constants.CLIENTID;
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -232,9 +232,9 @@ describe("/lib/utils/token-util", function () {
 				decodedToken.aud = [constants.CLIENTID];
 				decodedToken.iss = constants.TOKEN_ISSUER;
 				decodedToken.azp = constants.BAD_CLIENTID;
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -250,9 +250,9 @@ describe("/lib/utils/token-util", function () {
 			});
 
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -267,9 +267,9 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri"
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("This test should fail.");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -287,7 +287,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done();
 				}).catch(err => {
 					done(err);
@@ -307,9 +307,9 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("suppose to fail");
-				}).catch(err => {
+				}).catch(() => {
 					done();
 				});
 			});
@@ -328,10 +328,10 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("suppose to fail");
 					reqError = undefined;
-				}).catch(err => {
+				}).catch(() => {
 					done();
 					reqError = undefined;
 				});
@@ -352,10 +352,10 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("suppose to fail");
 					reqError = undefined;
-				}).catch(err => {
+				}).catch(() => {
 					done();
 					reqError = undefined;
 				});
@@ -376,10 +376,10 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done("suppose to fail");
 					reqError = undefined;
-				}).catch(err => {
+				}).catch(() => {
 					done();
 					reqError = undefined;
 				});
@@ -401,7 +401,7 @@ describe("/lib/utils/token-util", function () {
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
 
-				TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
+				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
 					done();
 				}).catch(err => {
