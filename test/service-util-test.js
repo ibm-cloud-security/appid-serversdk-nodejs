@@ -23,6 +23,14 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 			oauthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id',
 			redirectUri: "https://test-redirect-uri",
 			preferredLocale: "test-preferred-locale"
+		},
+		oAuthCredentials: {
+			tenantId: 'test-tenant-id',
+			clientId: 'test-client-id',
+			secret: 'secret',
+			oAuthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id',
+			redirectUri: "https://test-redirect-uri",
+			preferredLocale: "test-preferred-locale"
 		}
 	};
 
@@ -58,6 +66,12 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 		assert.include(config.getConfig(), mockCredentials.credentials);
 		done();
 	});
+
+  it("Should get config from options argument (with oAuthServerUrl)", (done) => {
+	const config = new ServiceConfig(mockCredentials.oAuthCredentials);
+	assert.include(config.getConfig(), mockCredentials.credentials);
+	done();
+  });
 
 	it("Should get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
 		const { tenantId, clientId, secret, oauthServerUrl, redirectUri } = mockCredentials.credentials;
@@ -138,6 +152,10 @@ describe('/lib/strategies/api-strategy-config', () => {
 		credentials: {
 			tenantId: 'test-tenant-id',
 			oauthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id'
+		},
+		oAuthCredentials: {
+			tenantId: 'test-tenant-id',
+			oAuthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id'
 		}
 	};
 
@@ -230,6 +248,12 @@ describe('/lib/strategies/api-strategy-config', () => {
 		done();
 	});
 
+  it("Should get config from options argument (with oAuthServerUrl)", (done) => {
+	const config = new ServiceConfig(mockCredentials.oAuthCredentials);
+	assert.include(config.getConfig(), mockCredentials.credentials);
+	done();
+  });
+
 	it("Should succeed and get config from VCAP_SERVICES with AdvancedMobileAccess as the name", (done) => {
 		const { tenantId, oauthServerUrl } = mockCredentials.credentials;
 		process.env.VCAP_SERVICES = JSON.stringify({
@@ -274,6 +298,12 @@ describe('/lib/token-manager/token-manager-config', () => {
 			clientId: 'test-client-id',
 			secret: 'secret',
 			oauthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id'
+		},
+		oAuthCredentials: {
+			tenantId: 'test-tenant-id',
+			clientId: 'test-client-id',
+			secret: 'secret',
+			oAuthServerUrl: 'https://test-appid-oauth.bluemix.net/oauth/v3/test-tenant-id'
 		}
 	};
 
@@ -303,6 +333,12 @@ describe('/lib/token-manager/token-manager-config', () => {
 
 	it("Should get config from options argument", (done) => {
 		const config = new ServiceConfig(mockCredentials.credentials);
+		assert.include(config.getConfig(), mockCredentials.credentials);
+		done();
+	});
+
+	it("Should get config from options argument (with oAuthServerUrl)", (done) => {
+		const config = new ServiceConfig(mockCredentials.oAuthCredentials);
 		assert.include(config.getConfig(), mockCredentials.credentials);
 		done();
 	});
