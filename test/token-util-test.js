@@ -88,6 +88,7 @@ describe("/lib/utils/token-util", function () {
 				issuer: constants.ISSUER
 			});
 			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+                decodedToken.version = 3;
 				return TokenUtil.validateIssAzpAud(decodedToken, config).then((res) => {
 					assert(res, true);
 				});
@@ -286,6 +287,7 @@ describe("/lib/utils/token-util", function () {
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
+                decodedToken.version = 3;
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					done();
@@ -400,6 +402,7 @@ describe("/lib/utils/token-util", function () {
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
+                decodedToken.version = 3;
 
 				TokenUtil.validateIssAzpAud(decodedToken, config).then(() => {
 					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
