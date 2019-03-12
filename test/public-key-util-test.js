@@ -81,7 +81,9 @@ describe("/lib/utils/public-key-util", function () {
 					done("should get reject");
 				}).catch(function (err) {
 					try {
-						assert.equal(err, "updatePublicKeys error: Failed to update public keys.");
+						//assert.equal(err, "updatePublicKeys error: Failed to update public keys.");
+                                                // different endpoint means there are no keys to update
+					        assert.equal(err, "updatePublicKeys error: Failed to retrieve public keys.  All requests to protected endpoints will be rejected.");
 						done();
 					} catch(e) {
 						done(e);
