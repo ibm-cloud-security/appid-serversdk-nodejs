@@ -88,7 +88,6 @@ describe("/lib/utils/token-util", function () {
 				issuer: constants.ISSUER
 			});
 			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-                decodedToken.ver = 3;
 				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					assert(res, true);
 				});
@@ -104,10 +103,7 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri",
 				issuer: constants.CONFIG_ISSUER
 			});
-			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.ver = 4;
-				decodedToken.aud = [constants.CLIENTID];
-				decodedToken.iss = constants.TOKEN_ISSUER;
+			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN_V4).then(function (decodedToken) {
 				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					assert(res, true);
 				});
@@ -123,10 +119,7 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri",
 				issuer: constants.CONFIG_ISSUER_BLUEMIX
 			});
-			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.ver = 4;
-				decodedToken.aud = [constants.CLIENTID];
-				decodedToken.iss = constants.TOKEN_ISSUER;
+			return TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN_V4).then(function (decodedToken) {
 				return TokenUtil.validateIssAndAud(decodedToken, config).then((res) => {
 					assert(res, true);
 				});
@@ -160,9 +153,7 @@ describe("/lib/utils/token-util", function () {
 				redirectUri: "redirectUri",
 				issuer: constants.CONFIG_ISSUER_NO_HTTPS
 			});
-			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.ver = 4;
-				decodedToken.aud = [constants.CLIENTID];
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN_V4).then(function (decodedToken) {
 				decodedToken.iss = constants.TOKEN_ISSUER_NO_HTTPS;
 				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 					done("This test should fail.");
@@ -182,9 +173,7 @@ describe("/lib/utils/token-util", function () {
 				issuer: constants.CONFIG_ISSUER
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.ver = 4;
 				decodedToken.aud = constants.CLIENTID;
-				decodedToken.iss = constants.TOKEN_ISSUER;
 				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 					done("This test should fail.");
 				}).catch(() => {
@@ -203,9 +192,7 @@ describe("/lib/utils/token-util", function () {
 				issuer: constants.CONFIG_ISSUER
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-				decodedToken.ver = 4;
 				decodedToken.aud = [constants.BAD_CLIENTID];
-				decodedToken.iss = constants.TOKEN_ISSUER;
 				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 					done("This test should fail.");
 				}).catch(() => {
@@ -260,7 +247,6 @@ describe("/lib/utils/token-util", function () {
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
-                decodedToken.ver = 3;
 
 				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 					done();
@@ -375,7 +361,6 @@ describe("/lib/utils/token-util", function () {
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
-                decodedToken.ver = 3;
 
 				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 					//it supposes to succeed even though the request returns endpoint 2 as the issuer since the config already have endpoint as the issuer
