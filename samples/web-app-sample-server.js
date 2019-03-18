@@ -150,7 +150,10 @@ app.get("/protected", function tryToRefreshTokenIfNotLoggedIn(req, res, next) {
 		return next();
 	}
 
-	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).then(next, next);
+	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).then(function() {
+		next();
+	});
+
 }, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
