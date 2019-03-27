@@ -292,6 +292,8 @@ const config = {
 
 const TokenManager = require('ibmcloud-appid').TokenManager;
 
+const tokenManager = new TokenManager(config);
+
 async function getAppIdentityToken() {
 	try {
 			const tokenResponse = await tokenManager.getApplicationIdentityToken();
@@ -300,7 +302,6 @@ async function getAppIdentityToken() {
 			//the token response contains the access_token, expires_in, token_type
 	} catch (err) {
 			console.log('err obtained : ' + err);
-			res.status(500).send(err.toString());
 	}
 }
 ```
