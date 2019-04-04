@@ -117,6 +117,19 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(e);
 			}
 		});
+
+	  it("Should be able to init with options with only tenantId and oAuthServerUrl", function (done) {
+		try {
+		  let selfServiceManager = new SelfServiceManager({
+			oAuthServerUrl: "https://appid-oauth.com/oauth/v3",
+			tenantId: "123"
+		  });
+		  assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
+		  done();
+		} catch (e) {
+		  done(e);
+		}
+	  });
 		
 		it("Should be able to init with options check iamTokenUrl and iamApiKey", function (done) {
 			try {
