@@ -322,6 +322,19 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+		it("get issuer from well known returned status code!= 200", function (done) {
+			reqEndpoint = "endpoint";
+			reqError = undefined;
+			reqresponse = {statusCode: 404};
+			const config = new Config({
+				tenantId: constants.TENANTID,
+				clientId: constants.CLIENTID,
+				secret: "secret",
+				oauthServerUrl: "http://mobileclientaccess/",
+				redirectUri: "redirectUri"
+			});
+			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+				decodedToken.iss = "endpoint";
 
 		it("get issuer from well known missing issuer", function (done) {
 			reqEndpoint = undefined;
@@ -370,6 +383,8 @@ describe("/lib/utils/token-util", function () {
 				});
 			});
 		});
+
+
 	});
 
 	describe("#decode()", function () {
@@ -382,4 +397,5 @@ describe("/lib/utils/token-util", function () {
 			assert.property(decodedToken, "iat");
 		});
 	});
+
 });
