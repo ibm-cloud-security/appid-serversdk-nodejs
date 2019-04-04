@@ -335,6 +335,15 @@ describe("/lib/utils/token-util", function () {
 			});
 			TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 				decodedToken.iss = "endpoint";
+				TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
+					done("suppose to fail");
+					reqError = undefined;
+				}).catch(() => {
+					done();
+					reqError = undefined;
+				});
+			});
+		});
 
 		it("get issuer from well known missing issuer", function (done) {
 			reqEndpoint = undefined;
