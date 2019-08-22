@@ -554,11 +554,13 @@ selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (us
 	}
 ```
 
-
 ### Logging
 This SDK uses the log4js package for logging. By default the logging level is set to `info`. To create your own logging configuration for your application, add a log4js.json file and set the `process.env.LOG4JS_CONFIG` environment variable to your json file.
 
 To learn more about log4js, visit the documentation here (https://log4js-node.github.io/log4js-node/).
+
+## Got Questions?
+Join us on [Slack](https://www.ibm.com/cloud/blog/announcements/get-help-with-ibm-cloud-app-id-related-questions-on-slack) and chat with our dev team.
 
 
 ### License
