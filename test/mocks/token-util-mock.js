@@ -41,6 +41,10 @@ function decodeAndValidate(tokenString) {
 		deferred.resolve({scope: "test_scope"});
 	} else if (tokenString === "id_token_mock_test_scope") {
 		deferred.resolve({scope: "test_scope"});
+	} else if (tokenString === "access_token_3_scopes") {
+	  deferred.resolve({scope: "appid_default app/scope1 app/scope2 app/scope3"});
+	} else if (tokenString === "id_token_3_scopes") {
+	  deferred.resolve({scope: "appid_default app/scope1 app/scope2 app/scope3"});
 	} else {
 		deferred.resolve({scope: "appid_default"});
 	}
