@@ -416,8 +416,7 @@ describe("/lib/utils/token-util", function () {
 	  it("Should return true: the two required scopes exist", function () {
 	    req.session[WebAppStrategy.AUTH_CONTEXT] = {
 	      accessTokenPayload: {
-		    scope: "app/scope1 app/scope2",
-		    appUri: "app"
+		    scope: "app/scope1 app/scope2"
 	      }
 	    };
 	    
@@ -427,8 +426,7 @@ describe("/lib/utils/token-util", function () {
       it("Should return false: only one of the two required scopes exists", function () {
 	    req.session[WebAppStrategy.AUTH_CONTEXT] = {
 	      accessTokenPayload: {
-		    scope: "app/scope1",
-		    appUri: "app"
+		    scope: "app/scope1"
 	      }
 	    };
 	
