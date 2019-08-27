@@ -17,6 +17,7 @@ const expect = chai.expect;
 chai.use(require("chai-as-promised"));
 const proxyquire = require("proxyquire");
 const constants = require("./mocks/constants");
+const WebAppStrategy = require("../lib/strategies/webapp-strategy");
 
 
 describe("/lib/utils/token-util", function () {
@@ -406,5 +407,33 @@ describe("/lib/utils/token-util", function () {
 			assert.property(decodedToken, "iat");
 		});
 	});
+  
+    describe("#hasScope()", function () {
+      const req = {
+	    session: {}
+      };
+      
+	  it("Should return true: the two required scopes exist", function () {
+	    req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	      accessTokenPayload: {
+		    scope: "app/scope1 app/scope2",
+		    appUri: "app"
+	      }
+	    };
+	    
+	    assert.isTrue(TokenUtil.hasScope(req, "scope1 scope2"));
+	  });
+  
+      it("Should return false: only one of the two required scopes exists", function () {
+	    req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	      accessTokenPayload: {
+		    scope: "app/scope1",
+		    appUri: "app"
+	      }
+	    };
+	
+	    assert.isFalse(TokenUtil.hasScope(req, "scope1 scope2"));
+      });
+    });
 
 });
