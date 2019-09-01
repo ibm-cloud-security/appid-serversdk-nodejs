@@ -205,20 +205,7 @@ describe("/lib/strategies/api-strategy", function () {
 	  
 	    it("should succeed when authenticating with 3 scopes, 2 of which are the required scopes", function (done) {
 	      apiStrategy.success = function (idToken) {
-		        assert.isObject(req.appIdAuthorizationContext);
-		    
-		        assert.isString(req.appIdAuthorizationContext.accessToken);
-		        assert.equal(req.appIdAuthorizationContext.accessToken, "access_token_3_scopes");
-		        assert.isObject(req.appIdAuthorizationContext.accessTokenPayload);
 		        assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		    
-		        assert.isString(req.appIdAuthorizationContext.identityToken);
-		        assert.equal(req.appIdAuthorizationContext.identityToken, "id_token_3_scopes");
-		        assert.isObject(req.appIdAuthorizationContext.identityTokenPayload);
-		        assert.equal(req.appIdAuthorizationContext.identityTokenPayload.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		    
-		        assert.isObject(idToken);
-		    
 		        assert.equal(idToken.scope, "appid_default app/scope1 app/scope2 app/scope3");
 		        done();
 	      };
@@ -253,5 +240,6 @@ describe("/lib/strategies/api-strategy", function () {
 			audience: "app"
 		  });
 	  });
+	  // todo add edge cases as unit tests for the for-loop that checks scopes
 	});
 });
