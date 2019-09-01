@@ -1194,5 +1194,33 @@ describe("/lib/strategies/webapp-strategy", function () {
 	
 	  assert.isTrue(WebAppStrategy.hasScope(req, ""));
     });
+  
+    it("Should return true: no scopes (whitespace) are required", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid app/subapp/scope1"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, "           "));
+    });
+  
+    it("Should return false: no scope on access token, while a default scope is required", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {}
+	  };
+	
+	  assert.isFalse(WebAppStrategy.hasScope(req, "openid"));
+    });
+  
+    it("Should return true: non-string required scopes", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, 42));
+    });
   });
 });

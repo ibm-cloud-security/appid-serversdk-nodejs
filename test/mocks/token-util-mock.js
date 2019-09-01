@@ -37,9 +37,7 @@ function decodeAndValidate(tokenString) {
 	deferred.resolve({scope: "bad_scope"});
   } else if (tokenString === "null_scope") {
 	deferred.resolve(null);
-  } else if (tokenString === "access_token_mock_test_scope") {
-	deferred.resolve({scope: "test_scope"});
-  } else if (tokenString === "id_token_mock_test_scope") {
+  } else if (tokenString === "access_token_mock_test_scope" || tokenString === "id_token_mock_test_scope") {
 	deferred.resolve({scope: "test_scope"});
   } else if (tokenString === "access_token_3_scopes" || tokenString === "id_token_3_scopes") {
 	deferred.resolve({scope: "appid_default app/scope1 app/scope2 app/scope3"});
