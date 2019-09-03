@@ -110,6 +110,21 @@ app.listen(port, function(){
 
 ```
 
+##### Protecting APIs using the APIStrategy: Access Control
+Using access control, you can define the scopes that are required to access a specific endpoint.
+```JavaScript
+app.get("/api/protected",
+	passport.authenticate(APIStrategy.STRATEGY_NAME, {
+		audience: "myApp",
+		scope: "read write update"
+	}),
+	function(req, res) {
+		res.send("Hello from protected resource");
+	}
+);
+```
+The scope parameter defines the required scopes, and the audience parameter is the resource URI.
+
 #### Protecting web applications using WebAppStrategy
 WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access, identity and refresh tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
 
@@ -207,6 +222,20 @@ app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), funct
 // Start the server!
 app.listen(process.env.PORT || 1234);
 ```
+
+##### Protecting web applications using WebAppStrategy: Access Control
+Using access control, you can check which scopes exist on the request.
+```JavaScript
+app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
+    if(WeAppStrategy.hasScope(req, "read write")){
+      	res.json(req.user);
+    }
+    else {
+        res.send("insufficient scopes!");
+    }
+});
+```
+Use WebAppStrategy's hasScope method to check if a given request has some specific scopes.
 
 #### Anonymous login
 WebAppStrategy allows users to login to your web application anonymously, meaning without requiring any credentials. After successful login the anonymous user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the anonymous user access token will be destroyed as well.  
