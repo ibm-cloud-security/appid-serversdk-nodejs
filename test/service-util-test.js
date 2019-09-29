@@ -98,9 +98,7 @@ describe("/lib/strategies/webapp-strategy-config", () => {
         }
       }]
     });
-
     process.env.redirectUri = redirectUri;
-
     const config = new ServiceConfig();
     assert.isObject(config);
     assert.isObject(config.getConfig());
@@ -109,6 +107,29 @@ describe("/lib/strategies/webapp-strategy-config", () => {
     assert.equal(config.getSecret(), secret);
     assert.equal(config.getOAuthServerUrl(), oauthServerUrl);
     assert.equal(config.getRedirectUri(), redirectUri);
+    done();
+  });
+
+  it("Should fail because of lack of VCAP_SERVICE instance", (done) => {
+    const {
+      tenantId,
+      clientId,
+      secret,
+      oauthServerUrl,
+      redirectUri
+    } = mockCredentials.credentials;
+    process.env.VCAP_SERVICES = JSON.stringify({
+      invalid: [{
+        credentials: {
+          tenantId,
+          clientId,
+          secret,
+          oauthServerUrl
+        }
+      }]
+    });
+    process.env.redirectUri = redirectUri;
+    assert.throws(ServiceConfig, Error, 'Failed to initialize WebAppStrategy. Missing tenantId parameter.');
     done();
   });
 

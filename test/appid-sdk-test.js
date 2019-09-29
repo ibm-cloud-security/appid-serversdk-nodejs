@@ -14,6 +14,8 @@ const chai = require('chai');
 
 const {assert} = chai;
 
+// let AppIdSDK = require('../lib/appid-sdk');
+
 describe('/lib/appid-sdk', () => {
   let AppIdSDK;
 
@@ -35,6 +37,34 @@ describe('/lib/appid-sdk', () => {
 		it('Should return token manger', (done) => {
 			assert.isFunction(AppIdSDK.TokenManager);
 			done();
+		});
+
+		it('Should process environment variable for log4js', (done) => {
+			process.env.LOG4JS_CONFIG = JSON.stringify({
+				appenders: {
+				  out: {
+					type: "console"
+				  }
+				},
+				categories: {
+				  default: {
+            appenders: [
+              "out"
+            ],
+            level: "fatal"
+				  }
+				}
+			});
+      delete require.cache[require.resolve("../lib/appid-sdk")];
+      AppIdSDK = require("../lib/appid-sdk");
+      done();
+    });
+
+		it('Should skip environment variable for log4js when invalid', (done) => {
+      process.env.LOG4JS_CONFIG = "invalid";
+      delete require.cache[require.resolve("../lib/appid-sdk")];
+      AppIdSDK = require("../lib/appid-sdk");
+      done();
 		});
 	});
 });

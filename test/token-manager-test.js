@@ -39,6 +39,8 @@ const BAD_REQUEST = 'return_code:400';
 const UNAUTHORIZED = 'return_code:401';
 const NOT_FOUND = 'return_code:404';
 const SERVER_ERROR = 'return_code:500';
+const INTERNAL_ERROR = 'return_error';
+const BLANK_SUCCESS = 'return_blank';
 
 const CUSTOM = 'CUSTOM';
 const APP_TO_APP = 'APP2APP';
@@ -86,6 +88,14 @@ function mockRequest(options, callback) {
     return callback(null, {
       statusCode: 200
     }, JSON.stringify(mockTokenResponse));
+  }
+  if (secret.includes(BLANK_SUCCESS)) {
+    return callback(null, {
+      statusCode: 200
+    });
+  }
+  if (secret.includes(INTERNAL_ERROR)) {
+    return callback(new Error(INTERNAL_ERROR));
   }
   if (secret.includes('return_code')) {
     const statusCode = parseInt(secret.split(':')[1], 10);
@@ -181,6 +191,25 @@ describe('/lib/token-manager/token-manager', () => {
     });
   });
 
+  it('should retrieve tokens - Blank flow', (done) => {
+    const tokenManager = new TokenManager(mockConfig(BLANK_SUCCESS));
+    tokenManager.getCustomIdentityTokens(mockJwsToken).then(() => {
+      done("Should Fail");
+    }).catch((err) => {
+      assert.equal(err.message, "Unable to parse token response");
+      done();
+    });
+  });
+
+  it('should retrieve tokens - Error flow', (done) => {
+    const tokenManager = new TokenManager(mockConfig(INTERNAL_ERROR));
+    tokenManager.getCustomIdentityTokens(mockJwsToken).then(() => {
+      done("Should Fail");
+    }).catch((err) => {
+      assert.equal(err.message, INTERNAL_ERROR);
+      done();
+    });
+  });
 
   describe('#TokenManager.getAppToAppToken', () => {
     it('Should fail token validation - wrong tenant', (done) => {
@@ -217,6 +246,26 @@ describe('/lib/token-manager/token-manager', () => {
         done();
       }).catch((err) => {
         done(err);
+      });
+    });
+
+    it('should retrieve tokens - Blank flow', (done) => {
+      const tokenManager = new TokenManager(mockConfig(BLANK_SUCCESS));
+      tokenManager.getApplicationIdentityToken().then(() => {
+        done("Should Fail");
+      }).catch((err) => {
+        assert.equal(err.message, "Unable to parse token response");
+        done();
+      });
+    });
+
+    it('should retrieve tokens - Error flow', (done) => {
+      const tokenManager = new TokenManager(mockConfig(INTERNAL_ERROR));
+      tokenManager.getApplicationIdentityToken().then(() => {
+        done("Should Fail");
+      }).catch((err) => {
+        assert.equal(err.message, INTERNAL_ERROR);
+        done();
       });
     });
   });

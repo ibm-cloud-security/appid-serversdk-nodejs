@@ -33,6 +33,11 @@ function requestMock(options, callback) {
       statusCode: parseInt(statusCode, 10)
     });
   }
+  if (authHeader.indexOf("userinfo_access_token_no_body") > 0) {
+    return callback(null, {
+      statusCode: 200
+    });
+  }
   if (authHeader.indexOf("userinfo_access_token") > 0) {
     options.sub = "123";
     return callback(null, {
@@ -105,6 +110,17 @@ describe("/lib/user-profile-manager/user-profile-manager", () => {
         throwIfFail: true,
         appidServiceEndpoint: "zyxw/"
       });
+    });
+
+    it("Should be able to init with VCAP_SERVICE (invalid)", () => {
+      process.env.VCAP_SERVICES = JSON.stringify({
+        invalid: [{
+          credentials: {
+            profilesUrl: "http://abcd"
+          }
+        }]
+      });
+      UserProfileManager.init();
     });
 
     it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", () => {
@@ -372,6 +388,27 @@ describe("/lib/user-profile-manager/user-profile-manager", () => {
     it("should send userinfo payload", (done) => {
       UserProfileManager.oauthServerUrl = "http://oauth";
       UserProfileManager.getUserInfo("userinfo_access_token", identityTokenSubIs123).then((result) => {
+        assert.equal(result.url, "http://oauth/userinfo");
+        assert.equal(result.method, "GET");
+        assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");
+        assert.equal(result.sub, "123");
+        done();
+      }).catch(done);
+    });
+
+    it("should send null for undefined body", (done) => {
+      UserProfileManager.oauthServerUrl = "http://oauth";
+      UserProfileManager.getUserInfo("userinfo_access_token_no_body", identityTokenSubIs123).then(() => {
+        done("Should fail for null body");
+      }).catch((e) => {
+        assert.equal(e.message, "Invalid user info response");
+        done();
+      });
+    });
+
+    it("should send userinfo payload without identity token", (done) => {
+      UserProfileManager.oauthServerUrl = "http://oauth";
+      UserProfileManager.getUserInfo("userinfo_access_token").then((result) => {
         assert.equal(result.url, "http://oauth/userinfo");
         assert.equal(result.method, "GET");
         assert.equal(result.headers["Authorization"], "Bearer userinfo_access_token");
