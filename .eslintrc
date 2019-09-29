@@ -9,7 +9,6 @@
     "node": true,
     "es6": true
   },
-
   "plugins": [
     "node"
   ],
@@ -96,7 +95,6 @@
     "no-unreachable": 1,
     "valid-typeof": 1,
     "no-shadow": 1,
-
     "no-path-concat": 1,
     "eqeqeq": [
       2,
@@ -104,12 +102,10 @@
     ],
     "no-use-before-define": 1,
     "no-new-require": 1,
-    //   "no-undef": 2,
-
-
+    "no-undef": 1,
     "no-mixed-requires": 0,
     "no-multi-spaces": 0,
-    //   "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "no-unused-vars": 2,
     "dot-notation": 0,
     "new-cap": 0,
     "one-var": 0,

@@ -20,14 +20,14 @@ const initError = "Failed to initialize self-service-manager.";
 
 describe("/lib/self-service/self-service-manager", function () {
 	console.log("Loading self-service-manager-test.js");
-	
+
 	var SelfServiceManager;
-	
+
 	before(function () {
 		delete process.env["VCAP_SERVICES"];
 		SelfServiceManager = rewire("../lib/self-service/self-service-manager");
 	});
-	
+
 	describe("#SelfserviceManager constructor", function () {
 		it("Should not be able to init without options and VCAP_SERVICS", function (done) {
 			try {
@@ -42,7 +42,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			}
 		});
-		
+
 		it("Should not be able to init with options with only tenantId", function (done) {
 			try {
 				let test = new SelfServiceManager({
@@ -58,7 +58,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			}
 		});
-		
+
 		it("Should not be able to init with options with server with host not equal to appid-oauth", function (done) {
 			try {
 				let test = new SelfServiceManager({
@@ -75,7 +75,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			}
 		});
-		
+
 		it("Should not be able to init with options with server with not /oauth/v3", function (done) {
 			try {
 				let test = new SelfServiceManager({
@@ -92,7 +92,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			}
 		});
-		
+
 		it("Should be able to init with options with only managementUrl", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
@@ -104,7 +104,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(e);
 			}
 		});
-		
+
 		it("Should be able to init with options with only tenantId and oauthServerUrl", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
@@ -130,7 +130,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		  done(e);
 		}
 	  });
-		
+
 		it("Should be able to init with options check iamTokenUrl and iamApiKey", function (done) {
 			try {
 				let selfServiceManager = new SelfServiceManager({
@@ -147,7 +147,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(e);
 			}
 		});
-		
+
 		it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", function (done) {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AdvancedMobileAccess: [
@@ -164,7 +164,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			} catch (e) {
 				done(e);
 			}
-			
+
 		});
 		it("Should be able to init with VCAP_SERVICES (appid) - check api key in VCAP", function (done) {
 			const testApiKey = "testApiKey";
@@ -179,7 +179,7 @@ describe("/lib/self-service/self-service-manager", function () {
 					}
 				]
 			});
-			
+
 			try {
 				let selfServiceManager = new SelfServiceManager();
 				assert.equal(testApiKey, selfServiceManager.iamApiKey);
@@ -188,7 +188,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(e);
 			}
 		});
-		
+
 		it("Should be able to init with VCAP_SERVICES (appid)", function (done) {
 			process.env.VCAP_SERVICES = JSON.stringify({
 				AppID: [
@@ -200,7 +200,7 @@ describe("/lib/self-service/self-service-manager", function () {
 					}
 				]
 			});
-			
+
 			try {
 				let selfServiceManager = new SelfServiceManager();
 				assert.equal("https://appid-management.com/management/v4/123", selfServiceManager.managementUrl);
@@ -210,7 +210,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 		});
 	});
-	
+
 	describe("#SelfServiceManager.signUp", function () {
 		let selfServiceManager;
 		let testUserJson = {email: "testEmail"};
@@ -220,7 +220,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, querys , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "POST" ||
@@ -232,7 +232,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testUserJson);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -263,7 +263,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully create new user", function (done) {
 			selfServiceManager.signUp(testUserJson, language).then(function (user) {
 				try {
@@ -276,7 +276,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			});
 		});
-		
+
 		it("Should successfully create new user with provided iamToken", function (done) {
 			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -292,7 +292,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			});
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -309,7 +309,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.signUp({}, language).then(function (user) {
 				done("should reject");
@@ -323,7 +323,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.forgotPassword", function () {
 		let selfServiceManager;
 		let testEmail = "testEmail";
@@ -334,7 +334,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, querys , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "POST" ||
@@ -346,7 +346,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testEmail);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -377,7 +377,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully return user", function (done) {
 			selfServiceManager.forgotPassword(testEmail, language).then(function (user) {
 				try {
@@ -390,7 +390,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully return user with provided iamToken", function (done) {
 			let selfServiceManager2 = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -406,7 +406,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -423,7 +423,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.forgotPassword({}, language).then(function (user) {
 				done("should reject");
@@ -437,7 +437,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.resendNotification", function () {
 		let selfServiceManager;
 		let testUuid = "testUuid";
@@ -449,7 +449,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "POST" ||
@@ -461,7 +461,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testUuid);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -487,13 +487,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			});
 			done();
 		});
-		
+
 		after(function (done) {
 			_handleRequestRevert();
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully resend", function (done) {
 			selfServiceManager.resendNotification(testUuid, testTemplateName, language).then(function (res) {
 				try {
@@ -506,7 +506,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully resend with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -522,7 +522,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -539,7 +539,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.resendNotification({}, testTemplateName ,language).then(function (user) {
 				done("should reject");
@@ -553,7 +553,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.getSignUpConfirmationResult", function () {
 		let selfServiceManager;
 		let testContext = "testContext";
@@ -565,7 +565,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "POST" ||
@@ -577,7 +577,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testContext);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -608,7 +608,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getSignUpConfirmationResult(testContext).then(function (res) {
 				try {
@@ -621,7 +621,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully get confirmation result with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -637,7 +637,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -654,7 +654,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getSignUpConfirmationResult({}).then(function (user) {
 				done("should reject");
@@ -668,7 +668,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.getForgotPasswordConfirmationResult", function () {
 		let selfServiceManager;
 		let testContext = "testContext";
@@ -680,7 +680,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let testTemplateName = "testTemplateName";
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "POST" ||
@@ -692,7 +692,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testContext);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -723,7 +723,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully get confirmation result", function (done) {
 			selfServiceManager.getForgotPasswordConfirmationResult(testContext).then(function (res) {
 				try {
@@ -736,7 +736,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully get confirmation result with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -752,7 +752,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -769,7 +769,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getForgotPasswordConfirmationResult({}).then(function (user) {
 				done("should reject");
@@ -783,7 +783,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.setUserNewPassword", function () {
 		let selfServiceManager;
 		let language = "en";
@@ -796,7 +796,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let _getIAMTokenRevert, _handleRequestRevert;
 		let testIpAddress = "127.0.0.1";
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (body.changedIpAddress) {
 				if (body.changedIpAddress !== testIpAddress) {
@@ -815,7 +815,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testUuid);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -846,7 +846,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully set new password", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language).then(function (res) {
 				try {
@@ -859,7 +859,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully set new password with ipAddress", function (done) {
 			selfServiceManager.setUserNewPassword(testUuid, testNewPassword, language, testIpAddress).then(function (res) {
 				try {
@@ -872,7 +872,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully set new password with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -888,7 +888,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -905,7 +905,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.setUserNewPassword({}, testNewPassword, language).then(function (user) {
 				done("should reject");
@@ -919,7 +919,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.getUserDetails", function () {
 		let selfServiceManager;
 		let testUuid = "testUuid";
@@ -929,7 +929,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let badIamApiKey = "badIamApiKey";
 		let providedIamToken = "bearer 123";
 		let _getIAMTokenRevert, _handleRequestRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "GET" ||
@@ -941,7 +941,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testUuid);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -967,13 +967,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			});
 			done();
 		});
-		
+
 		after(function (done) {
 			_handleRequestRevert();
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully get user details", function (done) {
 			selfServiceManager.getUserDetails(testUuid).then(function (res) {
 				try {
@@ -986,7 +986,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully get user details with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -1002,7 +1002,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -1019,7 +1019,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.getUserDetails({}).then(function (user) {
 				done("should reject");
@@ -1033,7 +1033,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("#SelfServiceManager.updateUserDetails", function () {
 		let selfServiceManager;
 		let testUuid = "testUuid";
@@ -1043,7 +1043,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let providedIamToken = "bearer 123";
 		let testUserJson = {email: "testEmail"};
 		let _handleRequestRevert, _getIAMTokenRevert;
-		
+
 		let stubHandleRequest = function (iamToken, method, url, body, queryObject , action, deferred) {
 			if (iamToken !== testIamToken ||
 				method !== "PUT" ||
@@ -1055,7 +1055,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			}
 			return deferred.resolve(testUuid);
 		};
-		
+
 		let stubGetIAMToken = function (iamToken, iamApiKey, iamTokenUrl) {
 			if (!iamApiKey){
 				if (iamToken !== providedIamToken) {
@@ -1081,13 +1081,13 @@ describe("/lib/self-service/self-service-manager", function () {
 			});
 			done();
 		});
-		
+
 		after(function (done) {
 			_handleRequestRevert();
 			_getIAMTokenRevert();
 			done();
 		});
-		
+
 		it("Should successfully update user details", function (done) {
 			selfServiceManager.updateUserDetails(testUuid, testUserJson).then(function (res) {
 				try {
@@ -1100,7 +1100,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should successfully update user details with provided iamToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest"
@@ -1116,7 +1116,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			})
 		});
-		
+
 		it("Should reject on _getIAMToken", function (done) {
 			let selfServiceManager = new SelfServiceManager({
 				managementUrl: "managementUrlTest",
@@ -1133,7 +1133,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			})
 		});
-		
+
 		it("Should reject on _handleRequest", function (done) {
 			selfServiceManager.updateUserDetails({}, testUserJson).then(function (user) {
 				done("should reject");
@@ -1147,7 +1147,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			})
 		});
 	});
-	
+
 	describe("test _getIAMToken function", function () {
 		let _getIAMToken,stubRequestRevert;
 		let testToken = "testToken";
@@ -1170,7 +1170,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				"apikey" : testApiKey
 			}
 		};
-		
+
 		let stubRequest = function (options, callback) {
 			if (options.url === netError) {
 				return callback(netErrorObject, {}, {});
@@ -1182,7 +1182,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				return callback(error, {}, {});
 			}
 			callback(null, {statusCode: 200}, JSON.stringify({"access_token": testToken}));
-			
+
 		};
 		before(function (done) {
 			_getIAMToken = SelfServiceManager.__get__("_getIAMToken");
@@ -1193,7 +1193,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			stubRequestRevert();
 			done();
 		});
-		
+
 		it("iamToken provided", function (done) {
 			_getIAMToken(testToken).then(function (token) {
 				try{
@@ -1206,20 +1206,20 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			});
 		});
-		
+
 		it("no iamToken no iamApiKey", function (done) {
 			_getIAMToken().then(function () {
 				done("should not get here");
 			}).catch(function (err) {
 				try{
-					assert.equal("You must pass 'iamToken' to self-service-manager APIs or specify 'iamApiKey' in selfServiceManager init options.", err);
+					assert.equal("You must pass 'iamToken' to self-service-manager APIs or specify 'iamApiKey' in selfServiceManager init options.", err.message);
 					done();
 				} catch (e) {
 					done(e);
 				}
 			});
 		});
-		
+
 		it("happy flow - should get iamToken from iam endpoint", function (done) {
 			_getIAMToken(null, testApiKey, testUrl).then(function (token) {
 				try{
@@ -1232,7 +1232,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				done(err);
 			});
 		});
-		
+
 		it("request failure network issue", function (done) {
 			_getIAMToken(null, testApiKey, netError).then(function () {
 				done("should not get here");
@@ -1245,7 +1245,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			});
 		});
-		
+
 		it("request failure bad input", function (done) {
 			_getIAMToken(null, testApiKey, badInputError).then(function () {
 				done("should not get here");
@@ -1259,7 +1259,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			});
 		});
 	});
-	
+
 	describe("test _handleRequest function", function () {
 		let _handleRequest;
 		let testToken = "testToken";
@@ -1282,7 +1282,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let method = "POST";
 		let successBody = {e:"e"};
 		let stubRequestRevert;
-		
+
 		let expectedInput = {
 			url: testUrl,
 			method: method,
@@ -1301,7 +1301,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				"Authorization": "Bearer " + testToken
 			}
 		};
-		
+
 		let stubRequest = function (options, callback) {
 			if (options.method === "GET") {
 				if (JSON.stringify(options) !== JSON.stringify(expectedInputForGet)) {
@@ -1328,7 +1328,7 @@ describe("/lib/self-service/self-service-manager", function () {
 				return callback(error, {}, {});
 			}
 			return callback(null, {statusCode: 200}, successBody);
-			
+
 		};
 		before(function (done) {
 			_handleRequest = SelfServiceManager.__get__("_handleRequest");
@@ -1339,7 +1339,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			stubRequestRevert();
 			done();
 		});
-		
+
 		it("happy flow - should return success response", function (done) {
 			let deferred = {
 				resolve: function (inputBody) {
@@ -1355,9 +1355,9 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			};
 			_handleRequest(testToken, method, testUrl, body, queryObject , action, deferred);
-			
+
 		});
-		
+
 		it("request failure network issue", function (done) {
 			let deferred = {
 				resolve: function (result) {
@@ -1375,12 +1375,12 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, netError, body, queryObject , action, deferred);
 		});
-		
+
 		it("request failure bad input", function (done) {
 			let deferred = {
 				resolve: function (body) {
 					done("should reject");
-					
+
 				},
 				reject: function (err) {
 					try{
@@ -1393,7 +1393,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, badInputError, body, queryObject , action, deferred);
 		});
-		
+
 		it("validate request with GET does not have body", function (done) {
 			let deferred = {
 				resolve: function (body) {
@@ -1409,9 +1409,9 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			};
 			_handleRequest(testToken, "GET", testUrl, body, queryObject , action, deferred);
-			
+
 		});
-		
+
 		it("request failure bad input - body is not object", function (done) {
 			let deferred = {
 				resolve: function (body) {
@@ -1428,7 +1428,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, badInputErrorBodyString, body, queryObject , action, deferred);
 		});
-		
+
 		it("request failure bad input - body with detail", function (done) {
 			let deferred = {
 				resolve: function (body) {
@@ -1446,7 +1446,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, badInputErrorBodyWithDetail, body, queryObject , action, deferred);
 		});
-		
+
 		it("request failure bad input - body with message", function (done) {
 			let deferred = {
 				resolve: function (body) {
@@ -1463,9 +1463,9 @@ describe("/lib/self-service/self-service-manager", function () {
 			};
 			_handleRequest(testToken, method, badInputErrorBodyWithMessage, body, queryObject , action, deferred);
 		});
-		
+
 	});
-	
+
 });
 
 
