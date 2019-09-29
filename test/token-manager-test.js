@@ -139,11 +139,12 @@ function mockRetrieveTokenFailure(tokenManager, grantType, expectedErrMessage, d
 describe('/lib/token-manager/token-manager', () => {
   let TokenManager;
 
-  before(() => {
+  before((done) => {
     TokenManager = proxyquire("../lib/token-manager/token-manager", {
       "../utils/token-util": require("./mocks/token-util-mock"),
       request: mockRequest
     });
+    done();
   });
 
   describe('#TokenManager.getCustomIdentityTokens', () => {

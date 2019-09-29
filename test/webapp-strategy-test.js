@@ -24,7 +24,7 @@ const previousAccessToken = "test.previousAccessToken.test";
 describe("/lib/strategies/webapp-strategy", () => {
   let WebAppStrategy;
   let webAppStrategy;
-  before(() => {
+  before((done) => {
     WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
       "../utils/token-util": tokenUtilsMock,
       request: require("./mocks/request-mock")
@@ -36,6 +36,7 @@ describe("/lib/strategies/webapp-strategy", () => {
       oauthServerUrl: "https://oauthServerUrlMock",
       redirectUri: "https://redirectUri"
     });
+    done();
   });
 
   describe("#SSO ", () => {

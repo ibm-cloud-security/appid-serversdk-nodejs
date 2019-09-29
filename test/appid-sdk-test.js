@@ -19,8 +19,9 @@ const {assert} = chai;
 describe('/lib/appid-sdk', () => {
   let AppIdSDK;
 
-	before(() => {
+	before((done) => {
 		AppIdSDK = require("../lib/appid-sdk");
+		done();
 	});
 
 	describe("#AppIdSDK", () => {

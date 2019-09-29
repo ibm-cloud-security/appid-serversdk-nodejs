@@ -20,7 +20,7 @@ describe("/lib/strategies/api-strategy", () => {
   let APIStrategy;
   let apiStrategy;
 
-  before(() => {
+  before((done) => {
     APIStrategy = proxyquire("../lib/strategies/api-strategy", {
       "../utils/public-key-util": require("./mocks/public-key-util-mock"),
       "../utils/token-util": require("./mocks/token-util-mock")
@@ -28,6 +28,7 @@ describe("/lib/strategies/api-strategy", () => {
     apiStrategy = new APIStrategy({
       oauthServerUrl: "serverUrl"
     });
+    done();
   });
 
   describe("#properties", () => {

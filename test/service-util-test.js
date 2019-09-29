@@ -37,7 +37,7 @@ describe("/lib/strategies/webapp-strategy-config", () => {
 
   let ServiceConfig;
 
-  before(() => {
+  before((done) => {
     const {
       CLIENT_ID,
       TENANT_ID,
@@ -55,6 +55,7 @@ describe("/lib/strategies/webapp-strategy-config", () => {
         REDIRECT_URI
       ], options);
     };
+    done();
   });
 
   beforeEach(() => {
@@ -202,7 +203,7 @@ describe('/lib/strategies/api-strategy-config', () => {
 
   let ServiceConfig;
 
-  before(() => {
+  before((done) => {
     const {
       TENANT_ID,
       OAUTH_SERVER_URL
@@ -214,6 +215,7 @@ describe('/lib/strategies/api-strategy-config', () => {
         OAUTH_SERVER_URL
       ], options);
     };
+    done();
   });
 
   beforeEach(() => {
@@ -359,7 +361,7 @@ describe('/lib/token-manager/token-manager-config', () => {
 
   let ServiceConfig;
 
-  before(() => {
+  before((done) => {
     const {
       CLIENT_ID,
       TENANT_ID,
@@ -375,6 +377,7 @@ describe('/lib/token-manager/token-manager-config', () => {
         OAUTH_SERVER_URL
       ], options);
     };
+    done();
   });
 
   beforeEach(() => {

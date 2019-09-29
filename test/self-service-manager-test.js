@@ -23,9 +23,10 @@ const initError = "Failed to initialize self-service-manager.";
 describe("/lib/self-service/self-service-manager", () => {
   let SelfServiceManager;
 
-  before(() => {
+  before((done) => {
     delete process.env["VCAP_SERVICES"];
     SelfServiceManager = rewire("../lib/self-service/self-service-manager");
+    done();
   });
 
   describe("#SelfserviceManager constructor", () => {

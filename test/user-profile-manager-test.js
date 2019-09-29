@@ -52,10 +52,11 @@ function requestMock(options, callback) {
 describe("/lib/user-profile-manager/user-profile-manager", () => {
   let UserProfileManager;
 
-  before(() => {
+  before((done) => {
     UserProfileManager = proxyquire("../lib/user-profile-manager/user-profile-manager", {
       request: requestMock
     });
+    done();
   });
 
   describe("#UserProfileManager.init", () => {

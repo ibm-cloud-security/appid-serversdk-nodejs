@@ -92,10 +92,11 @@ const requestMock = function requestMock(options, callback) {
 describe("/lib/utils/public-key-util", function publicKeyUtil() {
   let PublicKeyUtil;
 
-  before(() => {
+  before((done) => {
     PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
       request: requestMock
     });
+    done();
   });
 
   this.timeout(5000);

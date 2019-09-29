@@ -36,7 +36,7 @@ describe("/lib/utils/token-util", () => {
   };
   let Config;
 
-  before(() => {
+  before((done) => {
     TokenUtil = proxyquire("../lib/utils/token-util", utilsStub);
 
     const {
@@ -56,6 +56,7 @@ describe("/lib/utils/token-util", () => {
         REDIRECT_URI
       ], options);
     };
+    done();
   });
 
   describe("#decodeAndValidate()", () => {
