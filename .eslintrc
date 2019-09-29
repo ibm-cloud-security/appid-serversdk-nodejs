@@ -118,6 +118,19 @@
       "ignores": []
     }]
   },
+  "overrides": [
+    {
+      "files": ["test/*-test.js"],
+      "rules": {
+        "require-jsdoc": "off",
+        "node/no-unpublished-require": "off",
+        "global-require": "off"
+      },
+      "env": {
+        "mocha": true
+      }
+    }
+  ],
   "globals": {
     "__dirname": true,
     "after": true,

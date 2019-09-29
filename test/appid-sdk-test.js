@@ -10,20 +10,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 const chai = require('chai');
-const assert = chai.assert;
 
-describe('/lib/appid-sdk', function(){
-	console.log("Loading appid-sdk-test.js");
+const {assert} = chai;
 
-	let AppIdSDK;
+describe('/lib/appid-sdk', () => {
+  let AppIdSDK;
 
-	before(function(){
+	before(() => {
 		AppIdSDK = require("../lib/appid-sdk");
 	});
 
-	describe("#AppIdSDK", function(){
+	describe("#AppIdSDK", () => {
 		it("Should return WebAppStrategy", (done) => {
 			assert.isFunction(AppIdSDK.WebAppStrategy);
 			done();

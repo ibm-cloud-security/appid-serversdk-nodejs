@@ -10,21 +10,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 const pemFromModExp = require("rsa-pem-from-mod-exp");
-const constants = require("./constants");
 const Q = require("q");
+const constants = require("./constants");
 
 module.exports = {
-	retrievePublicKeys: function(){
-        var deferred = Q.defer();
-        deferred.resolve();
-		return deferred.promise;
-    },
+  retrievePublicKeys: () => {
+    const deferred = Q.defer();
+    deferred.resolve();
+    return deferred.promise;
+  },
 
-    getPublicKeyPemByKid: function () {
-        var deferred = Q.defer();
-        deferred.resolve(pemFromModExp(constants.DEV_PUBLIC_KEYS[0].n, constants.DEV_PUBLIC_KEYS[0].e));
-        return deferred.promise;
-	}
-}
+  getPublicKeyPemByKid: () => {
+    const deferred = Q.defer();
+    deferred.resolve(pemFromModExp(constants.DEV_PUBLIC_KEYS[0].n, constants.DEV_PUBLIC_KEYS[0].e));
+    return deferred.promise;
+  }
+};
