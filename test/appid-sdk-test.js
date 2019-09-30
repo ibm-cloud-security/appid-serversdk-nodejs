@@ -10,20 +10,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 const chai = require('chai');
-const assert = chai.assert;
 
-describe('/lib/appid-sdk', function(){
-	console.log("Loading appid-sdk-test.js");
+const {assert} = chai;
 
-	let AppIdSDK;
+// let AppIdSDK = require('../lib/appid-sdk');
 
-	before(function(){
+describe('/lib/appid-sdk', () => {
+  let AppIdSDK;
+
+	before((done) => {
 		AppIdSDK = require("../lib/appid-sdk");
+		done();
 	});
 
-	describe("#AppIdSDK", function(){
+	describe("#AppIdSDK", () => {
 		it("Should return WebAppStrategy", (done) => {
 			assert.isFunction(AppIdSDK.WebAppStrategy);
 			done();
@@ -37,6 +38,34 @@ describe('/lib/appid-sdk', function(){
 		it('Should return token manger', (done) => {
 			assert.isFunction(AppIdSDK.TokenManager);
 			done();
+		});
+
+		it('Should process environment variable for log4js', (done) => {
+			process.env.LOG4JS_CONFIG = JSON.stringify({
+				appenders: {
+				  out: {
+					type: "console"
+				  }
+				},
+				categories: {
+				  default: {
+            appenders: [
+              "out"
+            ],
+            level: "fatal"
+				  }
+				}
+			});
+      delete require.cache[require.resolve("../lib/appid-sdk")];
+      AppIdSDK = require("../lib/appid-sdk");
+      done();
+    });
+
+		it('Should skip environment variable for log4js when invalid', (done) => {
+      process.env.LOG4JS_CONFIG = "invalid";
+      delete require.cache[require.resolve("../lib/appid-sdk")];
+      AppIdSDK = require("../lib/appid-sdk");
+      done();
 		});
 	});
 });

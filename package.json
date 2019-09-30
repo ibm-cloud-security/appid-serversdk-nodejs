@@ -7,7 +7,7 @@
     "apiapp": "node samples/api-app-sample-server.js",
     "webapp": "node samples/web-app-sample-server.js",
     "test": "./node_modules/.bin/_mocha",
-    "coverage": "./node_modules/.bin/istanbul cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
+    "coverage": "./node_modules/.bin/nyc --include \"lib/**/*.js\" --reporter=lcov ./node_modules/.bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -16,18 +16,19 @@
   "author": "Anton Aleksandrov",
   "license": "Apache-2.0",
   "devDependencies": {
+    "ajv": "^5.0.0",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.0.2",
-    "eslint": "^5.11.0",
-    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint": "^6.4.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-node": "^10.0.0",
     "express": "^4.14.0",
     "express-session": "^1.15.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^5.2.0",
+    "mocha": "^6.2.0",
+    "nyc": "^14.1.1",
     "passport": "^0.4.0",
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1"
@@ -40,7 +41,7 @@
     "ejs": "^2.5.6",
     "helmet": "^3.11.0",
     "jsonwebtoken": "^8.4.0",
-    "log4js": "^3.0.6",
+    "log4js": "^5.1.0",
     "q": "^1.4.1",
     "request": "^2.88.0",
     "rsa-pem-from-mod-exp": "^0.8.4",
