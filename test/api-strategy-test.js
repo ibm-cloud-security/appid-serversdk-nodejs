@@ -32,10 +32,11 @@ describe("/lib/strategies/api-strategy", function () {
 	});
 
 	describe("#properties", function () {
-		it("Should have all properties", function () {
+		it("Should have all properties", function (done) {
 			assert.isFunction(APIStrategy);
 			assert.equal(APIStrategy.STRATEGY_NAME, "appid-api-strategy");
 			assert.equal(APIStrategy.DEFAULT_SCOPE, "appid_default");
+			done();
 		});
 	});
 
@@ -101,7 +102,7 @@ describe("/lib/strategies/api-strategy", function () {
 			apiStrategy.fail = function (msg, status) {
 				assert.equal(msg, 'Bearer scope="appid_default", error="invalid_token"');
 				assert.equal(status, 401);
-				done()
+				done();
 			}
 			apiStrategy.authenticate({
 				header: function () {
@@ -114,7 +115,7 @@ describe("/lib/strategies/api-strategy", function () {
 			apiStrategy.fail = function (msg, status) {
 				assert.equal(msg, 'Bearer scope="appid_default", error="insufficient_scope"');
 				assert.equal(status, 401);
-				done()
+				done();
 			}
 			apiStrategy.authenticate({
 				header: function () {
@@ -142,7 +143,7 @@ describe("/lib/strategies/api-strategy", function () {
 				assert.isUndefined(req.appIdAuthorizationContext.identityToken);
 				assert.isUndefined(req.appIdAuthorizationContext.identityTokenPayload);
 
-				done()
+				done();
 			};
 
 			apiStrategy.authenticate(req);
@@ -167,12 +168,11 @@ describe("/lib/strategies/api-strategy", function () {
 				assert.isUndefined(req.appIdAuthorizationContext.identityToken);
 				assert.isUndefined(req.appIdAuthorizationContext.identityTokenPayload);
 
-				done()
+				done();
 			};
 
 			apiStrategy.authenticate(req);
 		});
-
 
 		it("Should succeed when valid access and id tokens are present", function (done) {
 			var req = {
@@ -197,138 +197,177 @@ describe("/lib/strategies/api-strategy", function () {
 				assert.isObject(idToken);
 
 				assert.equal(idToken.scope, "appid_default");
-				done()
+				done();
 			};
 
 			apiStrategy.authenticate(req);
 		});
-	  
-	    it("should succeed when authenticating with 3 scopes, 2 of which are the required scopes", function (done) {
-	      apiStrategy.success = function (idToken) {
-		        assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		        assert.equal(idToken.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		        done();
-	      };
-	      
-	      let req = {
-	        header: function () {
-		      return "Bearer access_token_3_scopes id_token_3_scopes";
-	        }
-	      };
-		  apiStrategy.authenticate(req,
-		    {
-		      scope: "scope1 scope2",
-		      audience: "app"
-		    });
-	    });
-	  
-	  it("should fail when authenticating without the required scopes", function (done) {
-	    apiStrategy.fail = function (msg, status) {
-		  assert.equal(msg, 'Bearer scope="appid_default app/scope1 app/scope2", error="insufficient_scope"');
-		  assert.equal(status, 401);
-		  done();
-	    };
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token id_token";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: "scope1 scope2",
-			audience: "app"
-		  });
-	  });
-	  
-	  it("should fail when authenticating without the required scopes - passing prefixed required scopes without audience", function (done) {
-		apiStrategy.fail = function (msg, status) {
-		  assert.equal(msg, 'Bearer scope="appid_default app/scope1 app/scope2 app/scope3", error="insufficient_scope"');
-		  assert.equal(status, 401);
-		  done();
-		};
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token id_token";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: "app/scope1 app/scope2 app/scope3"
-		  });
-	  });
-	  
-	  it("should succeed when authenticating with *whitespace* as required scopes", function (done) {
-		apiStrategy.success = function (idToken) {
-		  assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		  assert.equal(idToken.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		  done();
-		};
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token_3_scopes id_token_3_scopes";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: "    "
-		  });
-	  });
-	  
-	  it("should succeed when authenticating with the required scopes, while not passing audience, but prefixed required scopes", function (done) {
-		apiStrategy.success = function (idToken) {
-		  assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		  assert.equal(idToken.scope, "appid_default app/scope1 app/scope2 app/scope3");
-		  done();
-		};
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token_3_scopes id_token_3_scopes";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: "app/scope1 app/scope2",
-		  });
-	  });
-	  
-	  it("should fail with BAD_REQUEST when the required scope is not a string", function (done) {
-		apiStrategy.fail = function (msg, status) {
-		  assert.equal(status, 400);
-		  done();
-		};
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token id_token";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: 42,
-			audience: "app"
-		  });
-	  });
-	  
-	  it("should fail with BAD_REQUEST when the required (non-null) audience is not a string", function (done) {
-		apiStrategy.fail = function (msg, status) {
-		  assert.equal(status, 400);
-		  done();
-		};
-		
-		let req = {
-		  header: function () {
-			return "Bearer access_token id_token";
-		  }
-		};
-		apiStrategy.authenticate(req,
-		  {
-			scope: "scope1",
-			audience: 42
-		  });
-	  });
+
+		it("should succeed when authenticating with 3 scopes, 2 of which are the required scopes", function (done) {
+			apiStrategy.success = function (idToken) {
+				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default scope1 scope2 scope3");
+				assert.equal(idToken.scope, "appid_default scope1 scope2 scope3");
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token_3_scopes id_token_3_scopes";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1 scope2",
+					audience: "myCliendId"
+				});
+		});
+
+		it("should fail when authenticating without the required scopes", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert.equal(msg, 'Bearer scope="appid_default scope1 scope2", error="insufficient_scope"');
+				assert.equal(status, 401);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1 scope2",
+					audience: "myCliendId"
+				});
+		});
+
+		it("should fail when authenticating without the required scopes - passing prefixed required scopes without audience", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert.equal(msg, 'Bearer scope="appid_default scope1 scope2 scope3", error="insufficient_scope"');
+				assert.equal(status, 401);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1 scope2 scope3"
+				});
+		});
+
+		it("should succeed when authenticating with *whitespace* as required scopes", function (done) {
+			apiStrategy.success = function (idToken) {
+				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default scope1 scope2 scope3");
+				assert.equal(idToken.scope, "appid_default scope1 scope2 scope3");
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token_3_scopes id_token_3_scopes";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "    "
+				});
+		});
+
+		it("should succeed when authenticating with the required scopes, while not passing audience, but prefixed required scopes", function (done) {
+			apiStrategy.success = function (idToken) {
+				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default scope1 scope2 scope3");
+				assert.equal(idToken.scope, "appid_default scope1 scope2 scope3");
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token_3_scopes id_token_3_scopes";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1 scope2"
+				});
+		});
+
+		it("should fail with BAD_REQUEST when the required scope is not a string", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert.equal(status, 400);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: 42,
+					audience: "app"
+				});
+		});
+
+		it("should fail with BAD_REQUEST when the required (non-null) audience is not a string", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert.equal(status, 400);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1",
+					audience: 42
+				});
+		});
+
+		it("should fail with BAD_REQUEST when sending several audiences ", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert(msg.indexOf("multiple audiences are not supported")>1, true);
+				assert.equal(status, 400);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "appid_default",
+					audience: "item1 item2"
+				});
+		});
+
+		it("should fail with BAD_REQUEST when request wrong audience value", function (done) {
+			apiStrategy.fail = function (msg, status) {
+				assert.equal(status, 400);
+				done();
+			};
+
+			let req = {
+				header: function () {
+					return "Bearer access_token_3_scopes id_token";
+				}
+			};
+			apiStrategy.authenticate(req,
+				{
+					scope: "scope1 scope2",
+					audience: "myBadCliendId"
+				});
+		});
+
+
 	});
 });
