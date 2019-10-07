@@ -241,7 +241,7 @@ describe("/lib/strategies/api-strategy", function () {
 				});
 		});
 
-		it("should fail when authenticating without the required scopes - passing prefixed required scopes without audience", function (done) {
+		it("should fail when authenticating without the required scopes", function (done) {
 			apiStrategy.fail = function (msg, status) {
 				assert.equal(msg, 'Bearer scope="appid_default scope1 scope2 scope3", error="insufficient_scope"');
 				assert.equal(status, 401);
@@ -277,7 +277,7 @@ describe("/lib/strategies/api-strategy", function () {
 				});
 		});
 
-		it("should succeed when authenticating with the required scopes, while not passing audience, but prefixed required scopes", function (done) {
+		it("should succeed when authenticating with the required scopes, while not passing audience", function (done) {
 			apiStrategy.success = function (idToken) {
 				assert.equal(req.appIdAuthorizationContext.accessTokenPayload.scope, "appid_default scope1 scope2 scope3");
 				assert.equal(idToken.scope, "appid_default scope1 scope2 scope3");
