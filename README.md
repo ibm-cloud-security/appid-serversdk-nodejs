@@ -123,7 +123,9 @@ app.get("/api/protected",
 	}
 );
 ```
-The scope parameter defines the required scopes, and the audience parameter is the resource URI.
+The scope parameter defines the required scopes. 
+The audience parameter is optional and should be set to the application clientId (or resource URI)
+to guarantee the scopes are for the requested application (or resource). 
 
 #### Protecting web applications using WebAppStrategy
 WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access, identity and refresh tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
