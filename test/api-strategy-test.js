@@ -214,7 +214,7 @@ describe("/lib/strategies/api-strategy", function () {
 			apiStrategy.authenticate(req,
 				{
 					scope: "scope1 scope2",
-					audience: "myCliendId"
+					audience: "myClientId"
 				});
 		});
 		
@@ -346,9 +346,10 @@ describe("/lib/strategies/api-strategy", function () {
 				});
 		});
 		
-		it("should fail with BAD_REQUEST when request wrong audience value", function (done) {
+		it("should fail with AUTH failure when request wrong audience value", function (done) {
 			apiStrategy.fail = function (msg, status) {
-				assert.equal(status, 400);
+				assert(msg.indexOf("audience mismatch") > 1, true);
+				assert.equal(status, 401);
 				done();
 			};
 			
@@ -360,10 +361,9 @@ describe("/lib/strategies/api-strategy", function () {
 			apiStrategy.authenticate(req,
 				{
 					scope: "scope1 scope2",
-					audience: "myBadCliendId"
+					audience: "myBadClientId"
 				});
 		});
-		
 		
 	});
 });

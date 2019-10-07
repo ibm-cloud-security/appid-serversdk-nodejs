@@ -34,15 +34,15 @@ function decodeAndValidate(tokenString) {
   if (tokenString === "invalid_token") {
 	deferred.resolve();
   } else if (tokenString === "bad_scope") {
-	deferred.resolve({scope: "bad_scope", aud: "myCliendId"});
+	deferred.resolve({scope: "bad_scope", aud: ["myClientId"]});
   } else if (tokenString === "null_scope") {
 	deferred.resolve(null);
   } else if (tokenString === "access_token_mock_test_scope" || tokenString === "id_token_mock_test_scope") {
-	deferred.resolve({scope: "test_scope", aud: "myCliendId"});
+	deferred.resolve({scope: "test_scope", aud: ["myClientId"]});
   } else if (tokenString === "access_token_3_scopes" || tokenString === "id_token_3_scopes") {
-	deferred.resolve({scope: "appid_default scope1 scope2 scope3", aud: "myCliendId"});
+	deferred.resolve({scope: "appid_default scope1 scope2 scope3", aud: ["myClientId"]});
   } else {
-	deferred.resolve({scope: "appid_default" , aud: "myCliendId"});
+	deferred.resolve({scope: "appid_default" , aud: ["myClientId"]});
   }
   return deferred.promise;
 }
