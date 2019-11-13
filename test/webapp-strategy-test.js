@@ -1149,4 +1149,78 @@ describe("/lib/strategies/webapp-strategy", function () {
 			});
 		});
 	});
+  
+  describe("#hasScope()", function () {
+	const req = {
+	  session: {}
+	};
+	
+	it("Should return true: the two required custom scopes exist", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+		accessTokenPayload: {
+		  scope: "app/scope1 app/scope2"
+		}
+	  };
+	  
+	  assert.isTrue(WebAppStrategy.hasScope(req, "scope1 scope2"));
+	});
+	
+	it("Should return false: only one of the two required scopes exists", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+		accessTokenPayload: {
+		  scope: "app/scope1"
+		}
+	  };
+	  
+	  assert.isFalse(WebAppStrategy.hasScope(req, "scope1 scope2"));
+	});
+  
+    it("Should return true: default scope and custom scope required exist", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid app/subapp/scope1"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, "scope1 openid"));
+    });
+  
+    it("Should return true: no scopes are required", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid app/subapp/scope1"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, ""));
+    });
+  
+    it("Should return true: no scopes (whitespace) are required", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid app/subapp/scope1"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, "           "));
+    });
+  
+    it("Should return false: no scope on access token, while a default scope is required", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {}
+	  };
+	
+	  assert.isFalse(WebAppStrategy.hasScope(req, "openid"));
+    });
+  
+    it("Should return true: non-string required scopes", function () {
+	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
+	    accessTokenPayload: {
+		  scope: "openid"
+	    }
+	  };
+	
+	  assert.isTrue(WebAppStrategy.hasScope(req, 42));
+    });
+  });
 });
