@@ -594,6 +594,12 @@ To learn more about log4js, visit the documentation here (https://log4js-node.gi
 Join us on [Slack](https://www.ibm.com/cloud/blog/announcements/get-help-with-ibm-cloud-app-id-related-questions-on-slack) and chat with our dev team.
 
 
+### Logging
+This SDK uses the log4js package for logging. By default the logging level is set to `info`. To create your own logging configuration for your application, add a log4js.json file and set the `process.env.LOG4JS_CONFIG` environment variable to your json file.
+
+To learn more about log4js, visit the documentation here (https://log4js-node.github.io/log4js-node/).
+
+
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
 
