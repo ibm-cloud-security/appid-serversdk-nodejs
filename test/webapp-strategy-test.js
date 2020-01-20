@@ -199,7 +199,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, {});
 		});
 	  
-		it("Should succeed when already authenticated with an expired token (default is shouldValidateTokenExpiration=false)", function (done) {
+		it("Should succeed when already authenticated with an expired token (default is allowExpiredTokensOnSession=true)", function (done) {
 		  const req = {
 			session: {
 			  APPID_AUTH_CONTEXT: {
@@ -222,7 +222,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 		  webAppStrategy.authenticate(req, {});
 		});
 	  
-		it("Should fail when already authenticated with an expired token, when shouldValidateTokenExpiration=true", function (done) {
+		it("Should fail when already authenticated with an expired token, when allowExpiredTokensOnSession=false", function (done) {
 		  const req = {
 			session: {
 			  APPID_AUTH_CONTEXT: {
@@ -242,10 +242,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 			done();
 		  };
 		  
-		  webAppStrategy.authenticate(req, {shouldValidateTokenExpiration: true});
+		  webAppStrategy.authenticate(req, {allowExpiredTokensOnSession: false});
 		});
 		
-		it("Should succeed when already authenticated with an unexpired token, when shouldValidateTokenExpiration=true", function (done) {
+		it("Should succeed when already authenticated with an unexpired token, when allowExpiredTokensOnSession=false", function (done) {
 		  const req = {
 			session: {
 			  APPID_AUTH_CONTEXT: {
@@ -265,7 +265,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			assert.fail('authentication should have succeeded.');
 		  };
 		  
-		  webAppStrategy.authenticate(req, {shouldValidateTokenExpiration: true});
+		  webAppStrategy.authenticate(req, {allowExpiredTokensOnSession: false});
 		});
 		
 		it("Should be able to detect authenticated request and skip strategy", function (done) {
