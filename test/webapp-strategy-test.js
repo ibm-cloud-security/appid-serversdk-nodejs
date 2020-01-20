@@ -199,74 +199,74 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, {});
 		});
 	  
-	    it("Should succeed when already authenticated with an expired token (default is shouldValidateTokenExpiration=false)", function (done) {
+		it("Should succeed when already authenticated with an expired token (default is shouldValidateTokenExpiration=false)", function (done) {
 		  const req = {
-		    session: {
+			session: {
 			  APPID_AUTH_CONTEXT: {
-			    accessTokenPayload: {
+				accessTokenPayload: {
 				  exp: 12, // smaller than Date.now() -> expired
 				  amr: []
-			    }
+				}
 			  }
-		    }
+			}
 		  };
 		  
 		  webAppStrategy.success = function () {
-		    done();
+			done();
 		  };
 		  
 		  webAppStrategy.redirect = function () {
-		    assert.fail('authentication should have succeeded.');
+			assert.fail('authentication should have succeeded.');
 		  };
 		  
 		  webAppStrategy.authenticate(req, {});
-	    });
+		});
 	  
-	    it("Should fail when already authenticated with an expired token, when shouldValidateTokenExpiration=true", function (done) {
+		it("Should fail when already authenticated with an expired token, when shouldValidateTokenExpiration=true", function (done) {
 		  const req = {
-		    session: {
+			session: {
 			  APPID_AUTH_CONTEXT: {
-			    accessTokenPayload: {
+				accessTokenPayload: {
 				  exp: 12, // smaller than Date.now() -> expired
 				  amr: []
-			    }
+				}
 			  }
-		    }
+			}
 		  };
 		  
 		  webAppStrategy.success = function () {
-		    assert.fail('authentication shouln\'t have succeeded.');
+			assert.fail('authentication shouln\'t have succeeded.');
 		  };
 		  
 		  webAppStrategy.redirect = function () {
-		    done();
+			done();
 		  };
 		  
 		  webAppStrategy.authenticate(req, {shouldValidateTokenExpiration: true});
-	    });
-	    
-	    it("Should succeed when already authenticated with an unexpired token, when shouldValidateTokenExpiration=true", function (done) {
+		});
+		
+		it("Should succeed when already authenticated with an unexpired token, when shouldValidateTokenExpiration=true", function (done) {
 		  const req = {
-		    session: {
+			session: {
 			  APPID_AUTH_CONTEXT: {
-			    accessTokenPayload: {
+				accessTokenPayload: {
 				  exp: Date.now().valueOf() / 1000 + 30, // valid, expires after 30 seconds
 				  amr: []
-			    }
+				}
 			  }
-		    }
+			}
 		  };
 		  
 		  webAppStrategy.success = function () {
-		    done();
+			done();
 		  };
 		  
 		  webAppStrategy.redirect = function () {
-		    assert.fail('authentication should have succeeded.');
+			assert.fail('authentication should have succeeded.');
 		  };
 		  
 		  webAppStrategy.authenticate(req, {shouldValidateTokenExpiration: true});
-	    });
+		});
 		
 		it("Should be able to detect authenticated request and skip strategy", function (done) {
 			var req = {
