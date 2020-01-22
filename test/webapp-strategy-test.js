@@ -199,7 +199,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, {});
 		});
 	  
-		it("Should succeed when already authenticated with an expired token (default is allowExpiredTokensOnSession=true)", function (done) {
+		it("Should not succeed when already authenticated with an expired token (default is allowExpiredTokensOnSession=false)", function (done) {
 		  const req = {
 			session: {
 			  APPID_AUTH_CONTEXT: {
@@ -212,11 +212,11 @@ describe("/lib/strategies/webapp-strategy", function () {
 		  };
 		  
 		  webAppStrategy.success = function () {
-			done();
+			  assert.fail('authentication should not have succeeded.');
 		  };
 		  
 		  webAppStrategy.redirect = function () {
-			assert.fail('authentication should have succeeded.');
+			  done();
 		  };
 		  
 		  webAppStrategy.authenticate(req, {});
@@ -250,7 +250,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			session: {
 			  APPID_AUTH_CONTEXT: {
 				accessTokenPayload: {
-				  exp: Date.now().valueOf() / 1000 + 30, // valid, expires after 30 seconds
+				  exp: Date.now() / 1000 + 30, // valid, expires after 30 seconds
 				  amr: []
 				}
 			  }
@@ -275,7 +275,12 @@ describe("/lib/strategies/webapp-strategy", function () {
 				},
 				session: {}
 			};
-			req.session[WebAppStrategy.AUTH_CONTEXT] = {identityTokenPayload: {}};
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				identityTokenPayload: {},
+				accessTokenPayload: {
+					exp: Date.now() / 1000 + 30 // valid, expires after 30 seconds
+				}
+			};
 			
 			webAppStrategy.success = function () {
 				done();
@@ -736,7 +741,8 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 			req.session[WebAppStrategy.AUTH_CONTEXT] = {
 				accessTokenPayload: {
-					amr: ["appid_anon"]
+					amr: ["appid_anon"],
+					exp: Date.now() / 1000 + 30 // valid, expires after 30 seconds
 				},
 				accessToken: "test_access_token"
 			};
