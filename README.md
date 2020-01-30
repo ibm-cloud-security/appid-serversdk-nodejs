@@ -330,7 +330,8 @@ async function getAppIdentityToken() {
 			const tokenResponse = await tokenManager.getApplicationIdentityToken();
 			console.log('Token response : ' + JSON.stringify(tokenResponse));
 
-			//the token response contains the access_token, expires_in, token_type
+			//the token response contains the accessToken, expiresIn, tokenType
+					
 	} catch (err) {
 			console.log('err obtained : ' + err);
 	}
