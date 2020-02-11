@@ -44,7 +44,7 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
 // additional documentation
-// Also, if you plan on explicitly stating cookie usage with "sameSite"
+// Also, if you plan on explicitly stating cookie usage with the "sameSite"
 // attribute, you can set the value to "Lax" to safely maintain cookie
 // preferences across sites or "None" to have the cookie sent in all context
 // but if you use "None", make sure to specify "Secure" to require a secure
