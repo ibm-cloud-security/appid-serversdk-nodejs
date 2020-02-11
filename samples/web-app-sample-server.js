@@ -45,10 +45,9 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 // environments. See https://github.com/expressjs/session for
 // additional documentation
 // Also, if you plan on explicitly stating cookie usage with the "sameSite"
-// attribute, you can set the value to "Lax" to safely maintain cookie
-// preferences across sites or "None" to have the cookie sent in all context
-// but if you use "None", make sure to specify "Secure" to require a secure
-// context in all cases.
+// attribute, you can set the value to "Lax" or "None" depending on your preferences.
+// However, note that setting the value to "true" will assign the value "Strict" to the
+// sameSite attribute which will result into an error.
 app.use(session({
 	secret: "123456",
 	resave: true,
