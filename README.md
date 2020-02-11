@@ -151,14 +151,14 @@ const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
-// additional documentation
+// additional documentation.
+// Also, if you plan on explicitly stating cookie usage with "sameSite" 
+// attribute, set the values to either "Strict", "Lax" or "None" only.
 app.use(session({
 	secret: '123456',
 	resave: true,
 	saveUninitialized: true
 }));
-
-// if you plan on explicitly stating cookie usage with "sameSite" attribute, set the values to either "Strict", "Lax" or "None" only.
 
 // Use static resources from /samples directory
 app.use(express.static("samples"));
