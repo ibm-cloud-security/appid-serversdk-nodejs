@@ -158,7 +158,7 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-// if you plan on explicilty stating cookie usage with sameSite attribute, set the values to either "Strict", "Lax" or "None" only.
+// if you plan on explicitly stating cookie usage with "sameSite" attribute, set the values to either "Strict", "Lax" or "None" only.
 
 // Use static resources from /samples directory
 app.use(express.static("samples"));
