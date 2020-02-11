@@ -158,6 +158,8 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+// if you plan on explicilty stating cookie usage with sameSite attribute, set the values to either "Strict", "Lax" or "None" only.
+
 // Use static resources from /samples directory
 app.use(express.static("samples"));
 
@@ -224,6 +226,7 @@ app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), funct
 // Start the server!
 app.listen(process.env.PORT || 1234);
 ```
+
 
 ##### Protecting web applications using WebAppStrategy: Access Control
 Using access control, you can check which scopes exist on the request.
