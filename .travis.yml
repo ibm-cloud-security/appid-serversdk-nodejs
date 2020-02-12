@@ -20,6 +20,7 @@ install:
 script:
   - npm install
   - npm run test_nyc
+  - nyc npm test && nyc report --reporter=text-lcov | coveralls
 
 deploy:
   provider: npm
