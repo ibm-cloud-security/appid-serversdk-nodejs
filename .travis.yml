@@ -19,7 +19,7 @@ install:
 
 script:
   - npm install
-  - npm run coverage
+  - npm run test_nyc
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js # publish coverage info to coveralls
 
 deploy:
