@@ -7,7 +7,7 @@
     "apiapp": "node samples/api-app-sample-server.js",
     "webapp": "node samples/web-app-sample-server.js",
     "test": "./node_modules/.bin/_mocha",
-    "coverage": "./node_modules/.bin/nyc cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
+    "coverage": "./node_modules/.bin/istanbul cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
   },
   "repository": {
     "type": "git",
