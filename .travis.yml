@@ -20,8 +20,6 @@ install:
 script:
   - npm install
   - npm run test_nyc
-  - nyc npm test
-  - nyc report --reporter=text-lcov > coverage.lcov ./node_modules/.bin/codecov
 
 deploy:
   provider: npm
