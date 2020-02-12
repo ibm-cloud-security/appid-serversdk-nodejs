@@ -19,7 +19,7 @@
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "coveralls": "^3.0.2",
+    "coveralls": "^3.0.9",
     "eslint": "^5.11.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
@@ -42,7 +42,7 @@
     "jsonwebtoken": "^8.4.0",
     "log4js": "^6.1.2",
     "q": "^1.4.1",
-    "request": "^2.88.0",
+    "request": "^2.88.2",
     "rsa-pem-from-mod-exp": "^0.8.4",
     "underscore": "^1.8.3"
   }
