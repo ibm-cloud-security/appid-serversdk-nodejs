@@ -33,8 +33,8 @@ In addition, the SDK provides helper utilities centered around tokens and user p
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
-* npm 4.+
-* node 6.+
+* npm 6.+
+* node 10.+
 
 ## Installation
 ```
