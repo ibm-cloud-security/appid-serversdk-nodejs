@@ -138,7 +138,7 @@ describe('/lib/token-manager/token-manager', () => {
 		});
 
 	  	it('Should fail for thrown error', function (done) {
-			const tokenManager = new TokenManager(mockConfig("ERROR"));
+			const tokenManager = new TokenManager(mockConfig('ERROR'));
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Error', done);
 	  	});
 
