@@ -84,10 +84,9 @@ function mockRequest(options, callback) {
 			statusCode
 		}, JSON.stringify(getErrorResponse(statusCode)));
 	} else if (secret.includes('ERROR')) {
-	  const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 	  return callback(new Error('Error'), {
 		statusCode: 500
-	  }, JSON.stringify(mockInvalidTokenResponse));
+	  }, "");
 	}
 }
 
