@@ -138,11 +138,6 @@ describe('/lib/token-manager/token-manager', () => {
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Invalid access token', done);
 		});
 
-		it('Should fail access token validation', function (done) {
-			const tokenManager = new TokenManager(mockConfig(INVALID_ACCESS_TOKEN));
-			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Invalid access token', done);
-	  	});
-
 	  	it('Should fail for thrown error', function (done) {
 			const tokenManager = new TokenManager(mockConfig("ERROR"));
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Error', done);
