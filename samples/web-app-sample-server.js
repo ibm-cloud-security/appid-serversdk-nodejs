@@ -67,14 +67,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
-	tenantId: "f2322ce2-b939-46cf-9e3b-e20caec6e7c0",
-	clientId: "749f22ec-98ba-4047-b274-7fc99710d3b5",
-	secret: "YzM2ZDFhNmMtYTk5MC00YWVhLTllNmItMTMwN2JiMTBkODgw",
-	oauthServerUrl: "https://eu-gb.appid.test.cloud.ibm.com/oauth/v4/f2322ce2-b939-46cf-9e3b-e20caec6e7c0",
+	tenantId: "TENANT_ID",
+	clientId: "CLIENT_ID",
+	secret: "SECRET",
+	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (err, user, cb) {
-	return user ? cb(null, user) : cb(err);
+}, function (user, cb) {
+	return user ? cb(null, user, "Hello") : cb("Failed to find user");
 });
+
 passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
