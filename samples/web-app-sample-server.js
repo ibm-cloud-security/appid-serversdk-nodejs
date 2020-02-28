@@ -67,15 +67,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
-	tenantId: "TENANT_ID",
-	clientId: "CLIENT_ID",
-	secret: "SECRET",
-	oauthServerUrl: "OAUTH_SERVER_URL",
+	tenantId: "f2322ce2-b939-46cf-9e3b-e20caec6e7c0",
+	clientId: "749f22ec-98ba-4047-b274-7fc99710d3b5",
+	secret: "YzM2ZDFhNmMtYTk5MC00YWVhLTllNmItMTMwN2JiMTBkODgw",
+	oauthServerUrl: "https://eu-gb.appid.test.cloud.ibm.com/oauth/v4/f2322ce2-b939-46cf-9e3b-e20caec6e7c0",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (req, done) {
-	let user = req.session.APPID_AUTH_CONTEXT.identityTokenPayload.sub || undefined;
-	if (!user) { return done(null, false, {message: 'User retrieval failure'}); }
-	return done(null, user);
+}, function (err, user, cb) {
+	return user ? cb(null, user) : cb(err);
 });
 passport.use(webAppStrategy);
 
