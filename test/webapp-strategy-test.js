@@ -36,7 +36,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
 		}, function (accessToken, IDToken, refreshToken, cb) {
-			if (!IDToken.sub) { return cb("Missing ID token"); }
+			if (!IDToken) { return cb("Missing ID token"); }
 			return cb(null, IDToken, "User exists!");
 		});
 	});
@@ -577,18 +577,16 @@ describe("/lib/strategies/webapp-strategy", function () {
 		});
 
 		it("Should fail if the verify callback is called with an error", function (done) {
-			webAppStrategy.fail = function (err) {
+			webAppStrategy.error = function (err) {
 				assert.equal(err, "Missing ID token");
 				done();
 			};
 			webAppStrategy.success = function () {
-				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+				assert('Should fail');
 				done();
-			}
+			};
 			var req = {
-				session: {
-					returnTo: "originalUri"
-				},
+				session: {},
 				query: {
 					code: "WORKING_CODE",
 					state: "123456789"
@@ -597,7 +595,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 			var options = {};
 			req.session[WebAppStrategy.AUTH_CONTEXT] = {
-				identityTokenPayload: {}
+				identityTokenPayload: {
+					shouldFailVerifyCB: true
+				}
 			};
 			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
@@ -612,10 +612,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 					done(e);
 				}
 			};
-			webAppStrategy.fail = function (err) {
-				assert.equal(err, "Missing ID token");
-				done();
-			};
+
 			var req = {
 				session: {
 					returnTo: "originalUri"
@@ -707,10 +704,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 				assert(options.successReturnToOrRedirect);
 				done();
 			};
-			webAppStrategy.fail = function (err) {
-				assert.equal(err, "Missing ID token");
-				done();
-			};
+
 			var req = {
 				session: {},
 				query: {
