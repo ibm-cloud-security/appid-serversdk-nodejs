@@ -72,8 +72,9 @@ let webAppStrategy = new WebAppStrategy({
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (user, cb) {
-	return user ? cb(null, user, "Hello") : cb("Failed to find user");
+}, function (accessToken, IDToken, refreshToken, cb) {
+	if (!IDToken) { return cb("Missing ID token"); }
+	return cb(null, IDToken, "User exists!");
 });
 
 passport.use(webAppStrategy);

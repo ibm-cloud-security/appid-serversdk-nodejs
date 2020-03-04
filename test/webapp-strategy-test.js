@@ -35,8 +35,8 @@ describe("/lib/strategies/webapp-strategy", function () {
 			secret: "secret",
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
-		}, function (user, cb) {
-			return cb(null, user, null);
+		}, function (accessToken, IDToken, refreshToken, cb) {
+			return cb(null, IDToken, null);
 		});
 	});
 
@@ -570,6 +570,33 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 			var options = {
 				successRedirect: "redirectUri"
+			};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			webAppStrategy.authenticate(req, options);
+		});
+
+		it("Should fail if the verify callback is called with an error", function (done) {
+			webAppStrategy.fail = function (err) {
+				assert.equal(err.message, "strategy.success is not a function");
+				done();
+			};
+			webAppStrategy.success = function () {
+				assert.equal(req.session[WebAppStrategy.AUTH_CONTEXT].identityTokenPayload.scope, "appid_default");
+				done();
+			}
+			var req = {
+				session: {
+					returnTo: "originalUri"
+				},
+				query: {
+					code: "WORKING_CODE",
+					state: "123456789"
+				}
+			};
+
+			var options = {};
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				identityTokenPayload: {}
 			};
 			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
