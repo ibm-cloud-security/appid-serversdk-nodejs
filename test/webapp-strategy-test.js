@@ -36,7 +36,8 @@ describe("/lib/strategies/webapp-strategy", function () {
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
 		}, function (accessToken, IDToken, refreshToken, cb) {
-			return cb(null, IDToken, null);
+			if (!IDToken.sub) { return cb("Missing ID token"); }
+			return cb(null, IDToken, "User exists!");
 		});
 	});
 
@@ -577,7 +578,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 		it("Should fail if the verify callback is called with an error", function (done) {
 			webAppStrategy.fail = function (err) {
-				assert.equal(err.message, "strategy.success is not a function");
+				assert.equal(err, "Missing ID token");
 				done();
 			};
 			webAppStrategy.success = function () {
@@ -611,7 +612,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 					done(e);
 				}
 			};
-
+			webAppStrategy.fail = function (err) {
+				assert.equal(err, "Missing ID token");
+				done();
+			};
 			var req = {
 				session: {
 					returnTo: "originalUri"
@@ -703,7 +707,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 				assert(options.successReturnToOrRedirect);
 				done();
 			};
-
+			webAppStrategy.fail = function (err) {
+				assert.equal(err, "Missing ID token");
+				done();
+			};
 			var req = {
 				session: {},
 				query: {
