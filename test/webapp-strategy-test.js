@@ -36,7 +36,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
 		}, function (accessToken, IDToken, refreshToken, cb) {
-			if (!IDToken) { return cb("Missing ID token"); }
+			if (!IDToken) { return cb(null, null, "Missing ID token"); }
 			return cb(null, IDToken, "User exists!");
 		});
 	});
@@ -576,16 +576,14 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, options);
 		});
 
-		it("Should fail if the verify callback is called with an error", function (done) {
-			webAppStrategy.error = function (err) {
-				assert.equal(err, "Missing ID token");
+		it("Should pass if the verify callback finds a user", function (done) {
+			webAppStrategy.success = function (err, user, info) {
+				assert.equal(err, null);
+				assert.isObject(user);
+				assert.equal(info, 'User exists!');
 				done();
 			};
-			webAppStrategy.success = function () {
-				assert('Should fail');
-				done();
-			};
-			var req = {
+			const req = {
 				session: {},
 				query: {
 					code: "WORKING_CODE",
@@ -593,12 +591,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 				}
 			};
 
-			var options = {};
-			req.session[WebAppStrategy.AUTH_CONTEXT] = {
-				identityTokenPayload: {
-					shouldFailVerifyCB: true
-				}
-			};
+			const options = {};
 			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
@@ -624,6 +617,11 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 
 			var options = {};
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				identityTokenPayload: {
+					sub: 'abcde'
+				}
+			};
 			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});

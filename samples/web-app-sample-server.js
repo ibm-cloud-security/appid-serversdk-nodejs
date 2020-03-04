@@ -73,7 +73,7 @@ let webAppStrategy = new WebAppStrategy({
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
 }, function (accessToken, IDToken, refreshToken, cb) {
-	if (!IDToken) { return cb("Missing ID token"); }
+	if (!IDToken) { return cb(null, null, "Missing ID token"); }
 	return cb(null, IDToken, "User exists!");
 });
 
