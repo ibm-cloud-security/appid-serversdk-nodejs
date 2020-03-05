@@ -596,6 +596,37 @@ describe("/lib/strategies/webapp-strategy", function () {
 			webAppStrategy.authenticate(req, options);
 		});
 
+		it("Should handle callback if request contains grant code. Failure if verify callback fails", function (done) {
+			let failWebAppStrategy = new WebAppStrategy({
+				tenantId: "tenantId",
+				clientId: "clientId",
+				secret: "secret",
+				oauthServerUrl: "https://oauthServerUrlMock",
+				redirectUri: "https://redirectUri"
+			}, function (accessToken, IDToken, refreshToken, cb) {
+				return cb('error', IDToken, 'mock error');
+			});
+			failWebAppStrategy.error = function (err) {
+				assert.equal(err, 'error');
+				done();
+			};
+			failWebAppStrategy.success = function () {
+				done('supposed to fail');
+			};
+			var req = {
+				session: {
+					returnTo: "originalUri"
+				},
+				query: {
+					code: "WORKING_CODE",
+					state: "123456789"
+				}
+			};
+			var options = {};
+			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			failWebAppStrategy.authenticate(req, options);
+		});
+
 		it("Should handle callback if request contains grant code. Success with original URL", function (done) {
 			webAppStrategy.success = function () {
 				try {
