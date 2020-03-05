@@ -648,11 +648,6 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.AUTH_CONTEXT] = {
-				identityTokenPayload: {
-					sub: 'abcde'
-				}
-			};
 			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
 			webAppStrategy.authenticate(req, options);
 		});
