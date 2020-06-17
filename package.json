@@ -7,7 +7,7 @@
     "apiapp": "node samples/api-app-sample-server.js",
     "webapp": "node samples/web-app-sample-server.js",
     "test": "./node_modules/.bin/_mocha",
-    "coverage": "./node_modules/.bin/istanbul cover -i \"lib/**/*.js\" ./node_modules/.bin/_mocha"
+    "test_nyc": "./node_modules/.bin/nyc ./node_modules/.bin/_mocha --timeout 30000 --exit"
   },
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "eslint-plugin-node": "^8.0.0",
     "express": "^4.14.0",
     "express-session": "^1.15.0",
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
+    "nyc": "^15.0.0",
     "passport": "^0.4.0",
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1"
@@ -40,7 +40,7 @@
     "ejs": "^2.5.6",
     "helmet": "^3.11.0",
     "jsonwebtoken": "^8.4.0",
-    "log4js": "^3.0.6",
+    "log4js": "^6.1.2",
     "q": "^1.4.1",
     "request": "^2.88.0",
     "rsa-pem-from-mod-exp": "^0.8.4",
