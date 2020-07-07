@@ -14,7 +14,7 @@
     "url": "git+https://github.com/ibm-cloud-security/appid-serversdk-nodejs.git"
   },
   "author": "Anton Aleksandrov",
-  "license": "Apache-2.0 ",
+  "license": "Apache-2.0",
   "devDependencies": {
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
