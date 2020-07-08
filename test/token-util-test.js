@@ -404,6 +404,14 @@ describe("/lib/utils/token-util", function () {
 	  assert.property(decodedToken, "aud");
 	  assert.property(decodedToken, "iat");
 	});
+  });  
+
+  describe("#getRandomNumber()", function() {
+	it("Should return a random number in base64 format", function() {
+		const regEx = /^[\_\-a-z0-9]+[=]+$/i;
+		const randomNumberBase64 = TokenUtil.getRandomNumber();
+		assert.isTrue(regEx.test(randomNumberBase64));
+	});
   });
   
 });
