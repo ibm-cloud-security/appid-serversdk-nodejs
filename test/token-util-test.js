@@ -407,11 +407,12 @@ describe("/lib/utils/token-util", function () {
   });  
 
   describe("#getRandomNumber()", function() {
-	it("Should return a random number in base64 format", function() {
+	it("Should return a random number in base64 format", function(done) {
 		const regEx = /^[\_\-a-z0-9]+[=]+$/i;
 		const randomNumberBase64 = TokenUtil.getRandomNumber();
 		assert.isTrue(regEx.test(randomNumberBase64));
+		done();
 	});
   });
-  
+
 });
