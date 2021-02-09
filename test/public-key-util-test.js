@@ -26,7 +26,7 @@ describe("/lib/utils/public-key-util", function () {
 	
 	before(function () {
 		PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
-			"request": requestMock
+			"got": requestMock
 		});
 	});
 	
@@ -80,7 +80,7 @@ describe("/lib/utils/public-key-util", function () {
 		
 		it("two sequential request to public keys endpoint", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
-				"request": requestMock
+				"got": requestMock
 			});
 			var kid = "123";
 			PublicKeyUtilNew.getPublicKeyPemByKid(kid, testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs").then(function () {
@@ -115,7 +115,7 @@ describe("/lib/utils/public-key-util", function () {
 	describe("getPublicKeyPemMultipleRequests", function () {
 		it("Should get public keys from multiple requests", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
-				"request": requestMock
+				"got": requestMock
 			});
 			var requestArray = [];
 			for (var i = 0; i < 5; i++) {
@@ -142,33 +142,39 @@ describe("/lib/utils/public-key-util", function () {
 	});
 });
 
-var requestMock = function (options, callback) {
-	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
-		return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
-	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(null, {statusCode: 200}, JSON.stringify({
-			"access_token": "access_token_mock",
-			"id_token": "id_token_mock"
-		}));
-	} else if (options.followRedirect === false) {
-		return callback(null, {
-			statusCode: 302,
+var requestMock = function (reqUrl, reqParameters) {
+	if (reqUrl.indexOf("FAIL-PUBLIC-KEY") >= 0 || reqUrl.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
+		return { statusCode: 0, body: new Error("STUBBED_ERROR")};
+	} else if (reqUrl.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
+		return {statusCode: 200, body: {"keys": [{"n": "1", "e": "2", "kid": "123"}]}};
+	} else if (reqParameters.formData && reqParameters.formData.code && reqParameters.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
+		return { statusCode: 0, body: new Error("STUBBED_ERROR")};
+	} else if (reqParameters.formData && reqParameters.formData.code && reqParameters.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
+		return { 
+			statusCode: 200, 
+			body: JSON.stringify({
+				"access_token": "access_token_mock",
+				"id_token": "id_token_mock"
+			})
+		};
+	} else if (reqParameters.followRedirect === false) {
+		return { 
+			statusCode: 302, 
 			headers: {
 				location: "test-location?code=WORKING_CODE"
 			}
-		});
-	} else if (options.url.indexOf("SETTIMEOUT-PUBLIC-KEYs") > -1) {
+		};
+	} else if (reqUrl.indexOf("SETTIMEOUT-PUBLIC-KEYs") > -1) {
 		requestCounter++;
-		setTimeout(function () {
-			return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
-		}, 3000);
-	} else if(options.url.indexOf("SEQUENTIAL-REQUEST-PUBLIC-KEYs") > -1) {
+		let promise = new Promise(function(resolve, reject) {
+			setTimeout(function () {
+				resolve({ statusCode: 200, body:{"keys": [{"n": "1", "e": "2", "kid": "123"}]} });
+			}, 3000);
+		});
+		return promise;
+	} else if(reqUrl.indexOf("SEQUENTIAL-REQUEST-PUBLIC-KEYs") > -1) {
 		seqRequestCounter++;
-		return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
+		return { statusCode: 200 , body: {"keys": [{"n": "1", "e": "2", "kid": "123"}]} };
 	} else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
 	} 
