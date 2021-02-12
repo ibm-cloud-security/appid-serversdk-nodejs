@@ -1159,34 +1159,41 @@ describe("/lib/self-service/self-service-manager", function () {
 		let netErrorObject = new Error("network issue");
 		let inputErrorBody = {error: "some bad input"};
 		let expectedInput = {
-			url:  testUrl,
-			method: "POST",
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				"Accept": "application/json"
+				"Accept": "application/json",
+				"Content-Type": "application/x-www-form-urlencoded"
 			},
-			form : {
-				"grant_type":"urn:ibm:params:oauth:grant-type:apikey",
-				"apikey" : testApiKey
-			}
+			method: "POST",
+			body: 'grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=testApiKey',
+			responseType:'json'
 		};
 		
-		let stubRequest = function (options, callback) {
-			if (options.url === netError) {
-				return callback(netErrorObject, {}, {});
+		let stubRequest = function (reqUrl, reqParameters) {
+			if (reqUrl === netError) {
+				return {
+					error: netErrorObject
+				};
 			}
-			if (options.url === badInputError) {
-				return callback(null, {statusCode: 400}, inputErrorBody);
+			if (reqUrl === badInputError) {
+				return { 
+					statusCode: 400, 
+					body: inputErrorBody
+				};
 			}
-			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
-				return callback(error, {}, {});
+			if (JSON.stringify(reqParameters) !== JSON.stringify(expectedInput)) {
+				return { 
+					error
+				};
 			}
-			callback(null, {statusCode: 200}, JSON.stringify({"access_token": testToken}));
+			return { 
+				statusCode: 200, 
+				body: JSON.stringify({"access_token": testToken})
+			};
 			
 		};
 		before(function (done) {
 			_getIAMToken = SelfServiceManager.__get__("_getIAMToken");
-			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("got", stubRequest);
 			done();
 		});
 		after(function (done) {
@@ -1284,55 +1291,82 @@ describe("/lib/self-service/self-service-manager", function () {
 		let stubRequestRevert;
 		
 		let expectedInput = {
-			url: testUrl,
+			headers: {
+				"Authorization": "Bearer " + testToken,
+				"Content-type":"application/json"
+			},
 			method: method,
-			qs: queryObject,
-			json: body,
-			headers: {
-				"Authorization": "Bearer " + testToken
-			}
-		};
-		let expectedInputForGet = {
-			url: testUrl,
-			method: "GET",
-			qs: queryObject,
 			json: true,
+			searchParams: queryObject,
+			responseType: "json",
+			body:{"t":"t"}
+		};
+
+		let expectedInputForGet = {
 			headers: {
 				"Authorization": "Bearer " + testToken
-			}
+			},
+			method: "GET",
+			json:true,
+			searchParams: queryObject,
+			json: true,
+			responseType:"json"
 		};
 		
-		let stubRequest = function (options, callback) {
-			if (options.method === "GET") {
-				if (JSON.stringify(options) !== JSON.stringify(expectedInputForGet)) {
-					return callback(error, {}, {});
+		let stubRequest = function (reqUrl, reqParameters) {
+			if (reqParameters.method === "GET") {
+				if (JSON.stringify(reqParameters) !== JSON.stringify(expectedInputForGet)) {
+					return {
+						error
+					};
 				}
-				return callback(null, {statusCode: 200}, successBody);
+				return { 
+					statusCode: 200, 
+					body: successBody
+				};
 			}
-			if (options.url === netError) {
-				return callback(netErrorObject, {}, {});
+			if (reqUrl === netError) {
+				return {
+					error: netErrorObject
+				};
 			}
-			if (options.url === badInputError) {
-				return callback(null, {statusCode: 400}, inputErrorBody);
+			if (reqUrl === badInputError) {
+				return { 
+					statusCode: 400, 
+					body: inputErrorBody
+				};
 			}
-			if (options.url === badInputErrorBodyString) {
-				return callback(null, {statusCode: 400}, inputErrorBodyString);
+			if (reqUrl === badInputErrorBodyString) {
+				return { 
+					statusCode: 400, 
+					body: inputErrorBodyString
+				};
 			}
-			if (options.url === badInputErrorBodyWithDetail) {
-				return callback(null, {statusCode: 400}, inputErrorBodyDetail);
+			if (reqUrl === badInputErrorBodyWithDetail) {
+				return { 
+					statusCode: 400, 
+					body: inputErrorBodyDetail
+				};
 			}
-			if (options.url === badInputErrorBodyWithMessage) {
-				return callback(null, {statusCode: 400}, inputErrorBodyMessage);
+			if (reqUrl === badInputErrorBodyWithMessage) {
+				return { 
+					statusCode: 400, 
+					body: inputErrorBodyMessage
+				};
 			}
-			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
-				return callback(error, {}, {});
+			if (JSON.stringify(reqParameters) !== JSON.stringify(expectedInput)) {
+				return { 
+					error
+				};
 			}
-			return callback(null, {statusCode: 200}, successBody);
-			
+			return { 
+				statusCode: 200, 
+				body: successBody
+			};
 		};
 		before(function (done) {
 			_handleRequest = SelfServiceManager.__get__("_handleRequest");
-			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("got", stubRequest);
 			done();
 		});
 		after(function(done){

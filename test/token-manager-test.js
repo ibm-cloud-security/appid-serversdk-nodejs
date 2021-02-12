@@ -60,29 +60,39 @@ function getErrorResponse(statusCode) {
 	return errorResponse
 }
 
-function mockRequest(options, callback) {
-	const secret = options.auth.password;
+function mockRequest(reqUrl, reqParameters) {
+	const header = reqParameters.headers.Authorization || ''; // get the auth header
+	const token = header.split(/\s+/).pop() || ''; // and the encoded auth token
+	const auth = Buffer.from(token, 'base64').toString(); // convert from base64
+	const parts = auth.split(/:/); // split on colon
+	const username = parts.shift(); // username is first
+	const secret = parts.join(':'); // everything else is the password
+
 	if (secret.includes(INVALID_ACCESS_TOKEN)) {
 		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['access_token'] = 'invalid_token';
-		return callback(null, {
-			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		return { 
+			statusCode: 200, 
+			body: JSON.stringify(mockInvalidTokenResponse)
+		};
 	} else if (secret.includes(INVALID_IDENTITY_TOKEN)) {
 		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['id_token'] = 'invalid_token';
-		return callback(null, {
-			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		return { 
+			statusCode: 200, 
+			body: JSON.stringify(mockInvalidTokenResponse)
+		};
 	} else if (secret.includes(SUCCESS)) {
-		return callback(null, {
-			statusCode: 200
-		}, JSON.stringify(mockTokenResponse))
+		return { 
+			statusCode: 200, 
+			body: JSON.stringify(mockTokenResponse)
+		};
 	} else if (secret.includes('return_code')) {
 		const statusCode = parseInt(secret.split(':')[1]);
-		return callback(null, {
-			statusCode
-		}, JSON.stringify(getErrorResponse(statusCode)));
+		return { 
+			statusCode: statusCode, 
+			body: JSON.stringify(getErrorResponse(statusCode))
+		};
 	}
 }
 
@@ -123,7 +133,7 @@ describe('/lib/token-manager/token-manager', () => {
 	before(() => {
 		TokenManager = proxyquire("../lib/token-manager/token-manager", {
 			"../utils/token-util": require("./mocks/token-util-mock"),
-			"request": mockRequest
+			"got": mockRequest
 		});
 	});
 

@@ -24,12 +24,19 @@ describe("/lib/utils/token-util", function () {
   //let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
   let reqEndpoint = "endpoint";
   let reqError;
-  let reqresponse = {statusCode: 200};
   
+
+  function requestMock() {
+		return {
+			"error": reqError,
+			"body": {issuer: reqEndpoint},
+			statusCode: 200,
+		}
+  }
   let utilsStub = {
 	"./public-key-util": require("./mocks/public-key-util-mock"),
-	"request": (_, cb) => cb(reqError, reqresponse, {issuer: reqEndpoint})
-  };
+	"got": requestMock
+	}
   let Config;
   
   before(function () {
