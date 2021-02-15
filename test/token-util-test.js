@@ -24,13 +24,13 @@ describe("/lib/utils/token-util", function () {
   //let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
   let reqEndpoint = "endpoint";
   let reqError;
-  
+  let reqresponse = {statusCode: 200};
 
   function requestMock() {
 		return {
 			"error": reqError,
 			"body": {issuer: reqEndpoint},
-			statusCode: 200,
+			...reqresponse
 		}
   }
   let utilsStub = {
@@ -319,28 +319,6 @@ describe("/lib/utils/token-util", function () {
 	  TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
 		decodedToken.iss = "endpoint";
 		
-		TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
-		  done("suppose to fail");
-		  reqError = undefined;
-		}).catch(() => {
-		  done();
-		  reqError = undefined;
-		});
-	  });
-	});
-	it("get issuer from well known returned status code!= 200", function (done) {
-	  reqEndpoint = "endpoint";
-	  reqError = undefined;
-	  reqresponse = {statusCode: 404};
-	  const config = new Config({
-		tenantId: constants.TENANTID,
-		clientId: constants.CLIENTID,
-		secret: "secret",
-		oauthServerUrl: "http://mobileclientaccess/",
-		redirectUri: "redirectUri"
-	  });
-	  TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
-		decodedToken.iss = "endpoint";
 		TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
 		  done("suppose to fail");
 		  reqError = undefined;
