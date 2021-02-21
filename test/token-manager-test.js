@@ -168,6 +168,18 @@ describe('/lib/token-manager/token-manager', () => {
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Unexpected error', done);
 		});
 
+		it('Should FAIL to retrieve tokens', (done) => {
+			const tokenManager = new TokenManager();
+			tokenManager.getCustomIdentityTokens(mockJwsToken)
+				.then(() => {
+					done('suppose to fail');
+				})
+				.catch((error) => {
+					assert.equal(error.message, "Cannot read property 'body' of undefined");
+					done();
+				});
+		});
+		
 		it('Should retrieve tokens - Happy Flow', (done) => {
 			const tokenManager = new TokenManager(mockConfig(SUCCESS));
 			tokenManager.getCustomIdentityTokens(mockJwsToken)
