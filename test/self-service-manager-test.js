@@ -13,6 +13,7 @@
 "use strict";
 const chai = require("chai");
 const assert = chai.assert;
+const expect = chai.expect;
 const rewire = require("rewire");
 const _ = require("underscore");
 const Q = require("q");
@@ -1273,6 +1274,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		let netError = "netError";
 		let badInputError = "badInputError";
 		let badInputErrorBodyString = "badInputErrorBodyString";
+		let badInputErrorBodyJSON = {err: "some error string"};
 		let badInputErrorBodyWithDetail = "badInputErrorBodyWithDetail";
 		let badInputErrorBodyWithMessage = "badInputErrorBodyWithMessage";
 		let testApiKey = "testApiKey";
@@ -1342,6 +1344,16 @@ describe("/lib/self-service/self-service-manager", function () {
 					body: inputErrorBodyString
 				};
 			}
+			
+			if (reqUrl === badInputErrorBodyJSON) {
+				return { 
+					statusCode: 400, 
+					body: {
+						err: 	inputErrorBodyString
+					}
+				};
+			}
+
 			if (reqUrl === badInputErrorBodyWithDetail) {
 				return { 
 					statusCode: 400, 
@@ -1461,6 +1473,23 @@ describe("/lib/self-service/self-service-manager", function () {
 				}
 			};
 			_handleRequest(testToken, method, badInputErrorBodyString, body, queryObject , action, deferred);
+		});
+		
+		it("request failure bad input - body is NOT string", function (done) {
+			let deferred = {
+				resolve: function (body) {
+					done("should reject");
+				},
+				reject: function (err) {
+					try{
+						expect(badInputErrorBodyJSON).to.deep.equal(JSON.parse(err.message));
+						done();
+					} catch(e) {
+						done(e);
+					}
+				}
+			};
+			_handleRequest(testToken, method, badInputErrorBodyJSON, body, queryObject , action, deferred);
 		});
 		
 		it("request failure bad input - body with detail", function (done) {
