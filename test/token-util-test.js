@@ -22,15 +22,17 @@ describe("/lib/utils/token-util", function () {
   console.log("Loading token-util-test.js");
   let TokenUtil;
   //let createDynamicIssuer=(endpoint)=>(_,cb)=>cb(undefined,{statusCode:200},{issuer:endpoint});
-  let reqEndpoint = "endpoint";
   let reqError;
-  let reqresponse = {statusCode: 200};
+  let resStatus = {statusCode: 200};
+  let reqEndpoint = "endpoint";
+  let resBody = { "body":{issuer: reqEndpoint} };
 
   function requestMock() {
+	resBody = { "body":{issuer: reqEndpoint} };
 		return {
 			"error": reqError,
-			"body": {issuer: reqEndpoint},
-			...reqresponse
+			...resBody,
+			...resStatus
 		}
   }
   let utilsStub = {
@@ -255,9 +257,9 @@ describe("/lib/utils/token-util", function () {
 		decodedToken.iss = "endpoint";
 		
 		TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
-		  done();
+			done();
 		}).catch(err => {
-		  done(err);
+			done(err);
 		});
 	  });
 	});
@@ -308,7 +310,7 @@ describe("/lib/utils/token-util", function () {
 	it("get issuer from well known returned status code!= 200", function (done) {
 	  reqEndpoint = "endpoint";
 	  reqError = undefined;
-	  reqresponse = {statusCode: 404};
+	  resStatus = {statusCode: 404};
 	  const config = new Config({
 		tenantId: constants.TENANTID,
 		clientId: constants.CLIENTID,
@@ -329,10 +331,31 @@ describe("/lib/utils/token-util", function () {
 	  });
 	});
 	
+
+	it("get issuer from well known - response body undefined", function (done) {
+		resBody = undefined;
+		const config = new Config({
+		  tenantId: constants.TENANTID,
+		  clientId: constants.CLIENTID,
+		  secret: "secret",
+		  oauthServerUrl: "http://mobileclientaccess/",
+		  redirectUri: "redirectUri"
+		});
+		TokenUtil.decodeAndValidate(constants.ACCESS_TOKEN).then(function (decodedToken) {
+		  decodedToken.iss = "endpoint";
+		  
+		  TokenUtil.validateIssAndAud(decodedToken, config).then(() => {
+			done('This test should fail.');
+		  }).catch(err => {
+			  done();
+		  });
+		});
+	  });
+	
 	it("get issuer from well known missing issuer", function (done) {
 	  reqEndpoint = undefined;
 	  reqError = undefined;
-	  reqresponse = {statusCode: 200};
+	  resStatus = {statusCode: 200};
 	  const config = new Config({
 		tenantId: constants.TENANTID,
 		clientId: constants.CLIENTID,
@@ -355,7 +378,7 @@ describe("/lib/utils/token-util", function () {
 	
 	it("don't go to issuer endpoint when issuer exists", function (done) {
 	  reqEndpoint = "endpoint2";
-	  reqresponse = {statusCode: 200};
+	  resStatus = {statusCode: 200};
 	  reqError = undefined;
 	  const config = new Config({
 		tenantId: constants.TENANTID,
