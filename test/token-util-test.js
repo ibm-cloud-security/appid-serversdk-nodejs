@@ -25,15 +25,19 @@ describe("/lib/utils/token-util", function () {
   let reqError;
   let resStatus = {statusCode: 200};
   let reqEndpoint = "endpoint";
-  let resBody = { "body":{issuer: reqEndpoint} };
+  let resBody;
 
   function requestMock() {
-	resBody = { "body":{issuer: reqEndpoint} };
-		return {
-			"error": reqError,
-			...resBody,
-			...resStatus
-		}
+	  if(resBody === 'undefined') {
+		throw new Error('Error thrown');
+	  } else {
+		  resBody = { "body":{issuer: reqEndpoint} };
+		  return {
+				"error": reqError,
+				...resBody,
+				...resStatus
+			}
+	  }
   }
   let utilsStub = {
 	"./public-key-util": require("./mocks/public-key-util-mock"),
@@ -333,7 +337,7 @@ describe("/lib/utils/token-util", function () {
 	
 
 	it("get issuer from well known - response body undefined", function (done) {
-		resBody = undefined;
+		resBody = 'undefined';
 		const config = new Config({
 		  tenantId: constants.TENANTID,
 		  clientId: constants.CLIENTID,
