@@ -59,6 +59,20 @@ describe("/lib/utils/public-key-util", function () {
 			});
 		});
 		
+		it("request to public keys endpoint failure - response body undefined", function (done) {
+			var kid = "not_found_kid";
+			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "KEYS-UNDEFINED").then(function () {
+				done("should get reject");
+			}).catch(function (err) {
+				try {
+					assert.equal(err, "updatePublicKeys error: Failed to retrieve public keys.  All requests to protected endpoints will be rejected.");
+					done();
+				} catch(e) {
+					done(e);
+				}
+			});
+		});
+		
 		it("request to public keys endpoint update failure", function (done) {
 			var kid = "123";
 			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function () {
@@ -147,6 +161,8 @@ var requestMock = function (reqUrl, reqParameters) {
 		return { statusCode: 0, body: new Error("STUBBED_ERROR")};
 	} else if (reqUrl.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
 		return {statusCode: 200, body: {"keys": [{"n": "1", "e": "2", "kid": "123"}]}};
+	} else if (reqUrl.indexOf("KEYS-UNDEFINED") !== -1) { // Used in public-key-util-test
+		return {statusCode: 200};
 	} else if (reqParameters.formData && reqParameters.formData.code && reqParameters.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
 		return { statusCode: 0, body: new Error("STUBBED_ERROR")};
 	} else if (reqParameters.formData && reqParameters.formData.code && reqParameters.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
