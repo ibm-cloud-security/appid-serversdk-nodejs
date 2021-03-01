@@ -141,5 +141,5 @@ module.exports = function (reqUrl, reqParameters) {
 		};
 	}
 
-	throw "Unhandled case!!!" + JSON.stringify(options);
+	throw "Unhandled case!!!" + JSON.stringify(reqParameters);
 };
