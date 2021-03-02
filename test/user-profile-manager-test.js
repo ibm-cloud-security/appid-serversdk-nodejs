@@ -34,11 +34,11 @@ function requestMock(options, callback) {
 		options.sub = "123";
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(options));
+		}, options);
 	} else {
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(options));
+		}, options);
 	}
 }
 
@@ -48,7 +48,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 	before(function () {
 		UserProfileManager = proxyquire("../lib/user-profile-manager/user-profile-manager", {
-			"request": requestMock
+			"../utils/request-util": requestMock
 		});
 	});
 
