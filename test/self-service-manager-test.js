@@ -1181,12 +1181,12 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
 				return callback(error, {}, {});
 			}
-			callback(null, {statusCode: 200}, JSON.stringify({"access_token": testToken}));
+			callback(null, {statusCode: 200}, {"access_token": testToken});
 			
 		};
 		before(function (done) {
 			_getIAMToken = SelfServiceManager.__get__("_getIAMToken");
-			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("../utils/request-util", stubRequest);
 			done();
 		});
 		after(function (done) {
@@ -1332,7 +1332,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		before(function (done) {
 			_handleRequest = SelfServiceManager.__get__("_handleRequest");
-			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("../utils/request-util", stubRequest);
 			done();
 		});
 		after(function(done){
