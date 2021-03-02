@@ -67,22 +67,22 @@ function mockRequest(options, callback) {
 		mockInvalidTokenResponse['access_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		}, mockInvalidTokenResponse);
 	} else if (secret.includes(INVALID_IDENTITY_TOKEN)) {
 		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['id_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		}, mockInvalidTokenResponse);
 	} else if (secret.includes(SUCCESS)) {
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockTokenResponse))
+		}, mockTokenResponse)
 	} else if (secret.includes('return_code')) {
 		const statusCode = parseInt(secret.split(':')[1]);
 		return callback(null, {
 			statusCode
-		}, JSON.stringify(getErrorResponse(statusCode)));
+		}, getErrorResponse(statusCode));
 	}
 }
 
@@ -123,7 +123,7 @@ describe('/lib/token-manager/token-manager', () => {
 	before(() => {
 		TokenManager = proxyquire("../lib/token-manager/token-manager", {
 			"../utils/token-util": require("./mocks/token-util-mock"),
-			"request": mockRequest
+			"../utils/request-util": mockRequest
 		});
 	});
 
