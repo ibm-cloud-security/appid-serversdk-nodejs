@@ -3,17 +3,17 @@ const previousAccessToken = "test.previousAccessToken.test";
 module.exports = function (options, callback) {
 	if (options.formData && options.formData.grant_type === "refresh_token") {
 		if (options.formData.refresh_token === "WORKING_REFRESH_TOKEN") {
-			return callback(null, {statusCode: 200}, JSON.stringify({
+			return callback(null, {statusCode: 200}, {
 				"access_token": "access_token_mock",
 				"id_token": "id_token_mock",
 				"refresh_token": "refresh_token_mock"
-			}));
+			});
 		}
 		if (options.formData.refresh_token === "INVALID_REFRESH_TOKEN") {
-			return callback(null, {statusCode: 401}, JSON.stringify({
+			return callback(null, {statusCode: 401}, {
 				error: "invalid_grant",
 				"error_description": "invalid grant"
-			}));
+			});
 		}
 	}
 	if (options.url.indexOf("generate_code") >= 0) {
@@ -32,11 +32,11 @@ module.exports = function (options, callback) {
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
 		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(null, {statusCode: 200}, JSON.stringify({
+		return callback(null, {statusCode: 200}, {
 			"access_token": "access_token_mock",
 			"id_token": "id_token_mock",
 			"refresh_token": "refresh_token_mock"
-		}));
+		});
 	} else if (options.followRedirect === false) {
 		return callback(null, {
 			statusCode: 302,
@@ -45,47 +45,47 @@ module.exports = function (options, callback) {
 			}
 		});
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("NULL_ID_TOKEN") !== -1) {
-		return callback(null, {statusCode: 200}, JSON.stringify({
+		return callback(null, {statusCode: 200}, {
 			"access_token": "access_token_mock",
 			"id_token": "null_scope",
 			"refresh_token": "refresh_token_mock"
-		}));
+		});
 	} else if (options.formData.username === "test_username" && options.formData.password === "bad_password") {
-		return callback(null, {statusCode: 401}, JSON.stringify({
+		return callback(null, {statusCode: 401}, {
 			error: "invalid_grant",
 			"error_description": "wrong credentials"
-		}));
+		});
 	} else if (options.formData.username === "request_error") {
 		return callback(new Error("REQUEST_ERROR"), {statusCode: 0}, null);
 	} else if (options.formData.username === "parse_error") {
-		return callback(null, {statusCode: 401}, JSON.stringify({
+		return callback(null, {statusCode: 401}, {
 			error: "invalid_grant",
 			"error_description": "wrong credentials"
-		}) + "dddddd");
+		} + "dddddd");
 	} else if (options.formData.username === "test_username" && options.formData.password === "good_password") {
 		if (options.formData.scope) {
-			return callback(null, {statusCode: 200}, JSON.stringify({
+			return callback(null, {statusCode: 200}, {
 				"access_token": "access_token_mock_test_scope",
 				"id_token": "id_token_mock_test_scope",
 				"refresh_token": "refrehs_token_test_scope"
-			}));
+			});
 		}
 		if (options.formData.appid_access_token) {
 			if (options.formData.appid_access_token === previousAccessToken) {
-				return callback(null, {statusCode: 200}, JSON.stringify({
+				return callback(null, {statusCode: 200}, {
 					"access_token": "access_token_mock",
 					"id_token": "id_token_mock",
 					"previousAccessToken": previousAccessToken,
 					"refresh_token": "refresh_token_mock"
-				}));
+				});
 			}
 			return callback(null, {statusCode: 400}, {});
 		}
-		return callback(null, {statusCode: 200}, JSON.stringify({
+		return callback(null, {statusCode: 200}, {
 			"access_token": "access_token_mock",
 			"id_token": "id_token_mock",
 			"refresh_token": "refresh_token_mock"
-		}));
+		});
 	}
 
 	throw "Unhandled case!!!" + JSON.stringify(options);
