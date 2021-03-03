@@ -13,12 +13,58 @@
 
 const chai = require("chai");
 const expect = chai.expect;
+const should = chai.should();
 let commonUtil = require("../lib/utils/common-util");
 chai.use(require("chai-as-promised"));
 
 describe("/lib/utils/common-util", function () {
+	context('getSafe', () => {
+        const sampleObj = {
+            "name":"abod",
+            "age":30,
+            "cars": {
+                "car1":"Ford",
+                "car2":"BMW",
+                "car3":"Fiat"
+            }
+        }
+
+        it('should successfully return the value of the property', () => {
+            expect(commonUtil.getSafe(() => sampleObj.cars.car2)).to.equal("BMW");
+        });
+
+        it('should return undefined if property is not in the json object', () => {
+            should.not.exist(commonUtil.getSafe(() => sampleObj.cars.car2.wheels));
+        });
+    });
+    
+    context('objectKeysToLowerCase', () => {
+        const mixedKeyCases = {
+            "First-Name":"abod",
+            "Age":30,
+            "CARS": {
+                "car1":"Ford",
+                "car2":"BMW",
+                "car3":"Fiat"
+            }
+        }
+        const lowerKeyCases = {
+            "first-name":"abod",
+            "age":30,
+            "cars": {
+                "car1":"Ford",
+                "car2":"BMW",
+                "car3":"Fiat"
+            }
+        }
+
+        it('should return the object keys in lowercases', () => {
+            expect(commonUtil.objectKeysToLowerCase(mixedKeyCases)).to.deep.equal(lowerKeyCases);
+        });
+    });
+
 	context('jsonToURLencodedForm', () => {
-		const formData = {
+        const formData = {
 			"grant_type": "urn:ibm:params:oauth:grant-type:apikey",
 			"apikey": "2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB"
 		}
