@@ -18,7 +18,7 @@ let commonUtil = require("../lib/utils/common-util");
 chai.use(require("chai-as-promised"));
 
 describe("/lib/utils/common-util", function () {
-	context('getSafe', () => {
+	context('optionalChaining', () => {
         const sampleObj = {
             "name":"abod",
             "age":30,
@@ -30,11 +30,11 @@ describe("/lib/utils/common-util", function () {
         }
 
         it('should successfully return the value of the property', () => {
-            expect(commonUtil.getSafe(() => sampleObj.cars.car2)).to.equal("BMW");
+            expect(commonUtil.optionalChaining(() => sampleObj.cars.car2)).to.equal("BMW");
         });
 
         it('should return undefined if property is not in the json object', () => {
-            should.not.exist(commonUtil.getSafe(() => sampleObj.cars.car2.wheels));
+            should.not.exist(commonUtil.optionalChaining(() => sampleObj.cars.car2.wheels));
         });
     });
     
