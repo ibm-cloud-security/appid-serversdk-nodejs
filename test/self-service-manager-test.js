@@ -1186,7 +1186,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		before(function (done) {
 			_getIAMToken = SelfServiceManager.__get__("_getIAMToken");
-			stubRequestRevert = SelfServiceManager.__set__("../utils/request-util", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
 			done();
 		});
 		after(function (done) {
@@ -1332,7 +1332,7 @@ describe("/lib/self-service/self-service-manager", function () {
 		};
 		before(function (done) {
 			_handleRequest = SelfServiceManager.__get__("_handleRequest");
-			stubRequestRevert = SelfServiceManager.__set__("../utils/request-util", stubRequest);
+			stubRequestRevert = SelfServiceManager.__set__("request", stubRequest);
 			done();
 		});
 		after(function(done){
