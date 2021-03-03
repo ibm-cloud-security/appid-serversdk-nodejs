@@ -19,6 +19,7 @@ chai.use(require("chai-as-promised"));
 
 describe("/lib/utils/common-util", function () {
 	context('optionalChaining', () => {
+        const stringName = 'testString';
         const sampleObj = {
             "name":"abod",
             "age":30,
@@ -35,6 +36,11 @@ describe("/lib/utils/common-util", function () {
 
         it('should return undefined if property is not in the json object', () => {
             should.not.exist(commonUtil.optionalChaining(() => sampleObj.cars.car2.wheels));
+        });
+
+        it('should return the same value if a non object was passed', () => {
+            expect(commonUtil.jsonToURLencodedForm(stringName)).to.equal(stringName);
+            expect(commonUtil.jsonToURLencodedForm(32)).to.equal(32);
         });
     });
     
@@ -64,6 +70,7 @@ describe("/lib/utils/common-util", function () {
     });
 
 	context('jsonToURLencodedForm', () => {
+        const stringName = 'testString';
         const formData = {
 			"grant_type": "urn:ibm:params:oauth:grant-type:apikey",
 			"apikey": "2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB"
@@ -73,6 +80,11 @@ describe("/lib/utils/common-util", function () {
 
         it('should successfully convert the formData to URLencoded format', () => {
             expect(commonUtil.jsonToURLencodedForm(formData)).to.equal(urlEncodedData);
+        });
+        
+        it('should return the same value if a non object was passed', () => {
+            expect(commonUtil.jsonToURLencodedForm(stringName)).to.equal(stringName);
+            expect(commonUtil.jsonToURLencodedForm(32)).to.equal(32);
         });
     });
 	
