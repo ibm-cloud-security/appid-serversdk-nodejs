@@ -45,6 +45,8 @@
     "npm-check-updates": "^7.0.1",
     "q": "^1.5.1",
     "rsa-pem-from-mod-exp": "^0.8.4",
+    "sinon": "^9.2.4",
+    "sinon-chai": "^3.5.0",
     "underscore": "^1.10.2"
   }
 }
