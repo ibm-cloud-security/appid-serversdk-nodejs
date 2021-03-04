@@ -249,23 +249,42 @@ describe('/lib/utils/request-util', function (done) {
 
 
     context('Handle error failures', () => {
-        let sampleError = new Error("Some Error");
-        sampleError.statusCode = 500;
+        const reqHeaders = {
+            url: 'sampleURL',
+            json: {
+                val: 'SomeVal'
+            }
+        }
+
         beforeEach(function () {
             sandbox.reset();
+        });
+        
+        it('should return an error if body has error value', (done) => {
+            const someError = "someError";
+            gotStub = sandbox.stub().resolves({
+                "error": someError
+            });
+            requestUtil = proxyquire("../lib/utils/request-util", {
+                got: gotStub,
+            });
+
+            const callbackFun = (error, response, body) => {
+                expect(gotStub).to.have.been.calledOnce;
+                expect(error).to.equal(someError);
+                done();
+            }
+            requestUtil(reqHeaders, callbackFun);
+
+        });
+
+        it('should return an error if body was not sent back2', (done) => {
+            let sampleError = new Error("Some Error");
+            sampleError.statusCode = 500;
             gotStub = sandbox.stub().rejects(sampleError);
             requestUtil = proxyquire("../lib/utils/request-util", {
                 got: gotStub,
             });
-            
-        });
-        it('should return an error if body was not sent back2', (done) => {
-            const reqHeaders = {
-                url: 'sampleURL',
-                json: {
-                    val: 'SomeVal'
-                }
-            }
 
             const callbackFun = (error, response, body) => {
                 expect(gotStub).to.have.been.calledOnce;
