@@ -7,11 +7,7 @@
     "apiapp": "node samples/api-app-sample-server.js",
     "webapp": "node samples/web-app-sample-server.js",
     "test": "./node_modules/.bin/_mocha",
-<<<<<<< HEAD
-    "test_nyc": "./node_modules/.bin/nyc ./node_modules/.bin/_mocha --timeout 30000 --exit"
-=======
     "coverage": "nyc node_modules/mocha/bin/_mocha test/ --recursive --exit"
->>>>>>> master
   },
   "repository": {
     "type": "git",
