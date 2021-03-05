@@ -57,7 +57,7 @@ function getErrorResponse(statusCode) {
 	} else {
 		errorResponse['error_description'] = 'Unexpected error';
 	}
-	return errorResponse
+	return errorResponse;
 }
 
 function mockRequest(options, callback) {
@@ -83,6 +83,10 @@ function mockRequest(options, callback) {
 		return callback(null, {
 			statusCode
 		}, getErrorResponse(statusCode));
+	} else if (secret.includes('ERROR')) {
+	  return callback(new Error('Error'), {
+		statusCode: 500
+	  }, "");
 	}
 }
 
@@ -133,6 +137,11 @@ describe('/lib/token-manager/token-manager', () => {
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Invalid access token', done);
 		});
 
+	  	it('Should fail for thrown error', function (done) {
+			const tokenManager = new TokenManager(mockConfig('ERROR'));
+			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Error', done);
+	  	});
+
 		it('Should fail identity token validation', function (done) {
 			const tokenManager = new TokenManager(mockConfig(INVALID_IDENTITY_TOKEN));
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Invalid identity token', done);
@@ -145,7 +154,7 @@ describe('/lib/token-manager/token-manager', () => {
 
 		it('Should not retrieve tokens - 401', function (done) {
 			const tokenManager = new TokenManager(mockConfig(UNAUTHORIZED));
-			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Unauthorized', done)
+			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Unauthorized', done);
 		});
 
 		it('Should not retrieve tokens - 404', function (done) {
@@ -208,10 +217,10 @@ describe('/lib/token-manager/token-manager', () => {
 				assert.equal(context.accessToken, mockAccessToken)
 				assert.equal(context.expiresIn, 9999999999)
 				assert.equal(context.tokenType, 'Bearer')
-				done()
+				done();
 			}).catch ((err) => {
 				done(err);
-			})
+			});
 		});
 	});
 
