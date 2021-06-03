@@ -43,16 +43,7 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
-// additional documentation.
-
-// Also, if you plan on explicitly stating cookie usage with the
-// "sameSite" attribute, you can set the value to "Lax" or "None"
-// depending on your preferences. However, note that setting the
-// value to "true" will assign the value "Strict" to the sameSite
-// attribute which will result into an authentication error because
-// setting the "Strict" value will cause your browser not to send your
-// cookies after the redirect that happens during the authentication process.
-
+// additional documentation
 app.use(session({
 	secret: "123456",
 	resave: true,
@@ -65,6 +56,7 @@ app.use(express.static(__dirname ));
 // Configure express application to use passportjs
 app.use(passport.initialize());
 app.use(passport.session());
+
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
 	tenantId: "TENANT_ID",
@@ -72,11 +64,7 @@ let webAppStrategy = new WebAppStrategy({
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (accessToken, IDToken, refreshToken, cb) {
-	if (!IDToken) { return cb(null, null, "Missing ID token"); }
-	return cb(null, IDToken, "User exists!");
 });
-
 passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
