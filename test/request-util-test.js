@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire').noPreserveCache();
 const chai = require("chai");
 const expect = chai.expect;
-const { jsonToURLencodedForm } = require('../lib/utils/common-util');
+const { jsonToURLencodedForm, parseFormData } = require('../lib/utils/common-util');
 const sinonChai = require('sinon-chai');
 var sandbox = sinon.createSandbox();
 chai.use(sinonChai);
@@ -224,9 +224,15 @@ describe('/lib/utils/request-util', function (done) {
                 formData: sampleForm
             }
 
+
             const callbackFun = (error, response, body) => {
+            const bodyParamPassed = gotStub.args[0][1].body;
+
                 expect(gotStub).to.have.been.calledOnce;
-                expect(gotStub).to.have.been.deep.calledWithMatch('sampleURL', expectedHeaders);
+                
+                // Expect the body to be passed as a stream
+                expect(bodyParamPassed).to.have.property('_streams');
+                expect(parseFormData(bodyParamPassed)).to.deep.equal(sampleForm);
                 done();
             }
             requestUtil(reqHeaders, callbackFun);
