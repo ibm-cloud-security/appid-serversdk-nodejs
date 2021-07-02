@@ -28,7 +28,7 @@ describe("/lib/utils/token-util", function () {
   
   let utilsStub = {
 	"./public-key-util": require("./mocks/public-key-util-mock"),
-	"request": (_, cb) => cb(reqError, reqresponse, {issuer: reqEndpoint})
+	"./request-util": (_, cb) => cb(reqError, reqresponse, {issuer: reqEndpoint})
   };
   let Config;
   

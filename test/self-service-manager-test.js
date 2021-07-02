@@ -1181,7 +1181,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (JSON.stringify(options) !== JSON.stringify(expectedInput)) {
 				return callback(error, {}, {});
 			}
-			callback(null, {statusCode: 200}, JSON.stringify({"access_token": testToken}));
+			callback(null, {statusCode: 200}, {"access_token": testToken});
 			
 		};
 		before(function (done) {

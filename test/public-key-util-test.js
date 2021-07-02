@@ -26,7 +26,7 @@ describe("/lib/utils/public-key-util", function () {
 	
 	before(function () {
 		PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
-			"request": requestMock
+			"../utils/request-util": requestMock
 		});
 	});
 	
@@ -80,7 +80,7 @@ describe("/lib/utils/public-key-util", function () {
 		
 		it("two sequential request to public keys endpoint", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
-				"request": requestMock
+				"../utils/request-util": requestMock
 			});
 			var kid = "123";
 			PublicKeyUtilNew.getPublicKeyPemByKid(kid, testServerUrl + "SEQUENTIAL-REQUEST-PUBLIC-KEYs").then(function () {
@@ -115,7 +115,7 @@ describe("/lib/utils/public-key-util", function () {
 	describe("getPublicKeyPemMultipleRequests", function () {
 		it("Should get public keys from multiple requests", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
-				"request": requestMock
+				"../utils/request-util": requestMock
 			});
 			var requestArray = [];
 			for (var i = 0; i < 5; i++) {
