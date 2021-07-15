@@ -65,6 +65,7 @@ app.use(express.static(__dirname ));
 // Configure express application to use passportjs
 app.use(passport.initialize());
 app.use(passport.session());
+
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
 	tenantId: "TENANT_ID",
@@ -72,11 +73,7 @@ let webAppStrategy = new WebAppStrategy({
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (accessToken, IDToken, refreshToken, cb) {
-	if (!IDToken) { return cb(null, null, "Missing ID token"); }
-	return cb(null, IDToken, "User exists!");
 });
-
 passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
