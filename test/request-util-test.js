@@ -2,7 +2,10 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire').noPreserveCache();
 const chai = require("chai");
 const expect = chai.expect;
-const { jsonToURLencodedForm, parseFormData } = require('../lib/utils/common-util');
+const {
+    jsonToURLencodedForm,
+    parseFormData
+} = require('../lib/utils/common-util');
 const sinonChai = require('sinon-chai');
 var sandbox = sinon.createSandbox();
 chai.use(sinonChai);
@@ -23,7 +26,7 @@ describe('/lib/utils/request-util', function (done) {
         });
     });
 
-    afterEach(()=>{
+    afterEach(() => {
         gotStub.resetHistory();
         sandbox.restore();
     })
@@ -79,13 +82,17 @@ describe('/lib/utils/request-util', function (done) {
         it('should replace the (qs) option header with (searchParams)', (done) => {
             const reqHeaders = {
                 url: 'sampleURL',
-                qs: { r: "r" },
+                qs: {
+                    r: "r"
+                },
                 method: "GET"
             }
 
             const expectedHeaders = {
                 url: 'sampleURL',
-                searchParams: { r: "r" },
+                searchParams: {
+                    r: "r"
+                },
                 method: "GET"
             }
 
@@ -103,7 +110,9 @@ describe('/lib/utils/request-util', function (done) {
         it('should replace the (form) option with JSON.stringify Body', (done) => {
             const reqHeaders = {
                 url: 'sampleURL',
-                form: { r: "r" }
+                form: {
+                    r: "r"
+                }
             }
 
             const expectedHeaders = {
@@ -124,7 +133,10 @@ describe('/lib/utils/request-util', function (done) {
 
 
         it('should replace the (form) option with URLencodedForm Body if content-type is application/x-www-form-urlencoded ', (done) => {
-            const sampleForm = { r: "r", s: "sss" };
+            const sampleForm = {
+                r: "r",
+                s: "sss"
+            };
             const reqHeaders = {
                 url: 'sampleURL',
                 form: sampleForm,
@@ -156,7 +168,9 @@ describe('/lib/utils/request-util', function (done) {
             const sampleToken = "sampleToken";
             const reqHeaders = {
                 url: 'sampleURL',
-                auth: { bearer:  sampleToken}
+                auth: {
+                    bearer: sampleToken
+                }
             }
 
             const expectedHeaders = {
@@ -182,8 +196,8 @@ describe('/lib/utils/request-util', function (done) {
             const reqHeaders = {
                 url: 'sampleURL',
                 auth: {
-                    username:  authUsername,
-                    password:  authPassword,
+                    username: authUsername,
+                    password: authPassword,
                 }
             }
 
@@ -206,9 +220,9 @@ describe('/lib/utils/request-util', function (done) {
 
     context('should replace the formData and json option with the corresponding body option', () => {
         const sampleForm = {
-            firstName:  'Abod',
-            lastName:  'Akhras',
-        };        
+            firstName: 'Abod',
+            lastName: 'Akhras',
+        };
 
         const expectedHeaders = {
             url: 'sampleURL',
@@ -226,10 +240,10 @@ describe('/lib/utils/request-util', function (done) {
 
 
             const callbackFun = (error, response, body) => {
-            const bodyParamPassed = gotStub.args[0][1].body;
+                const bodyParamPassed = gotStub.args[0][1].body;
 
                 expect(gotStub).to.have.been.calledOnce;
-                
+
                 // Expect the body to be passed as a stream
                 expect(bodyParamPassed).to.have.property('_streams');
                 expect(parseFormData(bodyParamPassed)).to.deep.equal(sampleForm);
@@ -265,7 +279,7 @@ describe('/lib/utils/request-util', function (done) {
         beforeEach(function () {
             sandbox.reset();
         });
-        
+
         it('should return an error if body has error value', (done) => {
             const someError = "someError";
             gotStub = sandbox.stub().resolves({
@@ -295,7 +309,9 @@ describe('/lib/utils/request-util', function (done) {
             const callbackFun = (error, response, body) => {
                 expect(gotStub).to.have.been.calledOnce;
                 expect(error).to.equal(sampleError);
-                expect(response).to.deep.equal({statusCode: sampleError.statusCode});
+                expect(response).to.deep.equal({
+                    statusCode: sampleError.statusCode
+                });
                 done();
             }
             requestUtil(reqHeaders, callbackFun);

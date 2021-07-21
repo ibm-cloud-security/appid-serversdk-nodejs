@@ -21,20 +21,20 @@ const Q = require("q");
 
 describe("/lib/utils/public-key-util", function () {
 	console.log("Loading public-key-util-test.js");
-	
+
 	var PublicKeyUtil;
-	
+
 	before(function () {
 		PublicKeyUtil = proxyquire("../lib/utils/public-key-util", {
 			"../utils/request-util": requestMock
 		});
 	});
-	
+
 	this.timeout(5000);
 
-	
+
 	describe("getPublicKeyPemByKid", function () {
-		
+
 		it("public key dont have kid value", function (done) {
 			var kid;
 			PublicKeyUtil.getPublicKeyPemByKid(kid).then(function (publicKey) {
@@ -44,7 +44,7 @@ describe("/lib/utils/public-key-util", function () {
 				done();
 			})
 		});
-		
+
 		it("request to public keys endpoint failure", function (done) {
 			var kid = "not_found_kid";
 			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "FAIL-PUBLIC-KEYs").then(function () {
@@ -53,12 +53,12 @@ describe("/lib/utils/public-key-util", function () {
 				try {
 					assert.equal(err, "updatePublicKeys error: Failed to retrieve public keys.  All requests to protected endpoints will be rejected.");
 					done();
-				} catch(e) {
+				} catch (e) {
 					done(e);
 				}
 			});
 		});
-		
+
 		it("request to public keys endpoint update failure", function (done) {
 			var kid = "123";
 			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function () {
@@ -69,7 +69,7 @@ describe("/lib/utils/public-key-util", function () {
 					try {
 						assert.equal(err, "updatePublicKeys error: Failed to retrieve public keys.  All requests to protected endpoints will be rejected.");
 						done();
-					} catch(e) {
+					} catch (e) {
 						done(e);
 					}
 				});
@@ -77,7 +77,7 @@ describe("/lib/utils/public-key-util", function () {
 				done(err);
 			});
 		});
-		
+
 		it("two sequential request to public keys endpoint", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
 				"../utils/request-util": requestMock
@@ -94,7 +94,7 @@ describe("/lib/utils/public-key-util", function () {
 				done(err);
 			});
 		});
-		
+
 		it("Should successfully retrieve public key from OAuth server", function (done) {
 			var kid = "123";
 			PublicKeyUtil.getPublicKeyPemByKid(kid, testServerUrl + "SUCCESS-PUBLIC-KEYs").then(function (publicKey) {
@@ -111,7 +111,7 @@ describe("/lib/utils/public-key-util", function () {
 			});
 		});
 	});
-	
+
 	describe("getPublicKeyPemMultipleRequests", function () {
 		it("Should get public keys from multiple requests", function (done) {
 			var PublicKeyUtilNew = proxyquire("../lib/utils/public-key-util", {
@@ -136,21 +136,35 @@ describe("/lib/utils/public-key-util", function () {
 			}).catch(function (err) {
 				done(err);
 			});
-			
-			
+
+
 		});
 	});
 });
 
 var requestMock = function (options, callback) {
 	if (options.url.indexOf("FAIL-PUBLIC-KEY") >= 0 || options.url.indexOf("FAIL_REQUEST") >= 0) { // Used in public-key-util-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+		return callback(new Error("STUBBED_ERROR"), {
+			statusCode: 0
+		}, null);
 	} else if (options.url.indexOf("SUCCESS-PUBLIC-KEY") !== -1) { // Used in public-key-util-test
-		return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
+		return callback(null, {
+			statusCode: 200
+		}, {
+			"keys": [{
+				"n": "1",
+				"e": "2",
+				"kid": "123"
+			}]
+		});
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("FAILING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(new Error("STUBBED_ERROR"), {statusCode: 0}, null);
+		return callback(new Error("STUBBED_ERROR"), {
+			statusCode: 0
+		}, null);
 	} else if (options.formData && options.formData.code && options.formData.code.indexOf("WORKING_CODE") !== -1) { // Used in webapp-strategy-test
-		return callback(null, {statusCode: 200}, JSON.stringify({
+		return callback(null, {
+			statusCode: 200
+		}, JSON.stringify({
 			"access_token": "access_token_mock",
 			"id_token": "id_token_mock"
 		}));
@@ -164,12 +178,28 @@ var requestMock = function (options, callback) {
 	} else if (options.url.indexOf("SETTIMEOUT-PUBLIC-KEYs") > -1) {
 		requestCounter++;
 		setTimeout(function () {
-			return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
+			return callback(null, {
+				statusCode: 200
+			}, {
+				"keys": [{
+					"n": "1",
+					"e": "2",
+					"kid": "123"
+				}]
+			});
 		}, 3000);
-	} else if(options.url.indexOf("SEQUENTIAL-REQUEST-PUBLIC-KEYs") > -1) {
+	} else if (options.url.indexOf("SEQUENTIAL-REQUEST-PUBLIC-KEYs") > -1) {
 		seqRequestCounter++;
-		return callback(null, {statusCode: 200}, {"keys": [{"n": "1", "e": "2", "kid": "123"}]});
+		return callback(null, {
+			statusCode: 200
+		}, {
+			"keys": [{
+				"n": "1",
+				"e": "2",
+				"kid": "123"
+			}]
+		});
 	} else {
 		throw "Unhandled case!!!" + JSON.stringify(options);
-	} 
+	}
 };

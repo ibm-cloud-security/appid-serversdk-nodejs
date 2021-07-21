@@ -18,15 +18,15 @@ let commonUtil = require("../lib/utils/common-util");
 chai.use(require("chai-as-promised"));
 
 describe("/lib/utils/common-util", function () {
-	context('optionalChaining', () => {
+    context('optionalChaining', () => {
         const stringName = 'testString';
         const sampleObj = {
-            "name":"abod",
-            "age":30,
+            "name": "abod",
+            "age": 30,
             "cars": {
-                "car1":"Ford",
-                "car2":"BMW",
-                "car3":"Fiat"
+                "car1": "Ford",
+                "car2": "BMW",
+                "car3": "Fiat"
             }
         }
 
@@ -43,24 +43,24 @@ describe("/lib/utils/common-util", function () {
             expect(commonUtil.jsonToURLencodedForm(32)).to.equal(32);
         });
     });
-    
+
     context('objectKeysToLowerCase', () => {
         const mixedKeyCases = {
-            "First-Name":"abod",
-            "Age":30,
+            "First-Name": "abod",
+            "Age": 30,
             "CARS": {
-                "car1":"Ford",
-                "car2":"BMW",
-                "car3":"Fiat"
+                "car1": "Ford",
+                "car2": "BMW",
+                "car3": "Fiat"
             }
         }
         const lowerKeyCases = {
-            "first-name":"abod",
-            "age":30,
+            "first-name": "abod",
+            "age": 30,
             "cars": {
-                "car1":"Ford",
-                "car2":"BMW",
-                "car3":"Fiat"
+                "car1": "Ford",
+                "car2": "BMW",
+                "car3": "Fiat"
             }
         }
 
@@ -69,29 +69,33 @@ describe("/lib/utils/common-util", function () {
         });
     });
 
-	context('jsonToURLencodedForm', () => {
+    context('jsonToURLencodedForm', () => {
         const stringName = 'testString';
         const formData = {
-			"grant_type": "urn:ibm:params:oauth:grant-type:apikey",
-			"apikey": "2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB"
-		}
+            "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
+            "apikey": "2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB"
+        }
 
-		const urlEncodedData = 'grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB';
+        const urlEncodedData = 'grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB';
 
         it('should successfully convert the formData to URLencoded format', () => {
             expect(commonUtil.jsonToURLencodedForm(formData)).to.equal(urlEncodedData);
         });
-        
+
         it('should return the same value if a non object was passed', () => {
             expect(commonUtil.jsonToURLencodedForm(stringName)).to.equal(stringName);
             expect(commonUtil.jsonToURLencodedForm(32)).to.equal(32);
         });
     });
-	
-	context('parseJSON', () => {
-		const validStringJson = '{"name":"abod","age":28,"car":"ford"}';
-		const validJSON = {"name":"abod","age":28,"car":"ford"};
-		const htmlError = "<div>Internal Server Error</div>";
+
+    context('parseJSON', () => {
+        const validStringJson = '{"name":"abod","age":28,"car":"ford"}';
+        const validJSON = {
+            "name": "abod",
+            "age": 28,
+            "car": "ford"
+        };
+        const htmlError = "<div>Internal Server Error</div>";
 
         it('should successfully return parsed JSON', () => {
             expect(commonUtil.parseJSON(validStringJson)).to.deep.equal(validJSON);
@@ -99,8 +103,8 @@ describe("/lib/utils/common-util", function () {
         it('should return the exact JSON', () => {
             expect(commonUtil.parseJSON(validJSON)).to.deep.equal(validJSON);
         });
-		
-		it('should return the exact text - Invalid JSON case', () => {
+
+        it('should return the exact text - Invalid JSON case', () => {
             expect(commonUtil.parseJSON(htmlError)).to.deep.equal(htmlError);
         });
     });
