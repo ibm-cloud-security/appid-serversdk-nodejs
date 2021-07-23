@@ -34,7 +34,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Requirements
 * npm 6.+
-* node 10.+ (node 12.+ recommended)
+* node 12.+
 
 ## Installation
 ```
@@ -238,7 +238,7 @@ app.listen(process.env.PORT || 1234);
 Using access control, you can check which scopes exist on the request.
 ```JavaScript
 app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
-    if(WeAppStrategy.hasScope(req, "read write")){
+    if(WebAppStrategy.hasScope(req, "read write")){
       	res.json(req.user);
     }
     else {
