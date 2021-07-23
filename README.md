@@ -33,8 +33,8 @@ In addition, the SDK provides helper utilities centered around tokens and user p
 Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
-* npm 4.+
-* node 6.+
+* npm 6.+
+* node 10.+ (node 12.+ recommended)
 
 ## Installation
 ```
@@ -123,9 +123,9 @@ app.get("/api/protected",
 	}
 );
 ```
-The scope parameter defines the required scopes. 
+The scope parameter defines the required scopes.
 The audience parameter is optional and should be set to the application clientId
-to guarantee the scopes are for the requested application. 
+to guarantee the scopes are for the requested application.
 
 #### Protecting web applications using WebAppStrategy
 WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access, identity and refresh tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
@@ -151,7 +151,16 @@ const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
-// additional documentation
+// additional documentation.
+
+// Also, if you plan on explicitly stating cookie usage with the
+// "sameSite" attribute, you can set the value to "Lax" or "None"
+// depending on your preferences. However, note that setting the
+// value to "true" will assign the value "Strict" to the sameSite
+// attribute which will result into an authentication error because
+// setting the "Strict" value will cause your browser not to send your 
+// cookies after the redirect that happens during the authentication process.
+
 app.use(session({
 	secret: '123456',
 	resave: true,
@@ -330,7 +339,8 @@ async function getAppIdentityToken() {
 			const tokenResponse = await tokenManager.getApplicationIdentityToken();
 			console.log('Token response : ' + JSON.stringify(tokenResponse));
 
-			//the token response contains the access_token, expires_in, token_type
+			//the token response contains the accessToken, expiresIn, tokenType
+
 	} catch (err) {
 			console.log('err obtained : ' + err);
 	}
@@ -592,7 +602,6 @@ To learn more about log4js, visit the documentation here (https://log4js-node.gi
 
 ## Got Questions?
 Join us on [Slack](https://www.ibm.com/cloud/blog/announcements/get-help-with-ibm-cloud-app-id-related-questions-on-slack) and chat with our dev team.
-
 
 ### License
 This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
