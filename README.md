@@ -34,7 +34,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Requirements
 * npm 6.+
-* node 10.+ (node 12.+ recommended)
+* node 12.+
 
 ## Installation
 ```
