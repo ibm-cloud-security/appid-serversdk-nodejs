@@ -47,7 +47,9 @@ const mockConfig = (event) => ({
 });
 
 function getErrorResponse(statusCode) {
-	let errorResponse = { statusCode };
+	let errorResponse = {
+		statusCode
+	};
 	if (statusCode === 400) {
 		errorResponse['error_description'] = 'Bad request';
 	} else if (statusCode === 401) {
@@ -57,7 +59,7 @@ function getErrorResponse(statusCode) {
 	} else {
 		errorResponse['error_description'] = 'Unexpected error';
 	}
-	return errorResponse
+	return errorResponse;
 }
 
 function mockRequest(options, callback) {
@@ -67,22 +69,26 @@ function mockRequest(options, callback) {
 		mockInvalidTokenResponse['access_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		}, mockInvalidTokenResponse);
 	} else if (secret.includes(INVALID_IDENTITY_TOKEN)) {
 		const mockInvalidTokenResponse = Object.create(mockTokenResponse);
 		mockInvalidTokenResponse['id_token'] = 'invalid_token';
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockInvalidTokenResponse));
+		}, mockInvalidTokenResponse);
 	} else if (secret.includes(SUCCESS)) {
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(mockTokenResponse))
+		}, mockTokenResponse)
 	} else if (secret.includes('return_code')) {
 		const statusCode = parseInt(secret.split(':')[1]);
 		return callback(null, {
 			statusCode
-		}, JSON.stringify(getErrorResponse(statusCode)));
+		}, getErrorResponse(statusCode));
+	} else if (secret.includes('ERROR')) {
+		return callback(new Error('Error'), {
+			statusCode: 500
+		}, "");
 	}
 }
 
@@ -91,13 +97,13 @@ function mockRetrieveTokenFailure(tokenManager, grantType, expectedErrMessage, d
 	let params = [];
 	let funcToTest;
 	switch (grantType) {
-		case CUSTOM : {
+		case CUSTOM: {
 			params.push(mockJwsToken);
 			funcToTest = tokenManager.getCustomIdentityTokens;
 			break;
 		}
 
-		case APP_TO_APP : {
+		case APP_TO_APP: {
 			funcToTest = tokenManager.getApplicationIdentityToken;
 			break;
 		}
@@ -123,7 +129,7 @@ describe('/lib/token-manager/token-manager', () => {
 	before(() => {
 		TokenManager = proxyquire("../lib/token-manager/token-manager", {
 			"../utils/token-util": require("./mocks/token-util-mock"),
-			"request": mockRequest
+			"../utils/request-util": mockRequest
 		});
 	});
 
@@ -131,6 +137,11 @@ describe('/lib/token-manager/token-manager', () => {
 		it('Should fail access token validation', function (done) {
 			const tokenManager = new TokenManager(mockConfig(INVALID_ACCESS_TOKEN));
 			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Invalid access token', done);
+		});
+
+		it('Should fail for thrown error', function (done) {
+			const tokenManager = new TokenManager(mockConfig('ERROR'));
+			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Error', done);
 		});
 
 		it('Should fail identity token validation', function (done) {
@@ -145,7 +156,7 @@ describe('/lib/token-manager/token-manager', () => {
 
 		it('Should not retrieve tokens - 401', function (done) {
 			const tokenManager = new TokenManager(mockConfig(UNAUTHORIZED));
-			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Unauthorized', done)
+			mockRetrieveTokenFailure(tokenManager, CUSTOM, 'Unauthorized', done);
 		});
 
 		it('Should not retrieve tokens - 404', function (done) {
@@ -175,43 +186,43 @@ describe('/lib/token-manager/token-manager', () => {
 
 	describe('#TokenManager.getAppToAppToken', () => {
 
-		it('Should fail token validation - wrong tenant', function(done) {
+		it('Should fail token validation - wrong tenant', function (done) {
 			const tokenManager = new TokenManager(mockConfig(INVALID_ACCESS_TOKEN));
 			mockRetrieveTokenFailure(tokenManager, APP_TO_APP, 'Invalid access token', done);
 		});
 
-		it('Should not retrieve tokens - 404', function(done) {
+		it('Should not retrieve tokens - 404', function (done) {
 			const tokenManager = new TokenManager(mockConfig(NOT_FOUND));
 			mockRetrieveTokenFailure(tokenManager, APP_TO_APP, 'Not found', done);
 
 		});
 
-		it('Should not retrieve tokens - 401', function(done) {
+		it('Should not retrieve tokens - 401', function (done) {
 			const tokenManager = new TokenManager(mockConfig(UNAUTHORIZED));
 			mockRetrieveTokenFailure(tokenManager, APP_TO_APP, 'Unauthorized', done)
 		});
 
-		it('Should not retrieve tokens - 400', function(done) {
+		it('Should not retrieve tokens - 400', function (done) {
 			const tokenManager = new TokenManager(mockConfig(BAD_REQUEST));
 			mockRetrieveTokenFailure(tokenManager, APP_TO_APP, 'Failed to obtain tokens', done);
 		});
 
-		it('Should not retrieve tokens - 500', function(done) {
+		it('Should not retrieve tokens - 500', function (done) {
 			const tokenManager = new TokenManager(mockConfig(SERVER_ERROR));
 			mockRetrieveTokenFailure(tokenManager, APP_TO_APP, 'Unexpected error', done);
 		});
 
-		it('should retrieve tokens - Happy Flow', function(done) {
+		it('should retrieve tokens - Happy Flow', function (done) {
 
 			const tokenManager = new TokenManager(mockConfig(SUCCESS));
 			tokenManager.getApplicationIdentityToken().then((context) => {
 				assert.equal(context.accessToken, mockAccessToken)
 				assert.equal(context.expiresIn, 9999999999)
 				assert.equal(context.tokenType, 'Bearer')
-				done()
-			}).catch ((err) => {
+				done();
+			}).catch((err) => {
 				done(err);
-			})
+			});
 		});
 	});
 

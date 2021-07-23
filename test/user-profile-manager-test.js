@@ -34,11 +34,11 @@ function requestMock(options, callback) {
 		options.sub = "123";
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(options));
+		}, options);
 	} else {
 		return callback(null, {
 			statusCode: 200
-		}, JSON.stringify(options));
+		}, options);
 	}
 }
 
@@ -48,7 +48,7 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 	before(function () {
 		UserProfileManager = proxyquire("../lib/user-profile-manager/user-profile-manager", {
-			"request": requestMock
+			"../utils/request-util": requestMock
 		});
 	});
 
@@ -109,26 +109,22 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 		it("Should be able to init with VCAP_SERVICES (AdvancedMobileAccess)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
-				AdvancedMobileAccess: [
-					{
-						credentials: {
-							profilesUrl: "http://abcd"
-						}
+				AdvancedMobileAccess: [{
+					credentials: {
+						profilesUrl: "http://abcd"
 					}
-				]
+				}]
 			});
 			UserProfileManager.init();
 		});
 
 		it("Should be able to init with VCAP_SERVICES (appid)", function () {
 			process.env.VCAP_SERVICES = JSON.stringify({
-				AppID: [
-					{
-						credentials: {
-							serverUrl: "http://abcd"
-						}
+				AppID: [{
+					credentials: {
+						serverUrl: "http://abcd"
 					}
-				]
+				}]
 			});
 			UserProfileManager.init();
 		});
@@ -170,17 +166,15 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 		it("Should send proper access token, url and value", function (done) {
 			process.env.VCAP_SERVICES = JSON.stringify({
-				AppID: [
-					{
-						credentials: {
-							tenantId: "abcd",
-							clientId: "clientId",
-							secret: "secret",
-							oauthServerUrl: "http://abcd",
-							profilesUrl: "http://abcd"
-						}
+				AppID: [{
+					credentials: {
+						tenantId: "abcd",
+						clientId: "clientId",
+						secret: "secret",
+						oauthServerUrl: "http://abcd",
+						profilesUrl: "http://abcd"
 					}
-				]
+				}]
 			});
 			UserProfileManager.init();
 			UserProfileManager.setAttribute("access_token", "name", "value").then(function (result) {
@@ -194,17 +188,15 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 	});
 	describe("#UserProfileManager.getAttribute", function () {
 		process.env.VCAP_SERVICES = JSON.stringify({
-			AppID: [
-				{
-					credentials: {
-						tenantId: "abcd",
-						clientId: "clientId",
-						secret: "secret",
-						oauthServerUrl: "http://abcd",
-						profilesUrl: "http://abcd"
-					}
+			AppID: [{
+				credentials: {
+					tenantId: "abcd",
+					clientId: "clientId",
+					secret: "secret",
+					oauthServerUrl: "http://abcd",
+					profilesUrl: "http://abcd"
 				}
-			]
+			}]
 		});
 		it("Should validate all parameters are present", function (done) {
 
@@ -251,17 +243,15 @@ describe("/lib/user-profile-manager/user-profile-manager", function () {
 
 	describe("#UserProfileManager.deleteAttribute", function () {
 		process.env.VCAP_SERVICES = JSON.stringify({
-			AppID: [
-				{
-					credentials: {
-						tenantId: "abcd",
-						clientId: "clientId",
-						secret: "secret",
-						oauthServerUrl: "http://abcd",
-						profilesUrl: "http://abcd"
-					}
+			AppID: [{
+				credentials: {
+					tenantId: "abcd",
+					clientId: "clientId",
+					secret: "secret",
+					oauthServerUrl: "http://abcd",
+					profilesUrl: "http://abcd"
 				}
-			]
+			}]
 		});
 		it("Should validate all parameters are present", function (done) {
 

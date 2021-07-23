@@ -151,7 +151,16 @@ const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
-// additional documentation
+// additional documentation.
+
+// Also, if you plan on explicitly stating cookie usage with the
+// "sameSite" attribute, you can set the value to "Lax" or "None"
+// depending on your preferences. However, note that setting the
+// value to "true" will assign the value "Strict" to the sameSite
+// attribute which will result into an authentication error because
+// setting the "Strict" value will cause your browser not to send your 
+// cookies after the redirect that happens during the authentication process.
+
 app.use(session({
 	secret: '123456',
 	resave: true,
