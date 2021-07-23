@@ -60,11 +60,12 @@ app.use(session({
 }));
 
 // Use static resources from /samples directory
-app.use(express.static(__dirname ));
+app.use(express.static(__dirname));
 
 // Configure express application to use passportjs
 app.use(passport.initialize());
 app.use(passport.session());
+
 // Configure passportjs to use WebAppStrategy
 let webAppStrategy = new WebAppStrategy({
 	tenantId: "TENANT_ID",
@@ -72,21 +73,17 @@ let webAppStrategy = new WebAppStrategy({
 	secret: "SECRET",
 	oauthServerUrl: "OAUTH_SERVER_URL",
 	redirectUri: "http://localhost:3000" + CALLBACK_URL
-}, function (accessToken, IDToken, refreshToken, cb) {
-	if (!IDToken) { return cb(null, null, "Missing ID token"); }
-	return cb(null, IDToken, "User exists!");
 });
-
 passport.use(webAppStrategy);
 
 // Configure passportjs with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
 // for additional information http://passportjs.org/docs
-passport.serializeUser(function(user, cb) {
+passport.serializeUser(function (user, cb) {
 	cb(null, user);
 });
 
-passport.deserializeUser(function(obj, cb) {
+passport.deserializeUser(function (obj, cb) {
 	cb(null, obj);
 });
 
@@ -137,7 +134,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 // Logout endpoint. Clears authentication information from session
-app.get(LOGOUT_URL, function(req, res){
+app.get(LOGOUT_URL, function (req, res) {
 	WebAppStrategy.logout(req);
 	res.redirect(LANDING_PAGE_URL);
 });
@@ -146,7 +143,9 @@ function storeRefreshTokenInCookie(req, res, next) {
 	const refreshToken = req.session[WebAppStrategy.AUTH_CONTEXT].refreshToken;
 	if (refreshToken) {
 		/* An example of storing user's refresh-token in a cookie with expiration of a month */
-		res.cookie("refreshToken", refreshToken, {maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */});
+		res.cookie("refreshToken", refreshToken, {
+			maxAge: 1000 * 60 * 60 * 24 * 30 /* 30 days */
+		});
 	}
 	next();
 }
@@ -162,27 +161,31 @@ app.get("/protected", function tryToRefreshTokenIfNotLoggedIn(req, res, next) {
 		return next();
 	}
 
-	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).then(function() {
+	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).then(function () {
 		next();
 	});
-}, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function(req, res) {
+}, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function (req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
 });
 
-app.post("/rop/login/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
+app.post("/rop/login/submit", bodyParser.urlencoded({
+	extended: false
+}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	failureRedirect: ROP_LOGIN_PAGE_URL,
-	failureFlash : true // allow flash messages
+	failureFlash: true // allow flash messages
 }));
 
-app.get(ROP_LOGIN_PAGE_URL, function(req, res) {
+app.get(ROP_LOGIN_PAGE_URL, function (req, res) {
 	// render the page and pass in any flash data if it exists
-	res.render("login.ejs", { message: req.flash('error') });
+	res.render("login.ejs", {
+		message: req.flash('error')
+	});
 });
 
 var port = process.env.PORT || 3000;
 
-app.listen(port, function(){
+app.listen(port, function () {
 	logger.info("Listening on http://localhost:" + port + "/web-app-sample.html");
 });

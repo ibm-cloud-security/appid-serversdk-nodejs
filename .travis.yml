@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - "10"
+  - "12"
 
 notifications:
   email:
@@ -19,7 +19,7 @@ install:
 
 script:
   - npm install
-  - npm run test_nyc
+  - npm run coverage
   - nyc npm test && nyc report --reporter=text-lcov | coveralls
 
 deploy:

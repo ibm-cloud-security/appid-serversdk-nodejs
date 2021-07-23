@@ -18,7 +18,7 @@ const proxyquire = require("proxyquire");
 const defaultLocale = "en";
 const previousAccessToken = "test.previousAccessToken.test";
 chai.use(require("chai-as-promised"));
-const tokenUtilsMock=require("./mocks/token-util-mock");
+const tokenUtilsMock = require("./mocks/token-util-mock");
 describe("/lib/strategies/webapp-strategy", function () {
 	console.log("Loading webapp-strategy-test.js");
 
@@ -27,7 +27,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 	before(function () {
 		WebAppStrategy = proxyquire("../lib/strategies/webapp-strategy", {
 			"../utils/token-util": tokenUtilsMock,
-			"request": require("./mocks/request-mock")
+			"../utils/request-util": require("./mocks/request-mock")
 		});
 		webAppStrategy = new WebAppStrategy({
 			tenantId: "tenantId",
@@ -35,37 +35,38 @@ describe("/lib/strategies/webapp-strategy", function () {
 			secret: "secret",
 			oauthServerUrl: "https://oauthServerUrlMock",
 			redirectUri: "https://redirectUri"
-		}, function (accessToken, IDToken, refreshToken, cb) {
-			if (!IDToken) { return cb(null, null, "Missing ID token"); }
-			return cb(null, IDToken, "User exists!");
 		});
 	});
 
 	describe("#SSO ", () => {
-		let resultRedirect='';
-		const redirectURL =  "http://localhost:3000/somethingElse";
+		let resultRedirect = '';
+		const redirectURL = "http://localhost:3000/somethingElse";
 
-		beforeEach( () => {
-			resultRedirect='';
+		beforeEach(() => {
+			resultRedirect = '';
 		});
 
-		it("good callback" , () => {
+		it("good callback", () => {
 			let req = {
-				session: { returnTo : 'ssss'},
-				logout : function(req) {}
+				session: {
+					returnTo: 'ssss'
+				},
+				logout: function (req) {}
 			};
 			let res = {
-				redirect : function (url) {
+				redirect: function (url) {
 					resultRedirect = url;
 				}
 			};
 
-			let options = { redirect_uri: redirectURL};
-			webAppStrategy.logoutSSO(req,res, options);
+			let options = {
+				redirect_uri: redirectURL
+			};
+			webAppStrategy.logoutSSO(req, res, options);
 			const uriEncodedCallBack = encodeURIComponent(redirectURL);
 			const excpected = `https://oauthServerUrlMock/cloud_directory/sso/logout?redirect_uri=${uriEncodedCallBack}&client_id=clientId`;
 			assert.equal(resultRedirect, excpected);
-			assert.equal(req.session.returnTo , undefined); // expect session to be cleaned.
+			assert.equal(req.session.returnTo, undefined); // expect session to be cleaned.
 		});
 
 	});
@@ -88,7 +89,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 		it("Should succeed if request has session", function (done) {
 			var failed = false;
-			var req = {session: {}};
+			var req = {
+				session: {}
+			};
 			webAppStrategy.error = function (err) {
 				failed = true;
 			};
@@ -126,7 +129,7 @@ describe("/lib/strategies/webapp-strategy", function () {
 	});
 
 	describe("#authenticate()", function () {
-		beforeEach(()=>tokenUtilsMock.setValidateIssAndAudResponse(true));
+		beforeEach(() => tokenUtilsMock.setValidateIssAndAudResponse(true));
 		describe("refresh-token", function () {
 
 			var req;
@@ -203,72 +206,76 @@ describe("/lib/strategies/webapp-strategy", function () {
 		});
 
 		it("Should not succeed when already authenticated with an expired token (default is allowExpiredTokensOnSession=false)", function (done) {
-		  const req = {
-			session: {
-			  APPID_AUTH_CONTEXT: {
-				accessTokenPayload: {
-				  exp: 12, // smaller than Date.now() -> expired
-				  amr: []
+			const req = {
+				session: {
+					APPID_AUTH_CONTEXT: {
+						accessTokenPayload: {
+							exp: 12, // smaller than Date.now() -> expired
+							amr: []
+						}
+					}
 				}
-			  }
-			}
-		  };
+			};
 
-		  webAppStrategy.success = function () {
-			  assert.fail('authentication should not have succeeded.');
-		  };
+			webAppStrategy.success = function () {
+				assert.fail('authentication should not have succeeded.');
+			};
 
-		  webAppStrategy.redirect = function () {
-			  done();
-		  };
+			webAppStrategy.redirect = function () {
+				done();
+			};
 
-		  webAppStrategy.authenticate(req, {});
+			webAppStrategy.authenticate(req, {});
 		});
 
 		it("Should fail when already authenticated with an expired token, when allowExpiredTokensOnSession=false", function (done) {
-		  const req = {
-			session: {
-			  APPID_AUTH_CONTEXT: {
-				accessTokenPayload: {
-				  exp: 12, // smaller than Date.now() -> expired
-				  amr: []
+			const req = {
+				session: {
+					APPID_AUTH_CONTEXT: {
+						accessTokenPayload: {
+							exp: 12, // smaller than Date.now() -> expired
+							amr: []
+						}
+					}
 				}
-			  }
-			}
-		  };
+			};
 
-		  webAppStrategy.success = function () {
-			assert.fail('authentication shouln\'t have succeeded.');
-		  };
+			webAppStrategy.success = function () {
+				assert.fail('authentication shouln\'t have succeeded.');
+			};
 
-		  webAppStrategy.redirect = function () {
-			done();
-		  };
+			webAppStrategy.redirect = function () {
+				done();
+			};
 
-		  webAppStrategy.authenticate(req, {allowExpiredTokensOnSession: false});
+			webAppStrategy.authenticate(req, {
+				allowExpiredTokensOnSession: false
+			});
 		});
 
 		it("Should succeed when already authenticated with an unexpired token, when allowExpiredTokensOnSession=false", function (done) {
-		  const req = {
-			session: {
-			  APPID_AUTH_CONTEXT: {
-				accessTokenPayload: {
-				  exp: Date.now() / 1000 + 30, // valid, expires after 30 seconds
-				  amr: []
+			const req = {
+				session: {
+					APPID_AUTH_CONTEXT: {
+						accessTokenPayload: {
+							exp: Date.now() / 1000 + 30, // valid, expires after 30 seconds
+							amr: []
+						}
+					}
 				}
-			  }
-			}
-		  };
+			};
 
-		  webAppStrategy.success = function () {
-			done();
-		  };
+			webAppStrategy.success = function () {
+				done();
+			};
 
-		  webAppStrategy.redirect = function () {
-			assert.fail('authentication should have succeeded.');
-		  };
+			webAppStrategy.redirect = function () {
+				assert.fail('authentication should have succeeded.');
+			};
 
-		  webAppStrategy.authenticate(req, {allowExpiredTokensOnSession: false});
+			webAppStrategy.authenticate(req, {
+				allowExpiredTokensOnSession: false
+			});
 		});
 
 		it("Should be able to detect authenticated request and skip strategy", function (done) {
@@ -515,7 +522,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 					state: "1234567"
 				}
 			};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req);
 		});
 
@@ -531,7 +541,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 					state: "123456789"
 				}
 			};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req);
 		});
 
@@ -572,59 +585,11 @@ describe("/lib/strategies/webapp-strategy", function () {
 			var options = {
 				successRedirect: "redirectUri"
 			};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
-		});
-
-		it("Should pass if the verify callback finds a user", function (done) {
-			webAppStrategy.success = function (err, user, info) {
-				assert.equal(err, null);
-				assert.isObject(user);
-				assert.equal(info, 'User exists!');
-				done();
-			};
-			const req = {
-				session: {},
-				query: {
-					code: "WORKING_CODE",
-					state: "123456789"
-				}
-			};
-
-			const options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
-			webAppStrategy.authenticate(req, options);
-		});
-
-		it("Should handle callback if request contains grant code. Failure if verify callback fails", function (done) {
-			let failWebAppStrategy = new WebAppStrategy({
-				tenantId: "tenantId",
-				clientId: "clientId",
-				secret: "secret",
-				oauthServerUrl: "https://oauthServerUrlMock",
-				redirectUri: "https://redirectUri"
-			}, function (accessToken, IDToken, refreshToken, cb) {
-				return cb('error', IDToken, 'mock error');
-			});
-			failWebAppStrategy.error = function (err) {
-				assert.equal(err, 'error');
-				done();
-			};
-			failWebAppStrategy.success = function () {
-				done('supposed to fail');
-			};
-			var req = {
-				session: {
-					returnTo: "originalUri"
-				},
-				query: {
-					code: "WORKING_CODE",
-					state: "123456789"
-				}
-			};
-			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
-			failWebAppStrategy.authenticate(req, options);
 		});
 
 		it("Should handle callback if request contains grant code. Success with original URL", function (done) {
@@ -648,7 +613,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
 		});
 
@@ -673,7 +641,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
 		});
 		it("Should fail if issuer validation is failing -id Token", function (done) {
@@ -698,7 +669,10 @@ describe("/lib/strategies/webapp-strategy", function () {
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
 		});
 
@@ -714,12 +688,15 @@ describe("/lib/strategies/webapp-strategy", function () {
 				},
 				query: {
 					code: "NULL_ID_TOKEN",
-					state : "123456789"
+					state: "123456789"
 				}
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
 		});
 
@@ -733,12 +710,15 @@ describe("/lib/strategies/webapp-strategy", function () {
 				session: {},
 				query: {
 					code: "WORKING_CODE",
-					state : "123456789"
+					state: "123456789"
 				}
 			};
 
 			var options = {};
-			req.session[WebAppStrategy.STATE_PARAMETER] = { anonymousLogin : false , state : "123456789" };
+			req.session[WebAppStrategy.STATE_PARAMETER] = {
+				anonymousLogin: false,
+				state: "123456789"
+			};
 			webAppStrategy.authenticate(req, options);
 		});
 
@@ -809,7 +789,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 				}
 			};
 
-			webAppStrategy.authenticate(req, {forceLogin: true});
+			webAppStrategy.authenticate(req, {
+				forceLogin: true
+			});
 		});
 
 		it("Should fail if previous anonymous access token is not found and anon user is not allowed", function (done) {
@@ -895,7 +877,13 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 			it("user authenticated but not with cloud directory", function (done) {
 				var req = {
-					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					session: {
+						APPID_AUTH_CONTEXT: {
+							identityTokenPayload: {
+								amr: ["not_cloud_directory"]
+							}
+						}
+					},
 					isAuthenticated: function () {
 						return true;
 					},
@@ -924,7 +912,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 						APPID_AUTH_CONTEXT: {
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -975,7 +965,13 @@ describe("/lib/strategies/webapp-strategy", function () {
 
 			it("user authenticated but not with cloud directory", function (done) {
 				var req = {
-					session: {APPID_AUTH_CONTEXT: {identityTokenPayload: {amr: ["not_cloud_directory"]}}},
+					session: {
+						APPID_AUTH_CONTEXT: {
+							identityTokenPayload: {
+								amr: ["not_cloud_directory"]
+							}
+						}
+					},
 					isAuthenticated: function () {
 						return true;
 					},
@@ -1004,7 +1000,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 						APPID_AUTH_CONTEXT: {
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -1033,7 +1031,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 							identityToken: "error",
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -1062,7 +1062,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 							identityToken: "statusNot200",
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -1092,7 +1094,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 						APPID_AUTH_CONTEXT: {
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -1126,7 +1130,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 							APPID_AUTH_CONTEXT: {
 								identityTokenPayload: {
 									amr: ["cloud_directory"],
-									identities: [{id: "testUserId"}]
+									identities: [{
+										id: "testUserId"
+									}]
 								}
 							}
 						},
@@ -1156,7 +1162,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 						APPID_AUTH_CONTEXT: {
 							identityTokenPayload: {
 								amr: ["cloud_directory"],
-								identities: [{id: "testUserId"}]
+								identities: [{
+									id: "testUserId"
+								}]
 							}
 						}
 					},
@@ -1279,77 +1287,77 @@ describe("/lib/strategies/webapp-strategy", function () {
 		});
 	});
 
-  describe("#hasScope()", function () {
-	const req = {
-	  session: {}
-	};
+	describe("#hasScope()", function () {
+		const req = {
+			session: {}
+		};
 
-	it("Should return true: the two required custom scopes exist", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-		accessTokenPayload: {
-		  scope: "app/scope1 app/scope2"
-		}
-	  };
+		it("Should return true: the two required custom scopes exist", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "app/scope1 app/scope2"
+				}
+			};
 
-	  assert.isTrue(WebAppStrategy.hasScope(req, "scope1 scope2"));
+			assert.isTrue(WebAppStrategy.hasScope(req, "scope1 scope2"));
+		});
+
+		it("Should return false: only one of the two required scopes exists", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "app/scope1"
+				}
+			};
+
+			assert.isFalse(WebAppStrategy.hasScope(req, "scope1 scope2"));
+		});
+
+		it("Should return true: default scope and custom scope required exist", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "openid app/subapp/scope1"
+				}
+			};
+
+			assert.isTrue(WebAppStrategy.hasScope(req, "scope1 openid"));
+		});
+
+		it("Should return true: no scopes are required", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "openid app/subapp/scope1"
+				}
+			};
+
+			assert.isTrue(WebAppStrategy.hasScope(req, ""));
+		});
+
+		it("Should return true: no scopes (whitespace) are required", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "openid app/subapp/scope1"
+				}
+			};
+
+			assert.isTrue(WebAppStrategy.hasScope(req, "           "));
+		});
+
+		it("Should return false: no scope on access token, while a default scope is required", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {}
+			};
+
+			assert.isFalse(WebAppStrategy.hasScope(req, "openid"));
+		});
+
+		it("Should return true: non-string required scopes", function () {
+			req.session[WebAppStrategy.AUTH_CONTEXT] = {
+				accessTokenPayload: {
+					scope: "openid"
+				}
+			};
+
+			assert.isTrue(WebAppStrategy.hasScope(req, 42));
+		});
 	});
-
-	it("Should return false: only one of the two required scopes exists", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-		accessTokenPayload: {
-		  scope: "app/scope1"
-		}
-	  };
-
-	  assert.isFalse(WebAppStrategy.hasScope(req, "scope1 scope2"));
-	});
-
-    it("Should return true: default scope and custom scope required exist", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-	    accessTokenPayload: {
-		  scope: "openid app/subapp/scope1"
-	    }
-	  };
-
-	  assert.isTrue(WebAppStrategy.hasScope(req, "scope1 openid"));
-    });
-
-    it("Should return true: no scopes are required", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-	    accessTokenPayload: {
-		  scope: "openid app/subapp/scope1"
-	    }
-	  };
-
-	  assert.isTrue(WebAppStrategy.hasScope(req, ""));
-    });
-
-    it("Should return true: no scopes (whitespace) are required", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-	    accessTokenPayload: {
-		  scope: "openid app/subapp/scope1"
-	    }
-	  };
-
-	  assert.isTrue(WebAppStrategy.hasScope(req, "           "));
-    });
-
-    it("Should return false: no scope on access token, while a default scope is required", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-	    accessTokenPayload: {}
-	  };
-
-	  assert.isFalse(WebAppStrategy.hasScope(req, "openid"));
-    });
-
-    it("Should return true: non-string required scopes", function () {
-	  req.session[WebAppStrategy.AUTH_CONTEXT] = {
-	    accessTokenPayload: {
-		  scope: "openid"
-	    }
-	  };
-
-	  assert.isTrue(WebAppStrategy.hasScope(req, 42));
-    });
-  });
 });
