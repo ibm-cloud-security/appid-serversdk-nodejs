@@ -28,5 +28,9 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         
-    - run: echo "Run this only if merging to master - here there will be npm publish"
+    - run: echo "Run this only if merging to master - here there will be npm publish (see below)"
       if: github.ref == 'master'
+    #- run: npm publish
+    #  if: github.ref == 'master'
+    #    with:
+    #      token: ${{ secrets.NPM_TOKEN }}
