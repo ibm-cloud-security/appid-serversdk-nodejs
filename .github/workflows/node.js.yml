@@ -22,6 +22,11 @@ jobs:
     - run: npm install
     - run: npm install -g codecov
     - run: npm run coverage
-    - run: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-    - run: echo "Added github actions - here deployment"
+    
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - run: echo "Run this only if merging to master - here there will be npm publish"
       if: github.ref == 'master'
