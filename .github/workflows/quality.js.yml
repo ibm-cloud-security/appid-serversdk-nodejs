@@ -9,7 +9,7 @@ on:
     branches: [ development, master ]
 
 jobs:
-  build:
+  quality:
 
     runs-on: ubuntu-latest
 
