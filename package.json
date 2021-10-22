@@ -49,7 +49,6 @@
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^3.0.6",
-    "npm-check-updates": "^7.0.1",
     "q": "^1.5.1",
     "rsa-pem-from-mod-exp": "^0.8.4",
     "underscore": "^1.10.2"
