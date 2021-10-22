@@ -4,7 +4,7 @@ name: Quality CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ development, master ]
   pull_request:
     branches: [ development, master ]
 
