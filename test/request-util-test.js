@@ -40,7 +40,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                "url": 'sampleURL',
                 headers: {
                     "content-type": "application/json"
                 }
@@ -65,7 +64,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                "url": 'sampleURL',
                 headers: {
                     "content-type": "application/x-www-form-urlencoded"
                 }
@@ -89,7 +87,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                url: 'sampleURL',
                 searchParams: {
                     r: "r"
                 },
@@ -116,7 +113,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                url: 'sampleURL',
                 body: '{"r":"r"}',
                 headers: {
                     "content-type": "application/json"
@@ -146,7 +142,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                url: 'sampleURL',
                 body: jsonToURLencodedForm(sampleForm),
                 headers: {
                     "content-type": "application/x-www-form-urlencoded"
@@ -174,7 +169,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                url: 'sampleURL',
                 headers: {
                     "Authorization": `Bearer ${sampleToken}`,
                     "content-type": "application/json"
@@ -202,7 +196,6 @@ describe('/lib/utils/request-util', function (done) {
             }
 
             const expectedHeaders = {
-                url: 'sampleURL',
                 headers: {
                     "Authorization": "Basic " + Buffer.from(`${authUsername}:${authPassword}`).toString("base64"),
                     "content-type": "application/json"
@@ -225,7 +218,6 @@ describe('/lib/utils/request-util', function (done) {
         };
 
         const expectedHeaders = {
-            url: 'sampleURL',
             body: JSON.stringify(sampleForm),
             headers: {
                 "content-type": "application/json"
