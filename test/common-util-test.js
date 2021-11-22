@@ -73,10 +73,10 @@ describe("/lib/utils/common-util", function () {
         const stringName = 'testString';
         const formData = {
             "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
-            "apikey": "2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB"
+            "apikey": "dummyAPIKEY-FCUIw1hgPp31iRjcYllURtWeelFBgHYm4-key"
         }
 
-        const urlEncodedData = 'grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=2hntsFCUIw1hgPp31iRjcYllURtWeelFBgHYm4-ol3XB';
+        const urlEncodedData = 'grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=dummyAPIKEY-FCUIw1hgPp31iRjcYllURtWeelFBgHYm4-key';
 
         it('should successfully convert the formData to URLencoded format', () => {
             expect(commonUtil.jsonToURLencodedForm(formData)).to.equal(urlEncodedData);
