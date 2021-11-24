@@ -1,7 +1,9 @@
 # IBM Cloud App ID Node.js SDK
 
 [![IBM Cloud powered][img-ibmcloud-powered]][url-ibmcloud]
+[![Travis][img-travis-master]][url-travis-master]
 [![Coveralls][img-coveralls-master]][url-coveralls-master]
+[![Codacy][img-codacy]][url-codacy]
 [![Version][img-version]][url-npm]
 [![DownloadsMonthly][img-npm-downloads-monthly]][url-npm]
 [![DownloadsTotal][img-npm-downloads-total]][url-npm]
@@ -619,5 +621,11 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 [img-github-forks]: https://img.shields.io/github/forks/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Fork
 [url-github-forks]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/network
 
+[img-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg
+[url-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs
+
 [img-coveralls-master]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg
 [url-coveralls-master]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs
+
+[img-codacy]: https://api.codacy.com/project/badge/Grade/3156f40a37cb4026a443082fc1afcaa4?branch=master
+[url-codacy]: https://www.codacy.com/app/ibm-cloud-security/appid-serversdk-nodejs
