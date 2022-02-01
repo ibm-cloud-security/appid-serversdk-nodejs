@@ -1,0 +1,30 @@
+# The objective of the dry-run job is to get a preview of the pending release.
+# Dry-run mode skips the following steps: prepare, publish, success and fail.
+# In addition to this it prints the next version and release notes to the console.
+
+# Note: The Dry-run mode verifies the repository push permission, even though nothing will be pushed.
+# The verification is done to help user to figure out potential configuration issues.
+name: Dry Publish
+
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dry-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npx -p @semantic-release/exec -p semantic-release semantic-release --dry-run --plugins "@semantic-release/commit-analyzer,@semantic-release/exec" --analyzeCommits @semantic-release/commit-analyzer --verifyRelease @semantic-release/exec --verifyReleaseCmd 'echo ${nextRelease.version}'
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
