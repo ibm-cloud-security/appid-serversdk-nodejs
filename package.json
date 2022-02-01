@@ -10,7 +10,7 @@
     "test": "./node_modules/.bin/_mocha",
     "coverage": "./node_modules/.bin/nyc ./node_modules/.bin/_mocha --timeout 30000 --exit",
     "semantic-release": "semantic-release",
-    "acp": "git add . && npm run commit && git push -u origin --all"
+    "acp": "git add . && npm run commit"
   },
   "repository": {
     "type": "git",
