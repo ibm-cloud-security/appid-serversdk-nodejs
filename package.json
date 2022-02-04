@@ -1,6 +1,6 @@
 {
   "name": "ibmcloud-appid",
-  "version": "6.2.3",
+  "version": "6.2.4",
   "description": "Node.js SDK for the IBM Cloud App ID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "commit": "git-cz",
     "test": "./node_modules/.bin/_mocha",
     "coverage": "./node_modules/.bin/nyc ./node_modules/.bin/_mocha --timeout 30000 --exit",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "acp": "git add . && npm run commit"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,7 @@
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.1.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^5.11.0",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^8.0.0",
@@ -48,7 +49,7 @@
     "got": "^9.6.0",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^3.0.6",
+    "log4js": "^6.4.1",
     "q": "^1.5.1",
     "rsa-pem-from-mod-exp": "^0.8.4",
     "underscore": "^1.10.2"
