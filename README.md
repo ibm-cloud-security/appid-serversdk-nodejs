@@ -1,9 +1,7 @@
 # IBM Cloud App ID Node.js SDK
 
 [![IBM Cloud powered][img-ibmcloud-powered]][url-ibmcloud]
-[![Travis][img-travis-master]][url-travis-master]
 [![Coveralls][img-coveralls-master]][url-coveralls-master]
-[![Codacy][img-codacy]][url-codacy]
 [![Version][img-version]][url-npm]
 [![DownloadsMonthly][img-npm-downloads-monthly]][url-npm]
 [![DownloadsTotal][img-npm-downloads-total]][url-npm]
@@ -34,7 +32,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Requirements
 * npm 6.+
-* node 10.+ (node 12.+ recommended)
+* node 12.+
 
 ## Installation
 ```
@@ -151,7 +149,16 @@ const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
 // environments. See https://github.com/expressjs/session for
-// additional documentation
+// additional documentation.
+
+// Also, if you plan on explicitly stating cookie usage with the
+// "sameSite" attribute, you can set the value to "Lax" or "None"
+// depending on your preferences. However, note that setting the
+// value to "true" will assign the value "Strict" to the sameSite
+// attribute which will result into an authentication error because
+// setting the "Strict" value will cause your browser not to send your 
+// cookies after the redirect that happens during the authentication process.
+
 app.use(session({
 	secret: '123456',
 	resave: true,
@@ -229,7 +236,7 @@ app.listen(process.env.PORT || 1234);
 Using access control, you can check which scopes exist on the request.
 ```JavaScript
 app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
-    if(WeAppStrategy.hasScope(req, "read write")){
+    if(WebAppStrategy.hasScope(req, "read write")){
       	res.json(req.user);
     }
     else {
@@ -612,11 +619,5 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 [img-github-forks]: https://img.shields.io/github/forks/ibm-cloud-security/appid-serversdk-nodejs.svg?style=social&label=Fork
 [url-github-forks]: https://github.com/ibm-cloud-security/appid-serversdk-nodejs/network
 
-[img-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs.svg
-[url-travis-master]: https://travis-ci.org/ibm-cloud-security/appid-serversdk-nodejs
-
 [img-coveralls-master]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg
 [url-coveralls-master]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs
-
-[img-codacy]: https://api.codacy.com/project/badge/Grade/3156f40a37cb4026a443082fc1afcaa4?branch=master
-[url-codacy]: https://www.codacy.com/app/ibm-cloud-security/appid-serversdk-nodejs
