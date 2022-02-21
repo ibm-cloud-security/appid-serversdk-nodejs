@@ -292,7 +292,8 @@ describe('/lib/utils/request-util', function (done) {
 
         it('should return an error if body was not sent back2', (done) => {
             let sampleError = new Error("Some Error");
-            sampleError.statusCode = 500;
+            sampleError.response = {};
+            sampleError.response.statusCode = 500;
             gotStub = sandbox.stub().rejects(sampleError);
             requestUtil = proxyquire("../lib/utils/request-util", {
                 got: gotStub,
@@ -302,7 +303,7 @@ describe('/lib/utils/request-util', function (done) {
                 expect(gotStub).to.have.been.calledOnce;
                 expect(error).to.equal(sampleError);
                 expect(response).to.deep.equal({
-                    statusCode: sampleError.statusCode
+                    statusCode: sampleError.response.statusCode
                 });
                 done();
             }
