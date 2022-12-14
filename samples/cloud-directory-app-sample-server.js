@@ -132,7 +132,7 @@ app.post(ROP_SUBMIT, function(req, res, next) {
 			req.flash('errorCode', info.code);
 			return res.redirect(ROP_LOGIN_PAGE_URL + languageQuery + emailInputQuery);
 		}
-		req.logIn(user, { keepSessionInfo: true }, function (err) {
+		req.logIn(user, function (err) {
 			if (err) {
 				return next(err);
 			}
@@ -237,11 +237,11 @@ app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NA
 });
 
 // Logout endpoint. Clears authentication information from session
-app.get(LOGOUT_URL, function (req, res){
-	req.session.destroy(function (err) {
-	  res.redirect(LANDING_PAGE_URL);
-	});
+app.get(LOGOUT_URL, function(req, res){
+	WebAppStrategy.logout(req);
+	res.redirect(LANDING_PAGE_URL);
 });
+
 
 function _generateUserScim(body) {
 	let userScim = {};
