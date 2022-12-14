@@ -134,10 +134,9 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 // Logout endpoint. Clears authentication information from session
-app.get(LOGOUT_URL, function (req, res){
-	req.session.destroy(function (err) {
-	  res.redirect(LANDING_PAGE_URL);
-	});
+app.get(LOGOUT_URL, function (req, res) {
+	WebAppStrategy.logout(req);
+	res.redirect(LANDING_PAGE_URL);
 });
 
 function storeRefreshTokenInCookie(req, res, next) {
