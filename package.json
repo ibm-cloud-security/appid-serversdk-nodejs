@@ -1,6 +1,6 @@
 {
   "name": "ibmcloud-appid",
-  "version": "6.2.6",
+  "version": "6.2.7",
   "description": "Node.js SDK for the IBM Cloud App ID service",
   "main": "lib/appid-sdk.js",
   "scripts": {
