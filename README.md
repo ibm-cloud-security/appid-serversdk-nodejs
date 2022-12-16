@@ -458,7 +458,7 @@ Note:
 
 ### Self Service APIs
 
-Use the self service manager when you want to control the UI for the sign-in, sign-up, forgot password, changeDetail and change password flows.
+Use the self service manager when you want to control the UI for the sign-up, forgot password, changeDetail and change password flows.
 The selfServiceManager can be init with the following options:
 
 * iamApiKey: If supplied, it will be used to get iamToken before every request of the selfServiceManager.
