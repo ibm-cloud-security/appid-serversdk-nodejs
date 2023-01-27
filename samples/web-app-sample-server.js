@@ -131,13 +131,14 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 // 1. the original URL of the request that triggered authentication, as persisted in HTTP session under WebAppStrategy.ORIGINAL_URL key.
 // 2. successRedirect as specified in passport.authenticate(name, {successRedirect: "...."}) invocation
 // 3. application root ("/")
-app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 
 // Logout endpoint. Clears authentication information from session
-app.get(LOGOUT_URL, function (req, res){
-	req.session.destroy(function (err) {
-	  res.redirect(LANDING_PAGE_URL);
-	});
+app.get(LOGOUT_URL, function (req, res) {
+	req._sessionManager = false;
+	WebAppStrategy.logout(req);
+	res.clearCookie("refreshToken");
+	res.redirect(LANDING_PAGE_URL);
 });
 
 function storeRefreshTokenInCookie(req, res, next) {
@@ -165,7 +166,7 @@ app.get("/protected", function tryToRefreshTokenIfNotLoggedIn(req, res, next) {
 	webAppStrategy.refreshTokens(req, req.cookies.refreshToken).then(function () {
 		next();
 	});
-}, passport.authenticate(WebAppStrategy.STRATEGY_NAME), storeRefreshTokenInCookie, function (req, res) {
+}, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }), storeRefreshTokenInCookie, function (req, res) {
 	logger.debug("/protected");
 	res.json(req.user);
 });
@@ -175,7 +176,8 @@ app.post("/rop/login/submit", bodyParser.urlencoded({
 }), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	failureRedirect: ROP_LOGIN_PAGE_URL,
-	failureFlash: true // allow flash messages
+	failureFlash: true, // allow flash messages
+	keepSessionInfo: true
 }));
 
 app.get(ROP_LOGIN_PAGE_URL, function (req, res) {
