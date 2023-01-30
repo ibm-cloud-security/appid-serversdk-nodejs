@@ -242,7 +242,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in signUp API");
 			}
 			return Q.resolve(testIamToken);
@@ -360,7 +360,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in forgotPassword API");
 			}
 			return Q.resolve(testIamToken);
@@ -479,7 +479,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in resendNotification API");
 			}
 			return Q.resolve(testIamToken);
@@ -597,7 +597,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in getSignUpConfirmationResult API");
 			}
 			return Q.resolve(testIamToken);
@@ -714,7 +714,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in getForgotPasswordConfirmationResult API");
 			}
 			return Q.resolve(testIamToken);
@@ -842,7 +842,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in setUserNewPassword API");
 			}
 			return Q.resolve(testIamToken);
@@ -968,7 +968,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in getUserDetails API");
 			}
 			return Q.resolve(testIamToken);
@@ -1084,7 +1084,7 @@ describe("/lib/self-service/self-service-manager", function () {
 			if (badIamApiKey === iamApiKey) {
 				return Q.reject(new Error(badIamApiKey));
 			}
-			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.bluemix.net/oidc/token") {
+			if (iamApiKey !== "testIamApiKey" || iamTokenUrl !== "https://iam.cloud.ibm.com/identity/token") {
 				return Q.reject("wrong input to _getIAMToken in updateUserDetails API");
 			}
 			return Q.resolve(testIamToken);
