@@ -621,3 +621,4 @@ This package contains code licensed under the Apache License, Version 2.0 (the "
 
 [img-coveralls-master]: https://coveralls.io/repos/github/ibm-cloud-security/appid-serversdk-nodejs/badge.svg
 [url-coveralls-master]: https://coveralls.io/github/ibm-cloud-security/appid-serversdk-nodejs
+
