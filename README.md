@@ -37,7 +37,7 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 * passport.js 0.6.0+
 
 ## Migrating from v6 to v7
-Breaking changes in passport.js require users to pass the `{ keepSessionInfo: true }` object to the middleware when protecting endpoints.
+Breaking changes in passport.js require users to pass the `{ keepSessionInfo: true }` object to the middleware when protecting endpoints when using WebAppStrategy.
 ```
 app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 
