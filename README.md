@@ -14,6 +14,7 @@
 ## Table of Contents
 * [Summary](#summary)
 * [Requirements](#requirements)
+* [Migrating from v6 to v7](#migrating-from-v6-to-v7)
 * [Installation](#installation)
 * [Example Usage](#example-usage)
 * [License](#license)
@@ -33,6 +34,15 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 ## Requirements
 * npm 6.+
 * node 12.+
+* passport.js 0.6.0+
+
+## Migrating from v6 to v7
+Breaking changes in passport.js require users to pass the `{ keepSessionInfo: true }` object to the middleware when protecting endpoints.
+```
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
+
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
+```
 
 ## Installation
 ```
