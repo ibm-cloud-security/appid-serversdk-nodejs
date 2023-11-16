@@ -41,7 +41,6 @@ Breaking changes in passport.js require users to pass the `{ keepSessionInfo: tr
 
 Old Usage (SDK v6):
 ```
-javascript
 app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 ```
@@ -49,7 +48,6 @@ New Usage (SDK v7):
 In SDK version 7, when using webappStrategy, you need to pass { keepSessionInfo: true } to the passport.authenticate method. Update your code as follows:
 
 ```
-javascript
 app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 ```
