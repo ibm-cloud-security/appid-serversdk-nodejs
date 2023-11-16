@@ -38,9 +38,19 @@ Read the [official documentation](https://console.ng.bluemix.net/docs/services/a
 
 ## Migrating from v6 to v7
 Breaking changes in passport.js require users to pass the `{ keepSessionInfo: true }` object to the middleware when protecting endpoints when using WebAppStrategy.
-```
-app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 
+Old Usage (SDK v6):
+```
+javascript
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+```
+New Usage (SDK v7):
+In SDK version 7, when using webappStrategy, you need to pass { keepSessionInfo: true } to the passport.authenticate method. Update your code as follows:
+
+```
+javascript
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
 ```
 
