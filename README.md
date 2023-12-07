@@ -29,7 +29,7 @@ If you use the Web application protection strategy the unauthenticated client wi
 
 In addition, the SDK provides helper utilities centered around tokens and user profiles. The token manager supports token retrieval for additional flows such as Application Identity and Custom Identity, as well as token specific functions. The user profile manager supports helper functions that retrieve identity provider and custom profile information about the user.
 
-Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
+Read the [official documentation](https://cloud.ibm.com/docs/appid?topic=appid-getting-started) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
 * npm 6.+
@@ -160,9 +160,9 @@ app.use(passport.initialize());
 
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
-const LOGIN_URL = "/ibm/bluemix/appid/login";
-const CALLBACK_URL = "/ibm/bluemix/appid/callback";
-const LOGOUT_URL = "/ibm/bluemix/appid/logout";
+const LOGIN_URL = "/ibm/cloud/appid/login";
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const LOGOUT_URL = "/ibm/cloud/appid/logout";
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
@@ -201,7 +201,7 @@ app.use(passport.session());
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the App ID SDK will try to retrieve
 //    application_uri of the application running on IBM Cloud and append a
-//    default suffix "/ibm/bluemix/appid/callback"
+//    default suffix "/ibm/cloud/appid/callback"
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
 	clientId: "{client-id}",
@@ -272,7 +272,7 @@ To allow anonymous login for a particular URL use two configuration properties a
 * `allowCreateNewAnonymousUser` - By default a new anonymous user will be created every time this method is invoked unless there's an existing anonymous access_token stored in the current HTTP session. In some cases you want to explicitly control whether you want to automatically create new anonymous user or not. Set this property to `false` if you want to disable automatic creation of new anonymous users. The default value of this property is `true`.  
 
 ```JavaScript
-const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
+const LOGIN_ANON_URL = "/ibm/cloud/appid/loginanon";
 
 // Explicit anonymous login endpoint
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -321,7 +321,7 @@ App ID's custom identity flow enables developers to utilize their own authorizat
 
 To utilize the custom identity flow, the user must first register a public key in PEM form using the App ID Dashboard. The user must generate a signed JWT using any open source library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
 
-Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
+Refer to the [documentation on custom identity](https://cloud.ibm.com/docs/appid?topic=appid-custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 
 ### Application Identity and Authorization
@@ -330,7 +330,7 @@ In case you want to call protected APIs from applications or clients that are no
 
 App ID application authorization implements the OAuth2.0 Client Credentials grant.
 
-Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://cloud.ibm.com/docs/appid?topic=appid-app) on how to register your applications.
 
 Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
 
@@ -362,7 +362,7 @@ async function getAppIdentityToken() {
 	}
 }
 ```
-For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://cloud.ibm.com/docs/appid?topic=appid-app).
 
 ### Manage User Profile
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
