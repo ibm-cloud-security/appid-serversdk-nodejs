@@ -51,7 +51,9 @@ describe("/lib/strategies/webapp-strategy", function () {
 				session: {
 					returnTo: 'ssss'
 				},
-				logout: function (req) {}
+				logout: function (_options, callback) {
+					callback();
+				}
 			};
 			let res = {
 				redirect: function (url) {
@@ -115,6 +117,64 @@ describe("/lib/strategies/webapp-strategy", function () {
 		it("Should be able to successfully logout", function (done) {
 			var req = {
 				logout: function () {
+					assert.isUndefined(this[WebAppStrategy.ORIGINAL_URL]);
+					assert.isUndefined(this[WebAppStrategy.AUTH_CONTEXT]);
+					done();
+				},
+				session: {
+					APPID_ORIGINAL_URL: "url",
+					APPID_AUTH_CONTEXT: "context"
+				}
+			};
+			WebAppStrategy.logout(req);
+		});
+
+		it("Should be able to successfully logout with passport >=0.6.0", function (done) {
+			let counter = 42;
+
+			const req = {
+				logout: function (_options, callback) {
+					assert.isUndefined(this[WebAppStrategy.ORIGINAL_URL]);
+					assert.isUndefined(this[WebAppStrategy.AUTH_CONTEXT]);
+					counter = 0;
+					callback();
+				},
+				session: {
+					APPID_ORIGINAL_URL: "url",
+					APPID_AUTH_CONTEXT: "context"
+				}
+			};
+			WebAppStrategy.logout(req, () => {
+				assert.equal(counter, 0);
+				done();
+			});
+		});
+
+		it("Should be able to successfully logout with passport >=0.6.0 and options", function (done) {
+			let counter = 42;
+
+			const req = {
+				logout: function (_options, callback) {
+					assert.isUndefined(this[WebAppStrategy.ORIGINAL_URL]);
+					assert.isUndefined(this[WebAppStrategy.AUTH_CONTEXT]);
+					counter = 0;
+					callback();
+				},
+				session: {
+					APPID_ORIGINAL_URL: "url",
+					APPID_AUTH_CONTEXT: "context"
+				}
+			};
+			const logoutOptions = {};
+			WebAppStrategy.logout(req, logoutOptions, () => {
+				assert.equal(counter, 0);
+				done();
+			});
+		});
+
+		it("Should be able to successfully logout when no options or callback are passed", function (done) {
+			const req = {
+				logout: function (_options, _callback) {
 					assert.isUndefined(this[WebAppStrategy.ORIGINAL_URL]);
 					assert.isUndefined(this[WebAppStrategy.AUTH_CONTEXT]);
 					done();
