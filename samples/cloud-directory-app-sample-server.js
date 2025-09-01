@@ -231,9 +231,10 @@ app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NA
 // Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function (req, res) {
 	req._sessionManager = false;
-	WebAppStrategy.logout(req);
-	res.clearCookie("refreshToken");
-	res.redirect(LANDING_PAGE_URL);
+	WebAppStrategy.logout(req, () => {
+		res.clearCookie("refreshToken");
+		res.redirect(LANDING_PAGE_URL);
+	});
 });
 
 
