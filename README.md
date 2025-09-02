@@ -12,8 +12,10 @@
 [![GithubForks][img-github-forks]][url-github-forks]
 
 ## Table of Contents
+
 * [Summary](#summary)
 * [Requirements](#requirements)
+* [Migrating from v6 to v7](#migrating-from-v6-to-v7)
 * [Installation](#installation)
 * [Example Usage](#example-usage)
 * [License](#license)
@@ -28,22 +30,46 @@ If you use the Web application protection strategy the unauthenticated client wi
 
 In addition, the SDK provides helper utilities centered around tokens and user profiles. The token manager supports token retrieval for additional flows such as Application Identity and Custom Identity, as well as token specific functions. The user profile manager supports helper functions that retrieve identity provider and custom profile information about the user.
 
-Read the [official documentation](https://console.ng.bluemix.net/docs/services/appid/index.html#gettingstarted) for information about getting started with IBM Cloud App ID Service.
+Read the [official documentation](https://cloud.ibm.com/docs/appid?topic=appid-getting-started) for information about getting started with IBM Cloud App ID Service.
 
 ## Requirements
+
 * npm 6.+
 * node 12.+
+* passport.js 0.6.0+
+
+## Migrating from v6 to v7
+
+Breaking changes in passport.js require users to pass the `{ keepSessionInfo: true }` object to the middleware when protecting endpoints when using WebAppStrategy.
+
+Old Usage (SDK v6):
+
+```js
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+```
+
+New Usage (SDK v7):
+In SDK version 7, when using webappStrategy, you need to pass { keepSessionInfo: true } to the passport.authenticate method. Update your code as follows:
+
+```js
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, { keepSessionInfo: true }));
+```
 
 ## Installation
-```
+
+```shell
 npm install --save ibmcloud-appid
 ```
 
 ## Example Usage
+
 Below find two examples of using this SDK to protect APIs and Web applications. Both samples are available under `samples` folder in this repository.
 
 Note that below examples are using additional npm modules. In order to install required npm modules run below commands in your node.js application.
-```
+
+```shell
 npm install --save express
 npm install --save log4js
 npm install --save passport
@@ -52,6 +78,7 @@ npm install --save pug
 ```
 
 #### Protecting APIs using the APIStrategy
+
 APIStrategy expects request to contain an Authorization header with valid access token and optionally identity token. See App ID docs for additional information. The expected header structure is `Authorization=Bearer {access_token} [{id_token}]`
 
 In case of invalid/expired tokens the APIStrategy will return HTTP 401 with `Www-Authenticate=Bearer scope="{scope}" error="{error}"`. The `error` component is optional.
@@ -109,7 +136,9 @@ app.listen(port, function(){
 ```
 
 ##### Protecting APIs using the APIStrategy: Access Control
+
 Using access control, you can define the scopes that are required to access a specific endpoint.
+
 ```JavaScript
 app.get("/api/protected",
 	passport.authenticate(APIStrategy.STRATEGY_NAME, {
@@ -121,11 +150,13 @@ app.get("/api/protected",
 	}
 );
 ```
+
 The scope parameter defines the required scopes.
 The audience parameter is optional and should be set to the application clientId
 to guarantee the scopes are for the requested application.
 
 #### Protecting web applications using WebAppStrategy
+
 WebAppStrategy is based on the OAuth2 authorization_code grant flow and should be used for web applications that use browsers. The strategy provides tools to easily implement authentication and authorization flows. When WebAppStrategy provides mechanisms to detect unauthenticated attempts to access protected resources. The WebAppStrategy will automatically redirect user's browser to the authentication page. After successful authentication user will be taken back to the web application's callback URL (redirectUri), which will once again use WebAppStrategy to obtain access, identity and refresh tokens from App ID service. After obtaining these tokens the WebAppStrategy will store them in HTTP session under WebAppStrategy.AUTH_CONTEXT key. In a scalable cloud environment it is recommended to persist HTTP sessions in a scalable storage like Redis to ensure they're available across server app instances.
 
 ```JavaScript
@@ -142,9 +173,9 @@ app.use(passport.initialize());
 
 // Below URLs will be used for App ID OAuth flows
 const LANDING_PAGE_URL = "/web-app-sample.html";
-const LOGIN_URL = "/ibm/bluemix/appid/login";
-const CALLBACK_URL = "/ibm/bluemix/appid/callback";
-const LOGOUT_URL = "/ibm/bluemix/appid/logout";
+const LOGIN_URL = "/ibm/cloud/appid/login";
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const LOGOUT_URL = "/ibm/cloud/appid/logout";
 
 // Setup express application to use express-session middleware
 // Must be configured with proper session storage for production
@@ -183,7 +214,7 @@ app.use(passport.session());
 // 2. As environment variable named `redirectUri`
 // 3. If none of the above was supplied the App ID SDK will try to retrieve
 //    application_uri of the application running on IBM Cloud and append a
-//    default suffix "/ibm/bluemix/appid/callback"
+//    default suffix "/ibm/cloud/appid/callback"
 passport.use(new WebAppStrategy({
 	tenantId: "{tenant-id}",
 	clientId: "{client-id}",
@@ -218,8 +249,9 @@ app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 // Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
-	WebAppStrategy.logout(req);
-	res.redirect(LANDING_PAGE_URL);
+	WebAppStrategy.logout(req, () => {
+		res.redirect(LANDING_PAGE_URL);
+	});
 });
 
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
@@ -233,7 +265,9 @@ app.listen(process.env.PORT || 1234);
 ```
 
 ##### Protecting web applications using WebAppStrategy: Access Control
+
 Using access control, you can check which scopes exist on the request.
+
 ```JavaScript
 app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
     if(WebAppStrategy.hasScope(req, "read write")){
@@ -244,17 +278,20 @@ app.get("/protected", passport.authenticate(WebAppStrategy.STRATEGY_NAME), funct
     }
 });
 ```
+
 Use WebAppStrategy's hasScope method to check if a given request has some specific scopes.
 
 #### Anonymous login
+
 WebAppStrategy allows users to login to your web application anonymously, meaning without requiring any credentials. After successful login the anonymous user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the anonymous user access token will be destroyed as well.  
 
 To allow anonymous login for a particular URL use two configuration properties as shown on a code snippet below:
+
 * `allowAnonymousLogin` - set this value to true if you want to allow your users to login anonymously when accessing this endpoint. If this property is set to true no authentication will be required. The default value of this property is `false`, therefore you must set it explicitly to allow anonymous login.
 * `allowCreateNewAnonymousUser` - By default a new anonymous user will be created every time this method is invoked unless there's an existing anonymous access_token stored in the current HTTP session. In some cases you want to explicitly control whether you want to automatically create new anonymous user or not. Set this property to `false` if you want to disable automatic creation of new anonymous users. The default value of this property is `true`.  
 
 ```JavaScript
-const LOGIN_ANON_URL = "/ibm/bluemix/appid/loginanon";
+const LOGIN_ANON_URL = "/ibm/cloud/appid/loginanon";
 
 // Explicit anonymous login endpoint
 app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
@@ -267,6 +304,7 @@ app.get(LOGIN_ANON_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 As mentioned previously the anonymous access_token, identity_token and refresh_token (optional) will be automatically persisted in HTTP session by App ID SDK. You can retrieve them from HTTP session via same mechanisms as regular tokens. Access and identity tokens will be kept in HTTP session and will be used until either them or HTTP session expires.
 
 ### Refresh Token
+
 Refresh Token may be used to acquire new access and identity tokens without the need to re-authenticate. Refresh Token is usually configured to have longer expiration than access token. Refresh Token is optional and can be configured in your App ID Dashboard.
 
 After a successful login, in addition to access_token and identity_token, a refresh_token will be persisted in the HTTP session as well.
@@ -299,20 +337,20 @@ const TokenManager = require('ibmcloud-appid').TokenManager(config);
 ```
 
 ### Custom Identity
+
 App ID's custom identity flow enables developers to utilize their own authorization protocols, while still leveraging App ID's capabilities. Instead of managing the entirety of the authorization flow, App ID's custom identity flow allows clients to leverage their own authorization protocol to authenticate and authorize their users and then provides a framework for exchanging verified authentication data securely for App ID tokens.
 
 To utilize the custom identity flow, the user must first register a public key in PEM form using the App ID Dashboard. The user must generate a signed JWT using any open source library and then the user can then use `TokenManager.getCustomIdentityTokens(jwsTokenString, scopes)` to exchange the token for access and identity tokens. `getCustomIdentityTokens()` is an asynchronous function that returns the access token and identity token. These tokens can be stored in the HTTP session for future use. `custom-identity-app-sample-server.js` contains an example of using the Token Manager.
 
-Refer to the [documentation on custom identity](https://console.bluemix.net/docs/services/appid/custom.html#custom-identity) for more details on how to implement App ID's custom identity flow in your application.
-
+Refer to the [documentation on custom identity](https://cloud.ibm.com/docs/appid?topic=appid-custom-identity) for more details on how to implement App ID's custom identity flow in your application.
 
 ### Application Identity and Authorization
 
-In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.   
+In case you want to call protected APIs from applications or clients that are non-interactive (i.e., there is no user involved), you can use the App ID application identity and authorization flow to secure your applications.
 
 App ID application authorization implements the OAuth2.0 Client Credentials grant.
 
-Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#registering) on how to register your applications.
+Before you can obtain access tokens using the application authorization flow, you need to obtain a `client ID` and a `secret` by registering your application with your App ID instance. Refer to the [App ID application identity and authorization documentation](https://cloud.ibm.com/docs/appid?topic=appid-app) on how to register your applications.
 
 Since the application needs to store the `client ID` and the `secret`, this flow must never be used with untrusted clients such as mobile clients and browser based applications.
 
@@ -344,9 +382,11 @@ async function getAppIdentityToken() {
 	}
 }
 ```
-For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://console.bluemix.net/docs/services/appid/app-to-app.html#app).
+
+For more detailed information on using the application identity and authorization flow, refer to the [App ID documentation](https://cloud.ibm.com/docs/appid?topic=appid-app).
 
 ### Manage User Profile
+
 Using the App ID UserProfileManager, you are able to create, delete, and retrieve user profile attributes as well as get additional info about a user.
 
 ```javascript
@@ -385,13 +425,17 @@ userProfileManager.getUserInfo(accessToken, identityToken).then(function (userIn
         });
 
 ```
+
 ## Cloud Directory
+
 Make sure to that Cloud Directory identity provider set to **ON** in the App ID dashboard and that you've included a callback endpoint.
 
 ### Login using resource owner password flow
+
 WebAppStrategy allows users to login to your web application using username/password.
 After successful login, the user access token will be persisted in HTTP session, making it available as long as HTTP session is kept alive. Once HTTP session is destroyed or expired the user access token will be destroyed as well.
 To allow login using username/password add to your app a post route that will be called with the username and password parameters.
+
 ```javascript
 app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
@@ -399,60 +443,77 @@ app.post("/form/submit", bodyParser.urlencoded({extended: false}), passport.auth
 	failureFlash : true // allow flash messages
 }));
 ```
+
 * `successRedirect` - set this value to the url you want the user to be redirected after successful authentication, default: the original request url. (in this example:"/form/submit")
 * `failureRedirect` - set this value to the url you want the user to be redirected in case authentication fails, default: the original request url. (in this example:"/form/submit")
 * `failureFlash` - set this value to true if you want to receive the error message that returned from cloud directory service, default: false
 
 Note:
+
 1. If you submitting the request using a html form, use [body-parser](https://www.npmjs.com/package/body-parser) middleware.
 2. Use [connect-flash](https://www.npmjs.com/package/connect-flash) for getting the returned error message. see the web-app-sample-server.js.
 
 ### Sign up
+
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.SIGN_UP, will launch the App ID sign up form.
+
 ```javascript
 app.get("/sign_up", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	show: WebAppStrategy.SIGN_UP
 }));
 ```
+
 Note:
+
 1. If your Cloud directory setting ***Allow users to sign-in without email verification** is set to **No**, the process will end without retrieving App ID access and id tokens.
 2. Be sure to set **Allow users to sign up and reset their password" to **ON**, in the settings for Cloud Directory.
 
-
 ### Forgot Password
+
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.FORGOT_PASSWORD, will launch the App ID forgot password from.
+
 ```javascript
 app.get("/forgot_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	show: WebAppStrategy.FORGOT_PASSWORD
 }));
 ```
+
 Note:
+
 1. This process will end without retrieving App ID access and id tokens.
 2. Make sure to set "Allow users to sign up and reset their password" and "Forgot password email" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
 ### Change Details
+
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_DETAILS, will launch the App ID change details from.
+
 ```javascript
 app.get("/change_details", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	show: WebAppStrategy.CHANGE_DETAILS
 }));
 ```
+
 Note:
+
 1. This call requires that the user is authenticated with Cloud directory identity provider.
 2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in the App ID dashboard.
 
 ### Change Password
+
 Pass WebAppStrategy "show" property and set it to WebAppStrategy.CHANGE_PASSWORD, will launch the App ID change password from.
+
 ```javascript
 app.get("/change_password", passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
 	successRedirect: LANDING_PAGE_URL,
 	show: WebAppStrategy.CHANGE_PASSWORD
 }));
 ```
+
 Note:
+
 1. This call requires that the user is authenticated with Cloud directory identity provider.
 2. Make sure to set "Allow users to sign up and reset their password" to ON, in Cloud Directory settings that are in App ID dashboard.
 
@@ -483,8 +544,9 @@ The self service manger exposed the following APIs, each API can get 'iamToken' 
 You must supply 'iamApikey' to the selfServiceManager otherwise you must supply the 'iamToken' to each of the selfServiceManager APIs.
 
 #### Sign-up
+
 Sign up a new user.
-userData is a JSON object with the user SCIM profile (https://tools.ietf.org/html/rfc7643#page-35).
+userData is a JSON object with the user SCIM profile (<https://tools.ietf.org/html/rfc7643#page-35>).
 language currently unused, default to 'en'.
 
 ```javascript
@@ -497,6 +559,7 @@ selfServiceManager.signUp(userData, language, iamToken).then(function (user) {
 ```
 
 #### Forgot Password
+
 Forgot password flow.
 email is the user email that request the forgot password request.
 language currently unused, default to 'en'.
@@ -511,6 +574,7 @@ selfServiceManager.forgotPassword(email, language, iamToken).then(function (user
 ```
 
 #### Resend Notification
+
 Resend notification.
 uuid is the Cloud Directory user uuid.
 templateName is the template to be send.
@@ -524,7 +588,9 @@ selfServiceManager.resendNotification(uuid, templateName, language, iamToken).th
 		});
 	}
 ```
+
 #### Get Sign-up confirmation result
+
 Get the stored result for the sign up confirmation.
 This should be called to verify the authenticity of the sign up verification.
 context is a random string that will be supply by App ID, for authenticity purposes.
@@ -538,7 +604,9 @@ selfServiceManager.getSignUpConfirmationResult(context, iamToken).then(function 
 		});
 	}
 ```
+
 #### Get Forgot password confirmation result
+
 Get the stored result for the forgot password confirmation.
 This should be called to verify the authenticity of the forgot password request.
 context is a random string that will be supply by App ID, for authenticity purposes.
@@ -552,7 +620,9 @@ selfServiceManager.getForgotPasswordConfirmationResult(ucontext, iamToken).then(
 		});
 	}
 ```
+
 #### Set User new password
+
 Change the user passowrd.
 uuid is the Cloud Directory user uuid.
 newPassword the new password to be set.
@@ -567,7 +637,9 @@ selfServiceManager.setUserNewPassword(uuid, newPassword, language, changedIpAddr
 		});
 	}
 ```
+
 #### Get user details
+
 Gets the stored details of the Cloud directory user.
 uuid is the Cloud Directory user uuid.
 
@@ -579,10 +651,12 @@ selfServiceManager.getUserDetails(uuid, iamToken).then(function (user) {
 		});
 	}
 ```
+
 #### Update user details
+
 update the user details.
 uuid is the Cloud Directory user uuid.
-userData is a JSON object with the updated user SCIM profile (https://tools.ietf.org/html/rfc7643#page-35).
+userData is a JSON object with the updated user SCIM profile (<https://tools.ietf.org/html/rfc7643#page-35>).
 
 ```javascript
 selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (user) {
@@ -594,15 +668,18 @@ selfServiceManager.updateUserDetails(uuid, userData, iamToken).then(function (us
 ```
 
 ### Logging
+
 This SDK uses the log4js package for logging. By default the logging level is set to `info`. To create your own logging configuration for your application, add a log4js.json file and set the `process.env.LOG4JS_CONFIG` environment variable to your json file.
 
-To learn more about log4js, visit the documentation here (https://log4js-node.github.io/log4js-node/).
+To learn more about log4js, visit the documentation here (<https://log4js-node.github.io/log4js-node/>).
 
 ## Got Questions?
+
 Join us on [Slack](https://www.ibm.com/cloud/blog/announcements/get-help-with-ibm-cloud-app-id-related-questions-on-slack) and chat with our dev team.
 
 ### License
-This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the License in the LICENSE file within this package.
+
+This package contains code licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0> and may also view the License in the LICENSE file within this package.
 
 [img-ibmcloud-powered]: https://img.shields.io/badge/ibm%20cloud-powered-blue.svg
 [url-ibmcloud]: https://www.ibm.com/cloud/
