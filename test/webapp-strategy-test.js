@@ -114,6 +114,28 @@ describe("/lib/strategies/webapp-strategy", function () {
 	});
 
 	describe("#logout", function () {
+
+	it("Should handle logout for passport < 0.6.0 with callback", function (done) {
+			const req = {
+				logout: function () {
+					assert.ok(true, "logout called");
+				},
+				session: {
+					APPID_ORIGINAL_URL: "url",
+					APPID_AUTH_CONTEXT: "context",
+					APPID_STATE_PARAMETER: "state",
+					APPID_CLOUD_DIRECTORY_UPDATE_REQ: "update"
+				}
+			};
+
+			WebAppStrategy.ORIGINAL_URL = "APPID_ORIGINAL_URL";
+			WebAppStrategy.AUTH_CONTEXT = "APPID_AUTH_CONTEXT";
+			WebAppStrategy.STATE_PARAMETER = "APPID_STATE_PARAMETER";
+			WebAppStrategy.CLOUD_DIRECTORY_UPDATE_REQ = "APPID_CLOUD_DIRECTORY_UPDATE_REQ";
+
+			WebAppStrategy.logout(req, done);
+		});
+
 		it("Should be able to successfully logout", function (done) {
 			var req = {
 				logout: function () {
